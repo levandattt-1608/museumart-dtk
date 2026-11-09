@@ -949,6 +949,8 @@ function showSection(sectionName) {
         updateMuseumStats();
     } else if (sectionName === 'hall-of-fame') {
         renderHallOfFame();
+    } else if (sectionName === 'masterpieces') {
+        renderMasterpiecesSection();
     } else if (sectionName === 'admin') {
         renderAdminStats();
         switchAdminTab(currentAdminTab);
@@ -970,7 +972,8 @@ function switchAdminTab(tabName) {
     const targetContent = document.getElementById('admin-tab-' + tabName);
     if (targetContent) targetContent.classList.remove('hidden');
 
-    if (tabName === 'users') renderAdminUsers();
+    if (tabName === 'cloud') renderAdminCloudTab();
+    else if (tabName === 'users') renderAdminUsers();
     else if (tabName === 'artworks') renderAdminArtworks();
     else if (tabName === 'themes') renderAdminThemes();
     else if (tabName === 'analytics') renderAdminAnalytics();
@@ -2908,6 +2911,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const qrModal = document.getElementById('qr-modal');
             const portfolioModal = document.getElementById('portfolio-modal');
             const artModal = document.getElementById('artwork-modal');
+            const mpModal = document.getElementById('masterpiece-modal');
 
             if (authModal && !authModal.classList.contains('hidden')) closeAuthModal();
             else if (addUserModal && !addUserModal.classList.contains('hidden')) closeAddUserModal();
@@ -2916,6 +2920,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (qrModal && !qrModal.classList.contains('hidden')) closeQrPlaqueModal();
             else if (portfolioModal && !portfolioModal.classList.contains('hidden')) closePortfolioModal();
             else if (artModal && !artModal.classList.contains('hidden')) closeArtworkModal();
+            else if (mpModal && !mpModal.classList.contains('hidden')) closeMasterpieceModal();
         }
     });
 
@@ -2986,3 +2991,1398 @@ function initSchoolLogoFallbacks() {
         };
     }
 }
+
+// ==========================================================================
+// 🏛️ GÓC THAM KHẢO KIỆT TÁC NGHỆ THUẬT (MASTERPIECES REFERENCE MODULE)
+// Trường PTDTBT TH&THCS Đinh Thanh Kháng - Sở GD&ĐT tỉnh Quảng Ngãi
+// ==========================================================================
+
+let currentMasterpieceFilter = 'all';
+let currentMasterpieceSearch = '';
+let selectedMasterpieceId = null;
+let masterpieceSpeechUtterance = null;
+let isMasterpieceAudioPlaying = false;
+
+// 1. Vector SVG Generators for the 8 World & Vietnamese Masterpieces
+function svgThieuNuBenHoaHue() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="100%" height="100%">
+        <defs>
+            <linearGradient id="bgHue" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4a3e35"/>
+                <stop offset="50%" stop-color="#322822"/>
+                <stop offset="100%" stop-color="#1e1814"/>
+            </linearGradient>
+            <linearGradient id="aodaiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="60%" stop-color="#f0f3f5"/>
+                <stop offset="100%" stop-color="#c9d2d8"/>
+            </linearGradient>
+            <radialGradient id="lampGlow" cx="70%" cy="30%" r="50%">
+                <stop offset="0%" stop-color="#ffe8b8" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#1e1814" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="canvasNoise">
+                <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise"/>
+                <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.08 0"/>
+                <feComposite in2="SourceGraphic" in="gl" operator="in"/>
+            </filter>
+        </defs>
+        <!-- Canvas Background -->
+        <rect width="600" height="800" fill="url(#bgHue)"/>
+        <rect width="600" height="800" fill="url(#lampGlow)"/>
+
+        <!-- Ceramic Table & White Lily Vase (Bình Hoa Huệ) -->
+        <path d="M420,480 L560,540 L560,780 L420,740 Z" fill="#2d221c" stroke="#1d1511" stroke-width="2"/>
+        <!-- Celadon Porcelain Vase -->
+        <ellipse cx="480" cy="530" rx="36" ry="12" fill="#5c8272"/>
+        <path d="M450,530 C440,600 435,660 480,670 C525,660 520,600 510,530 Z" fill="#699281" stroke="#4a6c5e" stroke-width="2"/>
+        <ellipse cx="480" cy="670" rx="26" ry="8" fill="#4a6c5e"/>
+        <!-- White Lilies (Hoa Huệ Trắng Muốt) -->
+        <!-- Stems -->
+        <path d="M480,530 Q460,400 440,320" stroke="#3d6347" stroke-width="4" fill="none"/>
+        <path d="M480,530 Q495,380 500,280" stroke="#3d6347" stroke-width="4" fill="none"/>
+        <path d="M480,530 Q515,410 540,340" stroke="#3d6347" stroke-width="3" fill="none"/>
+        <!-- Lily Petals and Buds -->
+        <g fill="#ffffff" stroke="#d5ded9" stroke-width="1.5">
+            <!-- Flower 1 -->
+            <path d="M440,320 C420,300 400,310 420,335 C435,350 455,340 440,320 Z"/>
+            <path d="M440,320 C435,290 460,290 455,315 Z"/>
+            <circle cx="438" cy="324" r="3" fill="#ecd56a"/>
+            <!-- Flower 2 top -->
+            <path d="M500,280 C485,255 510,245 515,275 C520,295 490,300 500,280 Z"/>
+            <path d="M500,280 C520,260 535,275 515,290 Z"/>
+            <circle cx="508" cy="278" r="3" fill="#ecd56a"/>
+            <!-- Flower 3 right -->
+            <path d="M540,340 C555,320 570,335 550,355 C535,365 525,350 540,340 Z"/>
+            <!-- Buds -->
+            <path d="M465,370 Q450,360 460,350 Q475,360 465,370 Z" fill="#dcedd9"/>
+            <path d="M485,340 Q495,330 500,340 Q490,355 485,340 Z" fill="#dcedd9"/>
+        </g>
+
+        <!-- Young Woman in White Ao Dai (Thiếu Nữ Áo Dài) -->
+        <!-- Delicate graceful posture leaning toward lilies -->
+        <!-- Body & Flowing Silk Drapes -->
+        <path d="M140,540 C160,450 200,380 260,330 C300,300 340,340 370,420 C410,520 440,640 450,780 L120,780 C110,720 120,620 140,540 Z" fill="url(#aodaiGrad)" filter="drop-shadow(0 10px 15px rgba(0,0,0,0.4))"/>
+        <!-- Silk Folds and Shading Lines -->
+        <path d="M260,330 C270,410 290,520 310,650 C320,710 330,780 340,780" stroke="#b2bec7" stroke-width="3" fill="none" opacity="0.6"/>
+        <path d="M300,430 C340,530 380,660 395,780" stroke="#b2bec7" stroke-width="2.5" fill="none" opacity="0.6"/>
+        <path d="M210,480 C230,580 250,700 255,780" stroke="#c0cbd3" stroke-width="2" fill="none" opacity="0.5"/>
+        <path d="M170,580 C190,660 200,740 205,780" stroke="#b2bec7" stroke-width="2" fill="none" opacity="0.5"/>
+
+        <!-- Woman's Arm reaching gracefully toward flowers -->
+        <path d="M310,380 C360,390 400,420 435,460 C425,475 390,455 350,440 Z" fill="#f7eae1" stroke="#e8d2c4" stroke-width="1.5"/>
+        <circle cx="438" cy="465" r="9" fill="#f7eae1"/>
+
+        <!-- Graceful Neck and Head tilted thoughtfully -->
+        <path d="M280,310 C285,270 295,260 310,255 C320,280 315,315 305,330 Z" fill="#f7eae1"/>
+        <!-- Face oval -->
+        <path d="M290,255 C275,225 285,185 315,180 C345,178 360,210 350,245 C340,270 315,275 290,255 Z" fill="#faeee6"/>
+        <!-- Delicate features -->
+        <!-- Eyes looking lovingly down at lilies -->
+        <path d="M320,215 Q330,220 338,216" stroke="#4a3728" stroke-width="2.5" fill="none"/>
+        <path d="M305,218 Q312,223 318,220" stroke="#4a3728" stroke-width="2" fill="none"/>
+        <path d="M332,222 L334,234" stroke="#dcb8a4" stroke-width="1.5" fill="none"/>
+        <!-- Soft lips -->
+        <path d="M322,246 Q332,250 338,245" stroke="#c45353" stroke-width="2" fill="none"/>
+
+        <!-- Jet-black Vietnamese Hairstyle (Tóc búi trâm thanh lịch thập niên 1940) -->
+        <path d="M290,210 C280,185 300,150 330,155 C360,160 375,185 365,225 C360,205 345,170 315,175 C295,178 288,195 290,210 Z" fill="#181514"/>
+        <ellipse cx="295" cy="190" rx="32" ry="24" fill="#181514"/>
+        <!-- Gold Hairpin (Trâm cài tóc) -->
+        <path d="M275,175 L310,165" stroke="#d4af37" stroke-width="3" stroke-linecap="round"/>
+
+        <!-- Inscription Plaque at bottom right corner -->
+        <rect x="30" y="730" width="230" height="42" rx="4" fill="rgba(10,12,16,0.7)" stroke="#d4af37" stroke-width="1"/>
+        <text x="42" y="750" fill="#ffd700" font-family="'Playfair Display', serif" font-size="12" font-weight="bold">THIẾU NỮ BÊN HOA HUỆ</text>
+        <text x="42" y="764" fill="#d5ded9" font-family="'Quicksand', sans-serif" font-size="10">Tô Ngọc Vân (1943) • Sơn dầu</text>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function svgEmThuy() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="100%" height="100%">
+        <defs>
+            <linearGradient id="emThuyBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4e3822"/>
+                <stop offset="60%" stop-color="#2d2014"/>
+                <stop offset="100%" stop-color="#19110a"/>
+            </linearGradient>
+            <radialGradient id="thuyFaceLight" cx="45%" cy="32%" r="45%">
+                <stop offset="0%" stop-color="#fff0e0" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#2d2014" stop-opacity="0"/>
+            </radialGradient>
+        </defs>
+        <!-- Background -->
+        <rect width="600" height="800" fill="url(#emThuyBg)"/>
+        <rect width="600" height="800" fill="url(#thuyFaceLight)"/>
+
+        <!-- Rattan Chair (Ghế Mây Đan) -->
+        <path d="M120,420 C110,250 490,250 480,420 C490,580 470,720 450,780 L150,780 C130,720 110,580 120,420 Z" fill="#5c4328" stroke="#7a5b3a" stroke-width="6"/>
+        <!-- Rattan Weave Texture -->
+        <g stroke="#8f6c46" stroke-width="2" opacity="0.45">
+            <line x1="160" y1="300" x2="440" y2="300"/>
+            <line x1="150" y1="340" x2="450" y2="340"/>
+            <line x1="140" y1="380" x2="460" y2="380"/>
+            <line x1="135" y1="420" x2="465" y2="420"/>
+            <line x1="140" y1="460" x2="460" y2="460"/>
+            <line x1="200" y1="280" x2="200" y2="480"/>
+            <line x1="260" y1="260" x2="260" y2="490"/>
+            <line x1="340" y1="260" x2="340" y2="490"/>
+            <line x1="400" y1="280" x2="400" y2="480"/>
+        </g>
+
+        <!-- Em Thúy Body: White Traditional Shirt & Dark Pants -->
+        <path d="M190,440 C220,380 380,380 410,440 C430,510 440,650 440,760 L160,760 C160,650 170,510 190,440 Z" fill="#eae7dc" stroke="#d4cfc1" stroke-width="2"/>
+        <!-- Fold lines -->
+        <path d="M300,420 L300,640" stroke="#b8b09d" stroke-width="2" opacity="0.6"/>
+        <path d="M260,460 L240,620" stroke="#b8b09d" stroke-width="2" opacity="0.5"/>
+        <path d="M340,460 L360,620" stroke="#b8b09d" stroke-width="2" opacity="0.5"/>
+        <!-- Hands folded innocently in lap (Hai tay lồng vào nhau bỡ ngỡ) -->
+        <ellipse cx="300" cy="590" rx="42" ry="24" fill="#f8e5d3" stroke="#e0c7af" stroke-width="2"/>
+        <path d="M285,585 C295,595 305,595 315,585" stroke="#bfa388" stroke-width="2" fill="none"/>
+
+        <!-- Neck -->
+        <path d="M275,370 L275,410 L325,410 L325,370 Z" fill="#f7e0ce"/>
+
+        <!-- Innocent Face (Khuôn mặt bầu bĩnh, đôi mắt to tròn lay động) -->
+        <ellipse cx="300" cy="305" rx="75" ry="85" fill="#fbe8d7"/>
+
+        <!-- Eyes - Huge, luminous, contemplative, innocent -->
+        <!-- Left eye -->
+        <ellipse cx="270" cy="300" rx="16" ry="12" fill="#ffffff"/>
+        <circle cx="270" cy="300" r="10" fill="#261b14"/>
+        <circle cx="268" cy="297" r="3" fill="#ffffff"/>
+        <path d="M252,295 Q270,285 288,295" stroke="#3d2b1f" stroke-width="3" fill="none"/>
+        <path d="M255,278 Q270,272 285,278" stroke="#4a3525" stroke-width="2" fill="none"/>
+
+        <!-- Right eye -->
+        <ellipse cx="330" cy="300" rx="16" ry="12" fill="#ffffff"/>
+        <circle cx="330" cy="300" r="10" fill="#261b14"/>
+        <circle cx="328" cy="297" r="3" fill="#ffffff"/>
+        <path d="M312,295 Q330,285 348,295" stroke="#3d2b1f" stroke-width="3" fill="none"/>
+        <path d="M315,278 Q330,272 345,278" stroke="#4a3525" stroke-width="2" fill="none"/>
+
+        <!-- Nose -->
+        <path d="M298,305 L297,328 Q300,332 305,330" stroke="#d5b094" stroke-width="2" fill="none"/>
+
+        <!-- Gentle Lips -->
+        <path d="M288,350 Q300,356 312,350" stroke="#cc6b6b" stroke-width="3" fill="none"/>
+
+        <!-- Signature Short Bobbed Hair (Mái tóc ngắn ôm gương mặt trẻ thơ) -->
+        <path d="M220,280 C215,200 385,200 380,280 C390,320 375,370 370,380 C360,340 370,280 340,240 C300,230 260,240 230,280 C225,340 235,375 228,380 C220,360 215,320 220,280 Z" fill="#1a1410"/>
+        <path d="M230,260 Q300,225 370,260" stroke="#2b2018" stroke-width="6" fill="none"/>
+
+        <!-- Inscription Plaque -->
+        <rect x="30" y="730" width="220" height="42" rx="4" fill="rgba(10,12,16,0.75)" stroke="#d4af37" stroke-width="1"/>
+        <text x="42" y="750" fill="#ffd700" font-family="'Playfair Display', serif" font-size="12" font-weight="bold">EM THÚY (Bảo vật Quốc gia)</text>
+        <text x="42" y="764" fill="#d5ded9" font-family="'Quicksand', sans-serif" font-size="10">Trần Văn Cẩn (1943) • Sơn dầu</text>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function svgKetNapDangDienBienPhu() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+        <defs>
+            <linearGradient id="lacquerBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4a150e"/>
+                <stop offset="35%" stop-color="#2a0d08"/>
+                <stop offset="70%" stop-color="#1a0805"/>
+                <stop offset="100%" stop-color="#0a0302"/>
+            </linearGradient>
+            <radialGradient id="vermilionGlow" cx="25%" cy="30%" r="50%">
+                <stop offset="0%" stop-color="#b82a18" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#0a0302" stop-opacity="0"/>
+            </radialGradient>
+        </defs>
+        <rect width="800" height="600" fill="url(#lacquerBg)"/>
+        <rect width="800" height="600" fill="url(#vermilionGlow)"/>
+
+        <!-- Earth trench logs & battlefield fortification (Chiến hào Điện Biên Phủ) -->
+        <polygon points="0,480 800,430 800,600 0,600" fill="#2d1d14"/>
+        <path d="M0,500 L800,450" stroke="#7a4e32" stroke-width="8"/>
+        <path d="M0,540 L800,500" stroke="#523420" stroke-width="6"/>
+
+        <!-- Red Flag with Yellow Star high in the bunker (Cờ Đảng & Cờ Tổ Quốc) -->
+        <polygon points="120,60 260,75 240,170 110,150" fill="#c41e12" stroke="#e6392a" stroke-width="2"/>
+        <polygon points="175,95 183,115 204,115 187,127 193,147 175,134 157,147 163,127 146,115 167,115" fill="#f5d033"/>
+
+        <!-- Group of Soldiers in Trench (Các chiến sĩ Điện Biên) -->
+        <!-- Center Soldier raising hand in solemn oath (Chiến sĩ tuyên thệ) -->
+        <g id="oathSoldier">
+            <!-- Body in khaki coat -->
+            <polygon points="340,320 440,320 460,540 320,540" fill="#5c4e33" stroke="#3d3320" stroke-width="3"/>
+            <!-- Crossed belts -->
+            <line x1="350" y1="330" x2="430" y2="480" stroke="#2b2014" stroke-width="7"/>
+            <line x1="430" y1="330" x2="350" y2="480" stroke="#2b2014" stroke-width="7"/>
+            <!-- Arm raised high in fist oath -->
+            <polygon points="410,320 440,250 480,180 505,195 465,275 435,340" fill="#d99b6c" stroke="#8a532d" stroke-width="2"/>
+            <!-- Clenched Fist -->
+            <circle cx="495" cy="185" r="18" fill="#d99b6c" stroke="#8a532d" stroke-width="2"/>
+            <!-- Determined Head & Helmet with camo net -->
+            <ellipse cx="385" cy="265" rx="30" ry="38" fill="#d99b6c"/>
+            <path d="M350,255 Q385,210 420,255 Z" fill="#3b4226" stroke="#222615" stroke-width="3"/>
+            <!-- Strong facial profile -->
+            <polygon points="415,260 425,270 412,275" fill="#d99b6c"/>
+        </g>
+
+        <!-- Wounded Soldier with white bandage on head (Chiến sĩ bị thương tựa vào đồng đội) -->
+        <g id="woundedSoldier">
+            <polygon points="180,380 270,360 280,550 160,550" fill="#4d4432" stroke="#2d271c" stroke-width="2"/>
+            <ellipse cx="230" cy="330" rx="26" ry="32" fill="#cca078"/>
+            <!-- White Head Bandage (Băng trắng đầu) -->
+            <path d="M205,310 L255,315 L253,332 L204,325 Z" fill="#ffffff" stroke="#c2c2c2" stroke-width="1.5"/>
+            <!-- Rifle slung on shoulder -->
+            <line x1="150" y1="280" x2="220,530" stroke="#1f1812" stroke-width="9"/>
+        </g>
+
+        <!-- Party Secretary conducting oath ceremony (Đồng chí Bí thư chi bộ) -->
+        <g id="secretary">
+            <polygon points="480,300 580,310 560,550 470,550" fill="#3d402e" stroke="#222419" stroke-width="3"/>
+            <!-- Holding Party Notebook -->
+            <polygon points="460,370 510,360 515,410 465,420" fill="#9e281e" stroke="#f5d033" stroke-width="2"/>
+            <ellipse cx="530" cy="255" rx="28" ry="36" fill="#cf9b6f"/>
+            <path d="M500,240 Q530,205 560,240 Z" fill="#2d3322"/>
+        </g>
+
+        <!-- Soldier rushing out to front-line trench on right -->
+        <g id="rushSoldier">
+            <polygon points="620,330 700,320 720,520 610,520" fill="#524a35"/>
+            <ellipse cx="660" cy="275" rx="24" ry="30" fill="#c79469"/>
+            <!-- Holding Gun Forward -->
+            <line x1="680" y1="340" x2="790" y2="330" stroke="#1a140e" stroke-width="8"/>
+        </g>
+
+        <!-- Title Plaque -->
+        <rect x="30" y="530" width="310" height="42" rx="4" fill="rgba(10,5,3,0.85)" stroke="#d4af37" stroke-width="1"/>
+        <text x="42" y="550" fill="#ffd700" font-family="'Playfair Display', serif" font-size="12" font-weight="bold">KẾT NẠP ĐẢNG Ở ĐIỆN BIÊN PHỦ</text>
+        <text x="42" y="564" fill="#d5ded9" font-family="'Quicksand', sans-serif" font-size="10">Nguyễn Sáng (1956) • Sơn mài • Bảo vật Quốc gia</text>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function svgPhoPhai() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+        <defs>
+            <linearGradient id="phaiSky" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#c8d2db"/>
+                <stop offset="60%" stop-color="#e3e7eb"/>
+                <stop offset="100%" stop-color="#f5ede1"/>
+            </linearGradient>
+            <linearGradient id="wallYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#dfaf45"/>
+                <stop offset="50%" stop-color="#c69530"/>
+                <stop offset="100%" stop-color="#8a611c"/>
+            </linearGradient>
+            <linearGradient id="mossRoof" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#7a2a1e"/>
+                <stop offset="60%" stop-color="#541e16"/>
+                <stop offset="100%" stop-color="#3d402b"/>
+            </linearGradient>
+        </defs>
+        <!-- Pale Hanoi Autumn Sky -->
+        <rect width="800" height="600" fill="url(#phaiSky)"/>
+
+        <!-- Street Perspective (Mặt đường phố cổ xám bạc) -->
+        <polygon points="0,600 800,600 480,360 420,360" fill="#c2beb4"/>
+        <line x1="450" y1="360" x2="350" y2="600" stroke="#756f64" stroke-width="4" stroke-dasharray="16,12"/>
+
+        <!-- Distant houses and street curve -->
+        <polygon points="410,320 480,310 490,365 405,365" fill="#a89a80"/>
+        <polygon points="400,305 485,295 490,312 405,322" fill="#5a3128"/>
+
+        <!-- Left Row of Old Hanoi Shophouses (Dãy nhà cổ rêu phong bên trái) -->
+        <!-- Front House Wall -->
+        <polygon points="60,200 240,230 250,520 40,550" fill="url(#wallYellow)" stroke="#2b2318" stroke-width="4"/>
+        <!-- Weathered Stains and Peeling Plaster -->
+        <path d="M80,300 Q140,340 120,440 Q70,410 80,300 Z" fill="#6e552a" opacity="0.4"/>
+        <path d="M160,260 Q210,290 190,390 Q150,340 160,260 Z" fill="#4d5236" opacity="0.35"/>
+        <!-- Window with green wooden shutters (Cửa sổ lá sách xanh rêu) -->
+        <polygon points="100,310 160,320 155,400 95,390" fill="#2d4239" stroke="#1b2823" stroke-width="3"/>
+        <line x1="128" y1="315" x2="124" y2="395" stroke="#1b2823" stroke-width="2"/>
+
+        <!-- Undulating Tiled Roof (Mái ngói ta xô nghiêng uốn lượn) -->
+        <polygon points="30,205 255,235 240,165 40,140" fill="url(#mossRoof)" stroke="#241410" stroke-width="4"/>
+        <!-- Secondary Attic Dormer (Tầng gác lửng nhô cao) -->
+        <polygon points="90,145 190,160 185,90 95,80" fill="#b0812b" stroke="#2b2318" stroke-width="3"/>
+        <polygon points="75,85 200,95 185,55 90,45" fill="#522119" stroke="#241410" stroke-width="3"/>
+
+        <!-- Right Row of Houses (Dãy phố bên phải) -->
+        <polygon points="560,260 760,210 780,530 540,510" fill="#cc9f43" stroke="#2b2318" stroke-width="4"/>
+        <!-- Right house roof -->
+        <polygon points="545,265 770,215 755,160 550,195" fill="#66261c" stroke="#241410" stroke-width="4"/>
+        <!-- Right house doorway -->
+        <polygon points="590,370 660,360 655,505 585,510" fill="#241e19" stroke="#14100c" stroke-width="3"/>
+
+        <!-- Electric Poles and Tangled Cables (Cột điện và dây chằng chịt đặc trưng Phố Phái) -->
+        <line x1="280" y1="180" x2="300" y2="520" stroke="#1f1812" stroke-width="5"/>
+        <line x1="260" y1="210" x2="315" y2="215" stroke="#1f1812" stroke-width="4"/>
+        <path d="M280,210 Q420,260 580,240" stroke="#261c14" stroke-width="2" fill="none"/>
+        <path d="M290,218 Q450,290 600,250" stroke="#261c14" stroke-width="1.8" fill="none"/>
+
+        <!-- Lone Figure with Conical Hat (Người đi bộ đội nón lá xa xăm) -->
+        <g transform="translate(435, 410) scale(0.65)">
+            <ellipse cx="20" cy="10" rx="14" ry="4" fill="#e6d5a8"/>
+            <polygon points="6,10 20,0 34,10" fill="#d4be83"/>
+            <path d="M12,12 L10,50 L28,50 L26,12 Z" fill="#363942"/>
+        </g>
+
+        <!-- Title Plaque -->
+        <rect x="30" y="530" width="260" height="42" rx="4" fill="rgba(15,12,10,0.85)" stroke="#d4af37" stroke-width="1"/>
+        <text x="42" y="550" fill="#ffd700" font-family="'Playfair Display', serif" font-size="12" font-weight="bold">PHỐ CỔ HÀ NỘI (PHỐ PHÁI)</text>
+        <text x="42" y="564" fill="#d5ded9" font-family="'Quicksand', sans-serif" font-size="10">Bùi Xuân Phái (1972) • Sơn dầu</text>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function svgStarryNight() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" width="100%" height="100%">
+        <defs>
+            <linearGradient id="nightSkyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#0b1736"/>
+                <stop offset="40%" stop-color="#142c62"/>
+                <stop offset="80%" stop-color="#1e4487"/>
+                <stop offset="100%" stop-color="#2a5a9e"/>
+            </linearGradient>
+            <radialGradient id="moonHalo" cx="85%" cy="18%" r="20%">
+                <stop offset="0%" stop-color="#fff3a1" stop-opacity="1"/>
+                <stop offset="40%" stop-color="#ffcc00" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#142c62" stop-opacity="0"/>
+            </radialGradient>
+        </defs>
+        <!-- Night Sky -->
+        <rect width="800" height="640" fill="url(#nightSkyGrad)"/>
+
+        <!-- Rolling Blue Alpilles Hills (Dãy núi Alpilles uốn lượn) -->
+        <path d="M0,450 Q200,380 400,430 T800,410 L800,640 L0,640 Z" fill="#182c47"/>
+        <path d="M0,470 Q250,420 500,460 T800,440 L800,640 L0,640 Z" fill="#132338"/>
+
+        <!-- Iconic Swirling Nebulae Arcs (Những vòng xoáy cuồn cuộn mãnh liệt) -->
+        <g stroke-linecap="round" fill="none">
+            <!-- Giant Central Vortex 1 -->
+            <path d="M180,240 Q280,140 420,190 T540,250 T430,310 T320,230" stroke="#77a8e0" stroke-width="18" opacity="0.6"/>
+            <path d="M180,240 Q280,140 420,190 T540,250 T430,310 T320,230" stroke="#ffd952" stroke-width="8" stroke-dasharray="14,14" opacity="0.75"/>
+            <!-- Vortex 2 -->
+            <path d="M300,160 Q440,100 580,170 T680,230" stroke="#9bc5f2" stroke-width="14" opacity="0.5"/>
+            <path d="M300,160 Q440,100 580,170 T680,230" stroke="#ffffff" stroke-width="6" stroke-dasharray="12,12" opacity="0.8"/>
+            <path d="M100,280 Q250,220 400,270 T700,230" stroke="#508ac7" stroke-width="16" opacity="0.6"/>
+        </g>
+
+        <!-- Golden Crescent Moon with Glowing Halo (Vầng trăng khuyết vàng rực) -->
+        <circle cx="680" cy="110" r="70" fill="url(#moonHalo)"/>
+        <!-- Star halos around canvas -->
+        <!-- Star 1 -->
+        <circle cx="160" cy="90" r="32" fill="#ffdd55" opacity="0.4"/>
+        <circle cx="160" cy="90" r="16" fill="#ffffff" opacity="0.9"/>
+        <circle cx="160" cy="90" r="7" fill="#ffeaa3"/>
+        <!-- Star 2 -->
+        <circle cx="280" cy="80" r="28" fill="#ffdd55" opacity="0.4"/>
+        <circle cx="280" cy="80" r="12" fill="#ffffff" opacity="0.9"/>
+        <!-- Star 3 (Venus / Sao Hôm rực rỡ) -->
+        <circle cx="480" cy="300" r="45" fill="#ffea75" opacity="0.5"/>
+        <circle cx="480" cy="300" r="20" fill="#ffffff" opacity="0.95"/>
+        <circle cx="480" cy="300" r="10" fill="#fff9db"/>
+        <!-- Star 4 -->
+        <circle cx="580" cy="80" r="30" fill="#ffdd55" opacity="0.4"/>
+        <circle cx="580" cy="80" r="14" fill="#ffffff"/>
+
+        <!-- The Golden Moon Shape -->
+        <path d="M660,70 A45,45 0 0,0 710,140 A40,40 0 1,1 660,70 Z" fill="#ffdd33" filter="drop-shadow(0 0 10px #ffbb00)"/>
+
+        <!-- Quiet Sleeping Village of Saint-Rémy (Ngôi làng thanh bình) -->
+        <g fill="#182333" stroke="#0e1722" stroke-width="2">
+            <!-- Village cottages -->
+            <polygon points="320,490 350,470 380,490 380,530 320,530"/>
+            <polygon points="380,500 420,480 450,500 450,540 380,540"/>
+            <polygon points="460,510 490,495 520,510 520,550 460,550"/>
+            <!-- Church with soaring Spire (Nhà thờ với ngọn tháp cao vút) -->
+            <polygon points="420,520 450,520 450,470 420,470"/>
+            <polygon points="430,470 435,370 440,470" fill="#101721" stroke="#070c12" stroke-width="2"/>
+        </g>
+        <!-- Golden Glowing Windows in Cottages -->
+        <rect x="340" y="505" width="8" height="8" fill="#ffdd55"/>
+        <rect x="400" y="515" width="8" height="8" fill="#ffdd55"/>
+        <rect x="480" y="525" width="8" height="8" fill="#ffdd55"/>
+
+        <!-- Towering Dark Cypress Tree in Left Foreground (Cây trắc bá vươn cao như ngọn lửa) -->
+        <path d="M120,640 C90,520 40,400 90,260 C105,210 115,160 120,120 C125,160 145,220 170,280 C205,370 240,480 230,640 Z" fill="#0d1b15" stroke="#060c09" stroke-width="3"/>
+        <path d="M70,640 C45,540 30,460 65,360 C75,320 85,280 88,250 C95,290 105,340 125,410 C145,490 155,570 150,640 Z" fill="#13261e" opacity="0.9"/>
+        <!-- Flame-like Cypress texture lines -->
+        <path d="M120,130 Q140,240 160,360 Q180,480 180,640" stroke="#1d382d" stroke-width="4" fill="none"/>
+        <path d="M90,270 Q110,380 120,500" stroke="#1d382d" stroke-width="3.5" fill="none"/>
+
+        <!-- Title Plaque -->
+        <rect x="30" y="570" width="280" height="42" rx="4" fill="rgba(6,12,24,0.85)" stroke="#d4af37" stroke-width="1"/>
+        <text x="42" y="590" fill="#ffd700" font-family="'Playfair Display', serif" font-size="12" font-weight="bold">ĐÊM ĐẦY SAO (The Starry Night)</text>
+        <text x="42" y="604" fill="#d5ded9" font-family="'Quicksand', sans-serif" font-size="10">Vincent van Gogh (1889) • Hậu ấn tượng</text>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function svgMonaLisa() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="100%" height="100%">
+        <defs>
+            <linearGradient id="monaBg" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#2a3f3d"/>
+                <stop offset="35%" stop-color="#3c4e40"/>
+                <stop offset="65%" stop-color="#46422d"/>
+                <stop offset="100%" stop-color="#1e1c14"/>
+            </linearGradient>
+            <radialGradient id="sfumatoLight" cx="50%" cy="32%" r="45%">
+                <stop offset="0%" stop-color="#faedd7" stop-opacity="0.32"/>
+                <stop offset="100%" stop-color="#1e1c14" stop-opacity="0"/>
+            </radialGradient>
+        </defs>
+        <!-- Background Landscape: Ethereal mountains, winding paths and bridge -->
+        <rect width="600" height="800" fill="url(#monaBg)"/>
+        <!-- Distant Rocky Crags in blue aerial perspective -->
+        <path d="M0,320 Q120,260 200,290 T400,270 T600,290 L600,450 L0,450 Z" fill="#2d4240" opacity="0.6"/>
+        <!-- Winding river path -->
+        <path d="M120,380 Q160,350 140,320" stroke="#7d8f76" stroke-width="5" fill="none" opacity="0.7"/>
+        <path d="M480,390 Q450,360 490,330" stroke="#7d8f76" stroke-width="4" fill="none" opacity="0.7"/>
+
+        <rect width="600" height="800" fill="url(#sfumatoLight)"/>
+
+        <!-- Balcony parapet ledge and chair armrest -->
+        <rect x="60" y="680" width="480" height="40" fill="#2d2218" stroke="#1a140d" stroke-width="2"/>
+
+        <!-- Mona Lisa Figure -->
+        <!-- Renaissance Garments: Dark olive silk with pleated bodice and golden amber sleeves -->
+        <path d="M140,500 C150,420 220,380 300,380 C380,380 450,420 460,500 C480,590 500,700 500,780 L100,780 C100,700 120,590 140,500 Z" fill="#2a2e22" stroke="#1a1d15" stroke-width="2"/>
+        <!-- Amber-gold folded sleeves -->
+        <path d="M130,520 C110,580 130,660 180,720 L240,680 C200,640 180,580 180,520 Z" fill="#5c4524"/>
+        <path d="M470,520 C490,580 470,660 420,720 L360,680 C400,640 420,580 420,520 Z" fill="#5c4524"/>
+
+        <!-- Hands folded gracefully across lap (Đôi bàn tay quý phái đặt trên tay ghế) -->
+        <ellipse cx="280" cy="700" rx="60" ry="22" fill="#ecd9c6" transform="rotate(-10 280 700)"/>
+        <ellipse cx="320" cy="690" rx="55" ry="20" fill="#ecd9c6" transform="rotate(12 320 690)"/>
+
+        <!-- Graceful Neck & Decolletage bathed in warm soft light -->
+        <path d="M265,320 L265,395 C280,410 320,410 335,395 L335,320 Z" fill="#faedd9"/>
+        <path d="M250,395 C275,420 325,420 350,395" stroke="#3b3223" stroke-width="3" fill="none"/>
+
+        <!-- Oval Face with Sfumato Technique (Gương mặt mềm mại không đường viền) -->
+        <ellipse cx="300" cy="270" rx="72" ry="88" fill="#fbeede"/>
+
+        <!-- The Enigmatic Smile (Nụ cười huyền bí muôn thuở) -->
+        <!-- Soft mouth with blended edges -->
+        <path d="M284,312 Q300,317 316,312" stroke="#995752" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <path d="M282,310 Q284,313 286,311" stroke="#874844" stroke-width="2" fill="none"/>
+        <path d="M314,311 Q316,313 318,310" stroke="#874844" stroke-width="2" fill="none"/>
+
+        <!-- Nose -->
+        <path d="M298,255 L296,290 Q300,296 306,293" stroke="#cfa88c" stroke-width="2.5" fill="none"/>
+
+        <!-- Eyes with direct, soul-penetrating gaze -->
+        <ellipse cx="272" cy="254" rx="14" ry="8" fill="#faf4eb"/>
+        <circle cx="272" cy="254" r="6" fill="#38291c"/>
+        <path d="M256,252 Q272,242 288,252" stroke="#38291c" stroke-width="2.5" fill="none"/>
+
+        <ellipse cx="328" cy="254" rx="14" ry="8" fill="#faf4eb"/>
+        <circle cx="328" cy="254" r="6" fill="#38291c"/>
+        <path d="M312,252 Q328,242 344,252" stroke="#38291c" stroke-width="2.5" fill="none"/>
+
+        <!-- Hair and Translucent Veil (Mái tóc gợn sóng và khăn voan mỏng bao phủ) -->
+        <path d="M225,260 C215,180 385,180 375,260 C390,340 385,460 365,540 C350,440 370,320 345,260 C325,230 275,230 255,260 C230,320 250,440 235,540 C215,460 210,340 225,260 Z" fill="#241a13"/>
+        <path d="M220,230 Q300,195 380,230" stroke="#473426" stroke-width="4" fill="none" opacity="0.6"/>
+
+        <!-- Title Plaque -->
+        <rect x="30" y="730" width="240" height="42" rx="4" fill="rgba(12,10,7,0.85)" stroke="#d4af37" stroke-width="1"/>
+        <text x="42" y="750" fill="#ffd700" font-family="'Playfair Display', serif" font-size="12" font-weight="bold">NÀNG MONA LISA</text>
+        <text x="42" y="764" fill="#d5ded9" font-family="'Quicksand', sans-serif" font-size="10">Leonardo da Vinci (1503) • Phục Hưng</text>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function svgGirlWithPearl() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="100%" height="100%">
+        <defs>
+            <linearGradient id="turbanBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#2a669f"/>
+                <stop offset="60%" stop-color="#18426d"/>
+                <stop offset="100%" stop-color="#0e2640"/>
+            </linearGradient>
+            <linearGradient id="turbanYellow" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#e8b843"/>
+                <stop offset="60%" stop-color="#b88925"/>
+                <stop offset="100%" stop-color="#694b0d"/>
+            </linearGradient>
+            <radialGradient id="pearlGlow" cx="40%" cy="35%" r="55%">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="50%" stop-color="#e8ecf0"/>
+                <stop offset="85%" stop-color="#a6b3bf"/>
+                <stop offset="100%" stop-color="#4a5563"/>
+            </radialGradient>
+        </defs>
+        <!-- Pure Deep Chiaroscuro Black Background -->
+        <rect width="600" height="750" fill="#0d1114"/>
+
+        <!-- Earthy Ochre Jacket & Crisp White Collar -->
+        <path d="M160,520 C180,450 250,420 330,420 C420,420 480,480 520,570 C550,640 560,750 560,750 L120,750 C120,750 140,600 160,520 Z" fill="#8f6f3b" stroke="#5e4722" stroke-width="2"/>
+        <!-- Crisp White Collar catching bright key light -->
+        <polygon points="260,420 320,445 285,475 240,435" fill="#f8f9fa"/>
+        <polygon points="320,445 375,420 395,445 335,475" fill="#e2e6ea"/>
+
+        <!-- Neck turned over shoulder toward viewer -->
+        <path d="M260,350 L270,440 L340,440 L345,350 Z" fill="#faeee3"/>
+
+        <!-- Girl's Face turned 3/4 looking back -->
+        <ellipse cx="310" cy="300" rx="72" ry="85" fill="#fdf0e4"/>
+
+        <!-- Captivating Eyes with wet moisture highlights -->
+        <ellipse cx="280" cy="290" rx="14" ry="10" fill="#faf6f0"/>
+        <circle cx="280" cy="290" r="7" fill="#2d2218"/>
+        <circle cx="278" cy="287" r="2.5" fill="#ffffff"/>
+        <path d="M265,286 Q280,278 295,286" stroke="#423122" stroke-width="2.5" fill="none"/>
+
+        <ellipse cx="340" cy="290" rx="14" ry="10" fill="#faf6f0"/>
+        <circle cx="340" cy="290" r="7" fill="#2d2218"/>
+        <circle cx="338" cy="287" r="2.5" fill="#ffffff"/>
+        <path d="M325,286 Q340,278 355,286" stroke="#423122" stroke-width="2.5" fill="none"/>
+
+        <!-- Soft Parted Lips with dewy highlight (Đôi môi hé mở tự nhiên) -->
+        <ellipse cx="312" cy="346" rx="14" ry="7" fill="#cf6363"/>
+        <ellipse cx="312" cy="346" rx="10" ry="3" fill="#240c0c"/>
+        <circle cx="310" cy="344" r="1.5" fill="#ffffff"/>
+
+        <!-- Blue & Yellow Exotic Turban (Khăn xếp phương Đông xanh biếc và vàng kim) -->
+        <!-- Blue dome wrap -->
+        <path d="M225,260 C215,160 380,140 405,240 C415,280 400,320 385,320 C380,240 375,200 310,205 C250,210 240,240 225,260 Z" fill="url(#turbanBlue)"/>
+        <!-- Top wrap curve -->
+        <path d="M235,220 C250,150 350,140 395,190" stroke="#4482c2" stroke-width="16" stroke-linecap="round" fill="none"/>
+        <!-- Yellow fabric tail hanging down the back (Dải khăn vàng buông rủ) -->
+        <path d="M375,220 C420,250 435,340 430,460 C420,500 400,520 390,460 C395,380 390,280 375,220 Z" fill="url(#turbanYellow)"/>
+
+        <!-- THE ICONIC PEARL EARRING (Viên Ngọc Trai Phát Sáng Huyền Thoại) -->
+        <!-- Hook -->
+        <path d="M258,350 Q262,360 260,366" stroke="#d4af37" stroke-width="1.5" fill="none"/>
+        <!-- Teardrop Pearl catching Chiaroscuro Reflection -->
+        <ellipse cx="260" cy="376" rx="11" ry="14" fill="url(#pearlGlow)" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.8))"/>
+        <!-- Top-left bright specular highlight -->
+        <ellipse cx="257" cy="372" rx="3.5" ry="4.5" fill="#ffffff"/>
+        <!-- Soft bottom reflection from white collar -->
+        <ellipse cx="261" cy="385" rx="5" ry="2" fill="#e8edf2" opacity="0.8"/>
+
+        <!-- Title Plaque -->
+        <rect x="30" y="680" width="290" height="42" rx="4" fill="rgba(8,10,14,0.9)" stroke="#d4af37" stroke-width="1"/>
+        <text x="42" y="700" fill="#ffd700" font-family="'Playfair Display', serif" font-size="12" font-weight="bold">CÔ GÁI ĐEO HOA TAI NGỌC TRAI</text>
+        <text x="42" y="714" fill="#d5ded9" font-family="'Quicksand', sans-serif" font-size="10">Johannes Vermeer (1665) • Baroque Hà Lan</text>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function svgGreatWave() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 580" width="100%" height="100%">
+        <defs>
+            <linearGradient id="waveSky" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#dfd7c2"/>
+                <stop offset="50%" stop-color="#ebe4d3"/>
+                <stop offset="100%" stop-color="#faf6ed"/>
+            </linearGradient>
+            <linearGradient id="prussianBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#14314f"/>
+                <stop offset="60%" stop-color="#1c4570"/>
+                <stop offset="100%" stop-color="#2c68a4"/>
+            </linearGradient>
+        </defs>
+        <!-- Pale Vintage Japanese Paper Sky -->
+        <rect width="840" height="580" fill="url(#waveSky)"/>
+
+        <!-- Distant Snow-capped Mount Fuji (Núi Phú Sĩ linh thiêng nhỏ bé ở hậu cảnh) -->
+        <polygon points="410,380 435,320 460,380" fill="#1b324a"/>
+        <!-- Snow Cap -->
+        <polygon points="428,338 435,320 442,338 438,345 432,345" fill="#ffffff"/>
+
+        <!-- Secondary Surging Wave (Đợt sóng thứ hai) -->
+        <path d="M0,480 Q200,420 380,450 T840,430 L840,580 L0,580 Z" fill="#245180"/>
+
+        <!-- Long Slender Oar Boats struggling in ocean swells (Thuyền chở cá vượt sóng dữ) -->
+        <!-- Boat 1 inside trough -->
+        <path d="M220,440 Q380,420 540,440 Q380,430 220,440 Z" fill="#c4aa7d" stroke="#8c7042" stroke-width="2"/>
+        <!-- Rowers huddled together -->
+        <g fill="#dfd8cb">
+            <circle cx="320" cy="432" r="4"/><circle cx="335" cy="431" r="4"/>
+            <circle cx="350" cy="430" r="4"/><circle cx="365" cy="429" r="4"/>
+            <circle cx="380" cy="429" r="4"/><circle cx="395" cy="430" r="4"/>
+        </g>
+
+        <!-- THE GREAT WAVE (NGỌN SÓNG LỪNG KHỔNG LỒ) -->
+        <!-- Main Body of the Wave -->
+        <path d="M0,580 L0,220 C80,180 180,200 240,270 C300,340 350,420 520,380 C360,330 320,200 260,140 C200,80 130,70 60,110 L0,150 Z" fill="url(#prussianBlue)"/>
+
+        <!-- Claw-like Wave Crests & Sea Foam Spray (Móng vuốt bọt sóng trắng như tuyết) -->
+        <path d="M40,120 C70,90 120,60 170,70 C220,80 280,130 320,210 C290,190 260,195 240,220 C250,190 220,170 190,180 C200,160 180,140 150,150 C160,130 140,110 110,120 Z" fill="#ffffff"/>
+        <!-- Extended Frothing Claws hanging over the void -->
+        <path d="M280,140 Q340,150 360,190 Q340,170 310,180" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M240,110 Q310,120 330,160 Q305,145 280,150" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M190,85 Q260,95 290,135 Q260,120 230,125" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M140,75 Q190,80 220,110" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+        <!-- Droplets and Spray Dots (Những giọt bọt biển tung bay) -->
+        <g fill="#ffffff">
+            <circle cx="380" cy="190" r="3"/><circle cx="395" cy="210" r="4"/><circle cx="365" cy="230" r="3.5"/>
+            <circle cx="340" cy="150" r="3"/><circle cx="320" cy="120" r="2.5"/><circle cx="270" cy="90" r="3"/>
+            <circle cx="420" cy="240" r="2.5"/><circle cx="450" cy="280" r="3"/><circle cx="480" cy="320" r="3.5"/>
+        </g>
+
+        <!-- Dynamic Striations inside the Wave (Các đường vân uốn lượn màu xanh phổ) -->
+        <path d="M20,260 C90,220 180,260 220,330" stroke="#5b96cc" stroke-width="4" fill="none"/>
+        <path d="M10,320 C80,280 150,320 200,410" stroke="#5b96cc" stroke-width="4" fill="none"/>
+        <path d="M0,380 C70,350 140,390 180,480" stroke="#5b96cc" stroke-width="4" fill="none"/>
+
+        <!-- Japanese Calligraphy Signature Box (Khung lạc khoản chữ Hán cổ) -->
+        <rect x="50" y="40" width="40" height="90" fill="#ffffff" stroke="#1f1812" stroke-width="1.5"/>
+        <text x="70" y="70" font-family="'Courier New', monospace" font-size="14" font-weight="bold" fill="#1f1812" text-anchor="middle">富</text>
+        <text x="70" y="90" font-family="'Courier New', monospace" font-size="14" font-weight="bold" fill="#1f1812" text-anchor="middle">嶽</text>
+        <text x="70" y="110" font-family="'Courier New', monospace" font-size="14" font-weight="bold" fill="#1f1812" text-anchor="middle">景</text>
+
+        <!-- Title Plaque -->
+        <rect x="30" y="515" width="310" height="42" rx="4" fill="rgba(10,18,30,0.88)" stroke="#d4af37" stroke-width="1"/>
+        <text x="42" y="535" fill="#ffd700" font-family="'Playfair Display', serif" font-size="12" font-weight="bold">SÓNG LỪNG NGOÀI KHƠI KANAGAWA</text>
+        <text x="42" y="549" fill="#d5ded9" font-family="'Quicksand', sans-serif" font-size="10">Katsushika Hokusai (1831) • Tranh khắc gỗ Ukiyo-e</text>
+    </svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+// 2. Masterpieces Database (8 tác phẩm tiêu biểu chuẩn chương trình Mỹ thuật)
+const MASTERPIECES_DATA = [
+    {
+        id: 'thieu-nu-ben-hoa-hue',
+        title: 'Thiếu Nữ Bên Hoa Huệ',
+        artist: 'Tô Ngọc Vân',
+        year: '1943',
+        origin: 'vietnam',
+        period: 'Mỹ thuật Đông Dương',
+        material: 'Sơn dầu trên toan (Oil on canvas)',
+        location: 'Bảo tàng Mỹ thuật Việt Nam (Hà Nội)',
+        tags: ['vietnam', 'oil-lacquer'],
+        paletteHarmony: 'Hài Hòa Nhã Nhặn (Harmonious Tint)',
+        palette: [
+            { name: 'Trắng Sữa Áo Dài', hex: '#F4F5F7' },
+            { name: 'Xanh Gốm Ngọc', hex: '#699281' },
+            { name: 'Xanh Lá Huệ', hex: '#3D6347' },
+            { name: 'Nâu Cổ Điển', hex: '#4A3E35' },
+            { name: 'Vàng Nhụy Hoa', hex: '#ECD56A' }
+        ],
+        shortDesc: 'Đỉnh cao hội họa sơn dầu hiện thực Việt Nam, tôn vinh nét duyên dáng, e ấp thanh tao của người thiếu nữ Hà thành bên bình hoa huệ trắng tinh khôi.',
+        audioScript: 'Chào các em học sinh Trường Đinh Thanh Kháng. Đây là kiệt tác Thiếu Nữ Bên Hoa Huệ, sáng tác năm 1943 bởi danh họa Tô Ngọc Vân. Bức tranh nổi bật với đường cong chữ S mềm mại của tà áo dài trắng muốt, ôm trọn dáng ngồi nghiêng duyên dáng của người thiếu nữ bên bình hoa huệ. Hòa sắc bức tranh vô cùng thanh khiết, chỉ gồm sắc trắng tinh khôi, xanh ngọc của bình gốm và nền nâu trầm ấm áp. Các em hãy chú ý ánh sáng dịu dàng soi rọi vẻ đẹp kín đáo, thuần khiết của tâm hồn phụ nữ Việt Nam.',
+        composition: 'Bố cục hình tam giác kết hợp đường cong lượn sóng chữ S kinh điển phương Đông. Dáng thiếu nữ nghiêng đầu nhẹ nhàng về phía bình hoa huệ tạo mối liên kết mật thiết giữa con người và thiên nhiên.',
+        color: 'Hòa sắc chủ đạo là gam màu sáng tinh khiết với màu trắng bạc của áo dài, xanh lục ngọc bích của bình hoa và sắc nâu trầm ấm ở hậu cảnh làm nền tôn vinh chủ thể.',
+        technique: 'Bút pháp sơn dầu phương Tây điêu luyện kết hợp tinh tế với thần thái dịu dàng, kín đáo và thanh tao của tâm hồn Á Đông.',
+        challenge: 'Em hãy thử vẽ một bức chân dung người thân (mẹ, cô giáo, bạn học) kết hợp với loài hoa em yêu thích ở quê hương Quảng Ngãi, áp dụng gam màu trang nhã.',
+        getImage: svgThieuNuBenHoaHue
+    },
+    {
+        id: 'em-thuy',
+        title: 'Em Thúy',
+        artist: 'Trần Văn Cẩn',
+        year: '1943',
+        origin: 'vietnam',
+        period: 'Mỹ thuật Cận đại Việt Nam',
+        material: 'Sơn dầu trên toan (Bảo vật Quốc gia)',
+        location: 'Bảo tàng Mỹ thuật Việt Nam (Hà Nội)',
+        tags: ['vietnam', 'oil-lacquer'],
+        paletteHarmony: 'Ấm Áp Nhuần Nhị (Warm Ochre)',
+        palette: [
+            { name: 'Trắng Ngà Áo Bà Ba', hex: '#EAE7DC' },
+            { name: 'Vàng Nâu Ghế Mây', hex: '#8F6C46' },
+            { name: 'Nâu Đất Sâu', hex: '#2D2014' },
+            { name: 'Hồng Phấn Trẻ Thơ', hex: '#FBE8D7' },
+            { name: 'Đen Mắt Huyền', hex: '#261B14' }
+        ],
+        shortDesc: 'Bảo vật Quốc gia Việt Nam, bức chân dung bé Thúy 8 tuổi với đôi mắt to tròn lay động, phản ánh thế giới nội tâm trong sáng và hồn nhiên thơ trẻ.',
+        audioScript: 'Tác phẩm Em Thúy của danh họa Trần Văn Cẩn được công nhận là Bảo vật Quốc gia Việt Nam. Điểm đặc biệt nhất khiến hàng triệu người rung động chính là đôi mắt đen lay láy, mở to tròn đầy bỡ ngỡ nhưng vô cùng trong sáng của cô bé 8 tuổi. Bức tranh sử dụng gam màu vàng nâu ấm cúng từ chiếc ghế mây và chiếc áo bà ba trắng ngà, toát lên tình yêu thương vô bờ của người họa sĩ đối với tuổi thơ.',
+        composition: 'Bố cục diện mạo chính diện, dáng ngồi hơi lệch tự nhiên trên chiếc ghế mây tròn, hai bàn tay lồng vào nhau bỡ ngỡ tạo điểm tựa thị giác ổn định và ngây thơ.',
+        color: 'Bảng màu ấm áp, nhuần nhị với sắc vàng đất, nâu gỗ mây và áo trắng ngà, ánh sáng tập trung soi rọi khuôn mặt bầu bĩnh và đôi mắt trong veo.',
+        technique: 'Nét vẽ trau chuốt, chuyển sắc êm dịu, diễn tả chất cảm mộc mạc của mây tre đan đối lập với làn da căng mịn màng của trẻ thơ.',
+        challenge: 'Em hãy quan sát một em nhỏ hoặc bạn bè cùng lớp, vẽ lại khoảnh khắc biểu cảm đôi mắt ngây thơ, sử dụng bút chì màu hoặc sáp dầu quen thuộc.',
+        getImage: svgEmThuy
+    },
+    {
+        id: 'ket-nap-dang-dien-bien-phu',
+        title: 'Kết Nạp Đảng Ở Điện Biên Phủ',
+        artist: 'Nguyễn Sáng',
+        year: '1956',
+        origin: 'vietnam',
+        period: 'Hiện thực Cách mạng',
+        material: 'Sơn mài truyền thống (Bảo vật Quốc gia)',
+        location: 'Bảo tàng Mỹ thuật Việt Nam (Hà Nội)',
+        tags: ['vietnam', 'oil-lacquer'],
+        paletteHarmony: 'Hùng Tráng Tương Phản (Heroic Vermilion)',
+        palette: [
+            { name: 'Đỏ Son Cờ Đảng', hex: '#C41E12' },
+            { name: 'Vàng Vỏ Trứng & Vàng Quỳ', hex: '#F5D033' },
+            { name: 'Nâu Chiến Hào', hex: '#4A150E' },
+            { name: 'Xanh Khaki Áo Lính', hex: '#5C4E33' },
+            { name: 'Then Đen Sơn Mài', hex: '#1A0805' }
+        ],
+        shortDesc: 'Bảo vật Quốc gia khắc họa lễ kết nạp Đảng hào hùng ngay giữa chiến hào ác liệt, biểu tượng đỉnh cao của tinh thần quả cảm dân tộc.',
+        audioScript: 'Đây là kiệt tác sơn mài Kết Nạp Đảng Ở Điện Biên Phủ của danh họa Nguyễn Sáng. Bức tranh đưa chúng ta trở về khoảnh khắc hào hùng năm 1954: giữa chiến hào bom đạn, lễ kết nạp Đảng diễn ra chớp nhoáng nhưng trang nghiêm tuyệt đối. Cánh tay giơ cao tuyên thệ, người chiến sĩ băng bó đầu kiên cường và đồng đội vững vàng tay súng được khắc họa bằng các mảng màu then, son, vàng quỳ rực sáng.',
+        composition: 'Bố cục chắt lọc theo nhịp điệu dồn dập, các nhân vật liên kết chặt chẽ theo khối hình học khỏe khoắn tạo cảm giác vững chãi như bàn thạch.',
+        color: 'Màu son đỏ rực rỡ tượng trưng cho lý tưởng cách mạng, nổi bật trên nền then đen huyền bí và các mảng dát vàng, cẩn vỏ trứng lấp lánh.',
+        technique: 'Nghệ thuật sơn mài đỉnh cao với kỹ thuật mài tỉ mỉ nhiều lớp, đường nét gãy gọn, cô đọng đầy sức mạnh biểu cảm.',
+        challenge: 'Em hãy vẽ một bức tranh về sự đoàn kết của tập thể học sinh trường mình, sử dụng gam màu nóng ấm và các đường nét dứt khoát, mạnh mẽ.',
+        getImage: svgKetNapDangDienBienPhu
+    },
+    {
+        id: 'pho-co-ha-noi',
+        title: 'Phố Cổ Hà Nội (Phố Phái)',
+        artist: 'Bùi Xuân Phái',
+        year: '1972',
+        origin: 'vietnam',
+        period: 'Hội họa Biểu hiện Hiện thực',
+        material: 'Sơn dầu trên bìa cứng',
+        location: 'Bộ sưu tập Mỹ thuật Quốc gia & Tư nhân',
+        tags: ['vietnam', 'oil-lacquer'],
+        paletteHarmony: 'Hoài Niệm Trầm Tích (Nostalgic Ochre)',
+        palette: [
+            { name: 'Vàng Vôi Tường Cũ', hex: '#DFAF45' },
+            { name: 'Đỏ Ngói Rêu Phong', hex: '#7A2A1E' },
+            { name: 'Xanh Rêu Ẩm Mục', hex: '#3D402B' },
+            { name: 'Xám Trời Mùa Thu', hex: '#C8D2DB' },
+            { name: 'Đen Nét Viền Phố', hex: '#2B2318' }
+        ],
+        shortDesc: 'Bức tranh bất hủ ghi lại hồn cốt ngàn năm của phố cổ Hà Nội qua những mái ngói xô nghiêng, bức tường vàng hoài niệm và nét vẽ run rẩy trầm tư.',
+        audioScript: 'Nhắc đến Hà Nội là nhắc đến Phố Phái của danh họa Bùi Xuân Phái. Bức tranh không chỉ vẽ những ngôi nhà, mà vẽ nên cả linh hồn và nỗi niềm thương nhớ của đất kinh kỳ. Những mái ngói rêu phong xô lệch vào nhau, mảng tường vàng vôi tróc lở cùng dáng người đi bộ nhỏ bé liêu xiêu gợi lên không gian tĩnh lặng, trầm mặc sâu lắng.',
+        composition: 'Góc nhìn phối cảnh sâu hun hút, các đường xiên của mái nhà và bờ tường tạo cảm giác xô lệch nhịp nhàng đầy chất thơ.',
+        color: 'Sắc vàng nghệ của vôi ve tương phản với nâu đỏ của ngói ta và xanh rêu mục nát, bao bọc bởi bầu trời xám bạc đặc trưng của mùa đông Hà Nội.',
+        technique: 'Nét cọ đậm chất tạo hình, những đường viền đen đậm khỏe khoắn bao bọc mảng màu dày dặn, thể hiện vết hằn của thời gian.',
+        challenge: 'Em hãy vẽ một góc mái nhà rông, nhà sàn hoặc góc sân trường Đinh Thanh Kháng dưới ánh nắng chiều tà với các mảng tường màu ấm.',
+        getImage: svgPhoPhai
+    },
+    {
+        id: 'dem-day-sao',
+        title: 'Đêm Đầy Sao (The Starry Night)',
+        artist: 'Vincent van Gogh',
+        year: '1889',
+        origin: 'world',
+        period: 'Hậu Ấn Tượng (Post-Impressionism)',
+        material: 'Sơn dầu trên toan (Oil on canvas)',
+        location: 'Bảo tàng Nghệ thuật Hiện đại (MoMA), New York, Hoa Kỳ',
+        tags: ['world', 'impressionism'],
+        paletteHarmony: 'Tương Phản Bổ Túc Rực Rỡ (Cobalt & Gold)',
+        palette: [
+            { name: 'Xanh Thẳm Bầu Trời', hex: '#142C62' },
+            { name: 'Vàng Rực Trăng Sao', hex: '#FFCC00' },
+            { name: 'Xanh Lục Trắc Bá', hex: '#0D1B15' },
+            { name: 'Lam Sóng Cuộn', hex: '#77A8E0' },
+            { name: 'Trắng Sáng Tinh Tú', hex: '#FFFFFF' }
+        ],
+        shortDesc: 'Một trong những kiệt tác nổi tiếng nhất lịch sử nhân loại, thể hiện vũ trụ huyền bí cuộn xoáy mãnh liệt qua nét cọ xoắn ốc đầy cảm xúc của Van Gogh.',
+        audioScript: 'Đêm Đầy Sao là tuyệt tác để đời của đại danh họa Vincent van Gogh, vẽ từ ô cửa sổ phòng bệnh viện Saint-Rémy năm 1889. Bầu trời đêm không hề u tối mà bừng sáng rực rỡ với 11 ngôi sao xoáy tròn và vầng trăng khuyết chói lòa như mặt trời. Cây trắc bá đen vươn thẳng lên trời xanh như ngọn lửa khát vọng vượt qua mọi đau khổ trần thế.',
+        composition: 'Cân bằng đối xứng độc đáo giữa cây trắc bá vươn cao sừng sững ở tiền cảnh bên trái và vầng trăng rực rỡ cùng tháp chuông nhà thờ ở bên phải.',
+        color: 'Sự đối lập hoàn hảo giữa gam màu lạnh sâu thẳm (xanh cobalt, chàm) và gam màu nóng rực rỡ (vàng chrome, cam) tạo ra xung lực thị giác mãnh liệt.',
+        technique: 'Kỹ thuật Impasto đắp màu dày cộp, nhát cọ ngắn, xoáy lượn theo nhịp điệu cuồn cuộn như dòng chảy vô tận của vũ trụ.',
+        challenge: 'Em hãy dùng những nét vẽ xoáy tròn nhịp điệu để vẽ bầu trời đêm quê hương mình với trăng, sao và núi rừng Ba Tơ đại ngàn.',
+        getImage: svgStarryNight
+    },
+    {
+        id: 'nang-mona-lisa',
+        title: 'Nàng Mona Lisa (La Gioconda)',
+        artist: 'Leonardo da Vinci',
+        year: '1503',
+        origin: 'world',
+        period: 'Thời kỳ Phục Hưng Ý (High Renaissance)',
+        material: 'Sơn dầu trên gỗ bạch dương',
+        location: 'Bảo tàng Louvre, Paris, Pháp',
+        tags: ['world', 'oil-lacquer'],
+        paletteHarmony: 'Loang Mờ Khói Sương (Sfumato Earth)',
+        palette: [
+            { name: 'Vàng Nhạt Sfumato', hex: '#FAEDD9' },
+            { name: 'Nâu Hổ Phách Áo', hex: '#5C4524' },
+            { name: 'Xanh Rêu Phong Cảnh', hex: '#2D4240' },
+            { name: 'Đen Gỗ Cổ', hex: '#1E1C14' },
+            { name: 'Hồng Nụ Cười', hex: '#995752' }
+        ],
+        shortDesc: 'Bức tranh chân dung trứ danh nhất thế giới với nụ cười bí ẩn muôn đời và kỹ thuật loang mờ Sfumato đỉnh cao thời Phục Hưng.',
+        audioScript: 'Chào mừng các em đến với bức họa nổi tiếng nhất lịch sử nhân loại: Nàng Mona Lisa của thiên tài toàn năng Leonardo da Vinci. Điểm mê hoặc lòng người chính là ánh mắt nhìn thấu tâm can và nụ cười thoắt ẩn thoắt hiện. Leonardo đã sáng tạo ra kỹ thuật Sfumato - xóa nhòa mọi đường nét ranh giới sắc nhọn, khiến làn da và bóng tối hòa quyện vào nhau mềm mại như làn khói mỏng.',
+        composition: 'Bố cục hình kim tự tháp vững chãi tuyệt đối, tư thế ngồi nửa người ba phần tư (three-quarter view) mở ra chuẩn mực mới cho thể loại chân dung phương Tây.',
+        color: 'Tông màu đất trầm ấm, chuyển sắc tinh tế từ sáng sang tối (chiaroscuro) tạo chiều sâu không gian ba chiều vô cùng sống động.',
+        technique: 'Kỹ thuật Sfumato thần thánh với hàng chục lớp men màu mỏng tang trong suốt được phủ chồng lên nhau, không để lại bất kỳ dấu vết nét cọ nào.',
+        challenge: 'Em hãy thử vẽ chân dung một người bạn bằng bút chì, dùng ngón tay hoặc mẩu giấy để chà mờ bóng tối tạo khối mềm mại theo cách của Da Vinci.',
+        getImage: svgMonaLisa
+    },
+    {
+        id: 'co-gai-deo-hoa-tai-ngoc-trai',
+        title: 'Cô Gái Đeo Hoa Tai Ngọc Trai',
+        artist: 'Johannes Vermeer',
+        year: '1665',
+        origin: 'world',
+        period: 'Thời kỳ Hoàng kim Hà Lan (Baroque)',
+        material: 'Sơn dầu trên toan (Oil on canvas)',
+        location: 'Bảo tàng Mauritshuis, La Haye, Hà Lan',
+        tags: ['world', 'oil-lacquer'],
+        paletteHarmony: 'Tương Phản Huyền Bí (Lapis & Pearl)',
+        palette: [
+            { name: 'Xanh Đá Quý Lapis', hex: '#18426D' },
+            { name: 'Vàng Kim Khăn Xếp', hex: '#E8B843' },
+            { name: 'Trắng Ngân Ngọc Trai', hex: '#FFFFFF' },
+            { name: 'Nâu Vàng Áo Khoác', hex: '#8F6F3B' },
+            { name: 'Đen Tuyệt Đối', hex: '#0D1114' }
+        ],
+        shortDesc: 'Được mệnh danh là "Mona Lisa của phương Bắc", bức họa gây sửng sốt bởi ánh nhìn qua vai đầy mê hoặc và viên ngọc trai phát sáng kỳ ảo trong bóng tối.',
+        audioScript: 'Cô Gái Đeo Hoa Tai Ngọc Trai là kiệt tác của bậc thầy ánh sáng Johannes Vermeer. Bức tranh không phải là chân dung cá nhân thông thường mà là một thể loại tranh biểu cảm Tronie. Cô gái như vừa khẽ quay đầu lại nhìn chúng ta, đôi môi hé mở tự nhiên và điểm nhấn trung tâm là viên ngọc trai giọt nước lấp lánh phản chiếu ánh sáng trắng tinh khiết trên nền đen sâu thẳm.',
+        composition: 'Khoảnh khắc chuyển động bất ngờ khi nhân vật ngoái nhìn qua vai, tạo sự gắn kết trực tiếp và thân mật kỳ lạ với người xem.',
+        color: 'Sắc xanh lam quý phái từ đá lưu ly Lapis Lazuli đắt giá kết hợp với màu vàng kim của khăn xếp trên phông nền đen tương phản mạnh mẽ.',
+        technique: 'Nghệ thuật xử lý ánh sáng Chiaroscuro tinh diệu, chỉ với hai nhát cọ trắng lướt nhẹ, Vermeer đã tạo nên độ tròn trịa và sự phát quang của viên ngọc trai.',
+        challenge: 'Em hãy đặt một đồ vật lấp lánh (vòng bạc, viên bi ve) dưới ánh đèn bàn và tập vẽ các điểm sáng phản chiếu (highlight) lung linh nhất.',
+        getImage: svgGirlWithPearl
+    },
+    {
+        id: 'song-lung-ngoai-khoi-kanagawa',
+        title: 'Sóng Lừng Ngoài Khơi Kanagawa',
+        artist: 'Katsushika Hokusai',
+        year: '1831',
+        origin: 'world',
+        period: 'Tranh khắc gỗ Phù Thế (Ukiyo-e)',
+        material: 'Mộc bản họa màu trên giấy Washi',
+        location: 'Bảo tàng Quốc gia Tokyo & Bảo tàng Anh',
+        tags: ['world', 'impressionism'],
+        paletteHarmony: 'Xanh Phổ & Trắng Tuyết (Prussian Blue & Snow)',
+        palette: [
+            { name: 'Xanh Phổ Prussian', hex: '#14314F' },
+            { name: 'Lam Biển Cuộn', hex: '#2C68A4' },
+            { name: 'Trắng Bọt Sóng', hex: '#FFFFFF' },
+            { name: 'Giấy Cổ Washi', hex: '#EBE4D3' },
+            { name: 'Vàng Gỗ Thuyền', hex: '#C4AA7D' }
+        ],
+        shortDesc: 'Biểu tượng kinh điển của mỹ thuật Nhật Bản và thế giới, khắc họa ngọn sóng dữ như móng vuốt khổng lồ ôm trọn ngọn núi Phú Sĩ tĩnh tại phía xa.',
+        audioScript: 'Chào các em học sinh, đây là bức tranh khắc gỗ Sóng Lừng Ngoài Khơi Kanagawa của đại bậc thầy Nhật Bản Hokusai. Tác phẩm thể hiện sức mạnh vĩ đại và dữ dội của thiên nhiên với ngọn sóng khổng lồ mang những móng vuốt bọt trắng cuộn trào dữ dội. Trong mắt sóng ấy, ngọn núi tuyết Phú Sĩ - biểu tượng thiêng liêng của nước Nhật - vẫn hiện lên sừng sững, bất biến và bình an vô sự.',
+        composition: 'Bố cục xoáy ốc Fractal lôi cuốn, đường cong khổng lồ của sóng biển tương phản với hình tam giác tĩnh tại của núi Phú Sĩ ở đường chân trời xa.',
+        color: 'Sử dụng sắc màu xanh Phổ (Prussian Blue) nhập khẩu mới mẻ thời bấy giờ, tạo chiều sâu thẳm thấu cho đại dương mênh mông đối lập với bọt sóng trắng xóa.',
+        technique: 'Nghệ thuật in khắc gỗ Ukiyo-e tinh xảo, đường nét kỷ hà học sắc bén, ảnh hưởng to lớn đến toàn bộ trường phái Ấn tượng châu Âu như Monet và Van Gogh.',
+        challenge: 'Em hãy thử vẽ một hiện tượng thiên nhiên kỳ vĩ (thác nước, cơn giông, sóng biển) sử dụng những đường nét cong mạnh mẽ và tương phản rõ nét.',
+        getImage: svgGreatWave
+    }
+];
+
+// 3. Render Masterpieces Grid
+function renderMasterpiecesSection() {
+    const grid = document.getElementById('masterpieces-grid');
+    if (!grid) return;
+
+    let filtered = MASTERPIECES_DATA;
+
+    // Filter by category
+    if (currentMasterpieceFilter === 'vietnam') {
+        filtered = filtered.filter(item => item.origin === 'vietnam');
+    } else if (currentMasterpieceFilter === 'world') {
+        filtered = filtered.filter(item => item.origin === 'world');
+    } else if (currentMasterpieceFilter === 'oil-lacquer') {
+        filtered = filtered.filter(item => item.tags.includes('oil-lacquer'));
+    } else if (currentMasterpieceFilter === 'impressionism') {
+        filtered = filtered.filter(item => item.tags.includes('impressionism'));
+    }
+
+    // Filter by search query
+    if (currentMasterpieceSearch.trim() !== '') {
+        const q = currentMasterpieceSearch.toLowerCase().trim();
+        filtered = filtered.filter(item =>
+            item.title.toLowerCase().includes(q) ||
+            item.artist.toLowerCase().includes(q) ||
+            item.period.toLowerCase().includes(q) ||
+            item.material.toLowerCase().includes(q) ||
+            item.shortDesc.toLowerCase().includes(q)
+        );
+    }
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--gold);">
+                <div style="font-size: 3rem; margin-bottom: 12px;">🔍</div>
+                <h3 style="font-size: 1.3rem; margin-bottom: 8px;">Không tìm thấy kiệt tác phù hợp</h3>
+                <p style="color: #9aa3b5; font-size: 0.95rem;">Vui lòng thử tìm với từ khóa khác (ví dụ: "Tô Ngọc Vân", "Van Gogh", "Sơn dầu", "Hà Nội").</p>
+                <button type="button" class="mp-filter-btn" style="margin-top: 15px;" onclick="filterMasterpieces('all')">Xem Tất Cả Kiệt Tác</button>
+            </div>
+        `;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(item => {
+        const badgeClass = item.origin === 'vietnam' ? 'mp-badge-vn' : 'mp-badge-world';
+        const badgeText = item.origin === 'vietnam' ? '🇻🇳 Việt Nam' : '🌍 Thế Giới';
+
+        return `
+            <div class="masterpiece-card" onclick="openMasterpieceDetail('${item.id}')" title="Bấm để xem phân tích chuyên sâu kiệt tác ${escapeHtml(item.title)}">
+                <span class="mp-badge-tag ${badgeClass}">${badgeText}</span>
+                
+                <div class="mp-card-frame-container">
+                    <div class="mp-card-frame">
+                        <div class="mp-card-mat">
+                            <img src="${item.getImage()}" alt="${escapeHtml(item.title)}" class="mp-card-img" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mp-card-info">
+                    <h3 class="mp-card-title">${escapeHtml(item.title)}</h3>
+                    <div class="mp-card-artist">${escapeHtml(item.artist)} (${escapeHtml(item.year)})</div>
+                    
+                    <div class="mp-card-meta">
+                        <span>${escapeHtml(item.period)}</span>
+                        <span>${escapeHtml(item.material.split('(')[0])}</span>
+                    </div>
+
+                    <!-- Mini palette swatches -->
+                    <div class="mp-card-palette-mini" title="Hòa sắc đặc trưng">
+                        ${item.palette.map(c => `<span class="mp-mini-dot" style="background-color: ${c.hex}" title="${escapeHtml(c.name)}: ${c.hex}"></span>`).join('')}
+                    </div>
+
+                    <p class="mp-card-desc">${escapeHtml(item.shortDesc)}</p>
+
+                    <button type="button" class="mp-card-btn">
+                        <span>🔍</span> Chi Tiết &amp; Học Tập Mỹ Thuật
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// 4. Filter and Search Handlers
+function filterMasterpieces(category) {
+    currentMasterpieceFilter = category;
+    document.querySelectorAll('.mp-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.category === category);
+    });
+    renderMasterpiecesSection();
+}
+
+function handleMasterpieceSearch(val) {
+    currentMasterpieceSearch = val;
+    renderMasterpiecesSection();
+}
+
+// 5. Open Masterpiece Detail Modal
+function openMasterpieceDetail(id) {
+    const item = MASTERPIECES_DATA.find(m => m.id === id);
+    if (!item) return;
+
+    selectedMasterpieceId = id;
+
+    // Reset audio state
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+    }
+    isMasterpieceAudioPlaying = false;
+    updateMasterpieceAudioButtonState();
+
+    // Populate modal fields
+    const modal = document.getElementById('masterpiece-modal');
+    const imgEl = document.getElementById('mp-display-image');
+    const locEl = document.getElementById('mp-display-location');
+    const harmonyEl = document.getElementById('mp-palette-harmony');
+    const swatchesEl = document.getElementById('mp-palette-swatches');
+    const originBadge = document.getElementById('mp-badge-origin');
+    const periodBadge = document.getElementById('mp-badge-period');
+    const yearBadge = document.getElementById('mp-badge-year');
+    const titleEl = document.getElementById('mp-title');
+    const artistEl = document.getElementById('mp-artist');
+    const materialEl = document.getElementById('mp-material');
+    const compEl = document.getElementById('mp-pedagogy-comp');
+    const colorEl = document.getElementById('mp-pedagogy-color');
+    const techEl = document.getElementById('mp-pedagogy-tech');
+    const challengeEl = document.getElementById('mp-pedagogy-challenge');
+
+    if (imgEl) imgEl.src = item.getImage();
+    if (locEl) locEl.textContent = item.location;
+    if (harmonyEl) harmonyEl.textContent = item.paletteHarmony;
+
+    if (swatchesEl) {
+        swatchesEl.innerHTML = item.palette.map(c => `
+            <div class="mp-swatch" title="${escapeHtml(c.name)} (${c.hex})">
+                <div class="mp-swatch-color" style="background-color: ${c.hex};"></div>
+                <span class="mp-swatch-hex">${c.hex}</span>
+            </div>
+        `).join('');
+    }
+
+    if (originBadge) {
+        originBadge.textContent = item.origin === 'vietnam' ? '🇻🇳 Hội Họa Việt Nam' : '🌍 Danh Họa Thế Giới';
+    }
+    if (periodBadge) periodBadge.textContent = item.period;
+    if (yearBadge) yearBadge.textContent = 'Năm ' + item.year;
+    if (titleEl) titleEl.textContent = item.title;
+    if (artistEl) artistEl.textContent = 'Danh họa: ' + item.artist;
+    if (materialEl) materialEl.textContent = 'Chất liệu: ' + item.material;
+
+    if (compEl) compEl.textContent = item.composition;
+    if (colorEl) colorEl.textContent = item.color;
+    if (techEl) techEl.textContent = item.technique;
+    if (challengeEl) challengeEl.textContent = item.challenge;
+
+    if (modal) {
+        modal.classList.remove('hidden');
+        const modalContent = modal.querySelector('.modal-masterpiece');
+        if (modalContent) modalContent.scrollTop = 0;
+    }
+}
+
+// 6. Close Modal & Stop Narration
+function closeMasterpieceModal() {
+    const modal = document.getElementById('masterpiece-modal');
+    if (modal) modal.classList.add('hidden');
+
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+    }
+    isMasterpieceAudioPlaying = false;
+    updateMasterpieceAudioButtonState();
+    selectedMasterpieceId = null;
+}
+
+// 7. Audio Guide Voice Narration (Web Speech API)
+function toggleMasterpieceAudioGuide() {
+    if (!('speechSynthesis' in window)) {
+        showToast('⚠️', 'Trình duyệt không hỗ trợ tính năng thuyết minh âm thanh!');
+        return;
+    }
+
+    if (isMasterpieceAudioPlaying) {
+        window.speechSynthesis.cancel();
+        isMasterpieceAudioPlaying = false;
+        updateMasterpieceAudioButtonState();
+        return;
+    }
+
+    const item = MASTERPIECES_DATA.find(m => m.id === selectedMasterpieceId);
+    if (!item) return;
+
+    window.speechSynthesis.cancel();
+
+    masterpieceSpeechUtterance = new SpeechSynthesisUtterance(item.audioScript);
+    masterpieceSpeechUtterance.lang = 'vi-VN';
+    masterpieceSpeechUtterance.rate = 0.95;
+    masterpieceSpeechUtterance.pitch = 1.0;
+
+    masterpieceSpeechUtterance.onstart = () => {
+        isMasterpieceAudioPlaying = true;
+        updateMasterpieceAudioButtonState();
+    };
+
+    masterpieceSpeechUtterance.onend = () => {
+        isMasterpieceAudioPlaying = false;
+        updateMasterpieceAudioButtonState();
+    };
+
+    masterpieceSpeechUtterance.onerror = () => {
+        isMasterpieceAudioPlaying = false;
+        updateMasterpieceAudioButtonState();
+    };
+
+    window.speechSynthesis.speak(masterpieceSpeechUtterance);
+}
+
+function updateMasterpieceAudioButtonState() {
+    const btn = document.getElementById('btn-mp-audio');
+    const icon = document.getElementById('mp-audio-icon');
+    const text = document.getElementById('mp-audio-text');
+
+    if (!btn || !icon || !text) return;
+
+    if (isMasterpieceAudioPlaying) {
+        btn.classList.add('playing');
+        icon.textContent = '⏹️';
+        text.textContent = 'Đang Thuyết Minh (Bấm để Dừng)';
+    } else {
+        btn.classList.remove('playing');
+        icon.textContent = '🔊';
+        text.textContent = 'Nghe Thuyết Minh Phân Tích (Audio Guide)';
+    }
+}
+
+// 8. Apply Masterpiece Practice to Upload Form
+function applyMasterpiecePractice() {
+    const item = MASTERPIECES_DATA.find(m => m.id === selectedMasterpieceId);
+    closeMasterpieceModal();
+
+    if (!currentUser) {
+        showToast('🎨', 'Bạn vui lòng đăng nhập để bắt đầu đăng tải bài vẽ thực hành nhé!');
+        openAuthModal('student');
+        return;
+    }
+
+    // Switch to upload section
+    showSection('upload');
+
+    // Auto fill form with inspiration challenge
+    if (item) {
+        const titleInput = document.getElementById('artwork-title');
+        const descInput = document.getElementById('artwork-desc');
+        const themeSelect = document.getElementById('artwork-theme');
+
+        if (titleInput && !titleInput.value) {
+            titleInput.value = 'Thực hành cảm hứng từ kiệt tác ' + item.title;
+        }
+        if (descInput) {
+            descInput.value = 'Thực hành thử thách mỹ thuật: ' + item.challenge + '\n(Học tập từ kiệt tác "' + item.title + '" của danh họa ' + item.artist + ')';
+        }
+        showToast('🎨', 'Đã chuyển sang khu vực nộp bài với đề tài thử thách kiệt tác "' + item.title + '"!');
+    }
+}
+
+
+// ==========================================================================
+// ☁️ GOOGLE FIREBASE REALTIME DATABASE CLOUD SYNCHRONIZATION MODULE
+// Trường PTDTBT TH&THCS Đinh Thanh Kháng
+// ==========================================================================
+let firebaseAppInstance = null;
+let firebaseDb = null;
+let isFirebaseConnected = false;
+
+function initFirebaseRealtimeSync() {
+    let configStr = localStorage.getItem('art_museum_firebase_config');
+    let config = null;
+
+    if (configStr) {
+        try {
+            config = JSON.parse(configStr);
+        } catch (e) {
+            console.warn('Invalid saved Firebase config JSON');
+        }
+    }
+
+    if (!config || !config.apiKey || !config.databaseURL) {
+        updateCloudStatusUI(false);
+        return;
+    }
+
+    if (typeof firebase === 'undefined') {
+        console.warn('Firebase SDK not yet loaded from CDN');
+        updateCloudStatusUI(false);
+        return;
+    }
+
+    try {
+        if (!firebase.apps.length) {
+            firebaseAppInstance = firebase.initializeApp(config);
+        } else {
+            firebaseAppInstance = firebase.app();
+        }
+
+        firebaseDb = firebase.database();
+        isFirebaseConnected = true;
+        updateCloudStatusUI(true);
+
+        console.log('✅ Google Firebase Realtime Database connected successfully!');
+
+        // 1. Listen for Realtime Artworks from Cloud
+        firebaseDb.ref('artworks').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const cloudArtworks = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+                if (cloudArtworks.length > 0) {
+                    console.log('📥 Received realtime artworks update:', cloudArtworks.length);
+                    localStorage.setItem(STORAGE_ARTWORKS_KEY, JSON.stringify(cloudArtworks));
+                    
+                    // Live UI update
+                    renderGallery();
+                    updateMuseumStats();
+                    const hallEl = document.getElementById('section-hall-of-fame');
+                    if (hallEl && !hallEl.classList.contains('hidden')) {
+                        renderHallOfFame();
+                    }
+                    const admArtEl = document.getElementById('admin-tab-artworks');
+                    if (admArtEl && !admArtEl.classList.contains('hidden')) {
+                        renderAdminArtworks();
+                    }
+                }
+            }
+        }, (error) => {
+            console.error('Firebase artworks sync error:', error);
+            updateCloudStatusUI(false);
+        });
+
+        // 2. Listen for Realtime Users from Cloud
+        firebaseDb.ref('users').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const cloudUsers = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+                if (cloudUsers.length > 0) {
+                    localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(cloudUsers));
+                    const admUsersEl = document.getElementById('admin-tab-users');
+                    if (admUsersEl && !admUsersEl.classList.contains('hidden')) {
+                        renderAdminUsers();
+                    }
+                }
+            }
+        });
+
+        // 3. Listen for Realtime Themes from Cloud
+        firebaseDb.ref('themes').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const cloudThemes = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+                if (cloudThemes.length > 0) {
+                    localStorage.setItem(STORAGE_THEMES_KEY, JSON.stringify(cloudThemes));
+                    renderThemeTabs();
+                    const admThemesEl = document.getElementById('admin-tab-themes');
+                    if (admThemesEl && !admThemesEl.classList.contains('hidden')) {
+                        renderAdminThemes();
+                    }
+                }
+            }
+        });
+
+    } catch (err) {
+        console.error('Firebase initialization error:', err);
+        isFirebaseConnected = false;
+        updateCloudStatusUI(false);
+    }
+}
+
+// Update Cloud Status Badge UI
+function updateCloudStatusUI(connected) {
+    const badge = document.getElementById('cloud-status-badge');
+    const text = document.getElementById('cloud-status-text');
+    if (!badge || !text) return;
+
+    if (connected) {
+        badge.className = 'cloud-status-pill online';
+        text.textContent = '☁️ Đám Mây: Đang Đồng Bộ Real-time';
+    } else {
+        badge.className = 'cloud-status-pill offline';
+        text.textContent = '💾 Cục Bộ (Chưa kết nối Firebase)';
+    }
+}
+
+// Render Admin Cloud Tab
+function renderAdminCloudTab() {
+    updateCloudStatusUI(isFirebaseConnected);
+    const input = document.getElementById('firebase-config-input');
+    if (input) {
+        const saved = localStorage.getItem('art_museum_firebase_config');
+        if (saved && !input.value) {
+            try {
+                input.value = JSON.stringify(JSON.parse(saved), null, 2);
+            } catch (e) {
+                input.value = saved;
+            }
+        }
+    }
+}
+
+// Parse string from Firebase web snippet or JSON
+function parseFirebaseConfigSnippet(text) {
+    if (!text || !text.trim()) return null;
+    let clean = text.trim();
+
+    // If starts with "const firebaseConfig =" or "var firebaseConfig ="
+    const match = clean.match(/firebaseConfig\s*=\s*({[\s\S]*?});?/);
+    if (match && match[1]) {
+        clean = match[1];
+    }
+
+    try {
+        return JSON.parse(clean);
+    } catch (e) {
+        // Try eval in safe sandbox or loose JSON parser
+        try {
+            const fn = new Function('return (' + clean + ');');
+            return fn();
+        } catch (e2) {
+            return null;
+        }
+    }
+}
+
+// Save & Connect Button Action
+function saveAndConnectFirebase() {
+    const input = document.getElementById('firebase-config-input');
+    if (!input || !input.value.trim()) {
+        showToast('⚠️', 'Vui lòng dán đoạn mã cấu hình firebaseConfig trước!');
+        return;
+    }
+
+    const config = parseFirebaseConfigSnippet(input.value);
+    if (!config || !config.apiKey || !config.databaseURL) {
+        showToast('❌', 'Cấu hình không hợp lệ! Hãy chắc chắn có "apiKey" và "databaseURL".');
+        return;
+    }
+
+    localStorage.setItem('art_museum_firebase_config', JSON.stringify(config));
+    showToast('⏳', 'Đang kết nối tới Google Firebase Realtime Database...');
+
+    initFirebaseRealtimeSync();
+
+    setTimeout(() => {
+        if (isFirebaseConnected) {
+            showToast('✅', 'Đã kết nối thành công! Giờ bạn có thể bấm nút "Đẩy Dữ Liệu Lên Đám Mây".');
+        } else {
+            showToast('⚠️', 'Không thể kết nối. Vui lòng kiểm tra lại cấu hình hoặc quyền Realtime Database (Test Mode).');
+        }
+    }, 1500);
+}
+
+// Disconnect Firebase
+function disconnectFirebase() {
+    localStorage.removeItem('art_museum_firebase_config');
+    isFirebaseConnected = false;
+    firebaseDb = null;
+    updateCloudStatusUI(false);
+    const input = document.getElementById('firebase-config-input');
+    if (input) input.value = '';
+    showToast('🔌', 'Đã ngắt kết nối Firebase. Hệ thống quay về chế độ lưu trữ cục bộ.');
+}
+
+// Push all local data (artworks, users, themes) to Firebase Cloud
+function pushLocalDataToFirebaseCloud() {
+    if (!isFirebaseConnected || !firebaseDb) {
+        showToast('⚠️', 'Bạn cần kết nối Firebase thành công trước khi đẩy dữ liệu!');
+        return;
+    }
+
+    const artworks = getArtworks();
+    const users = getUsers();
+    const themes = getThemes();
+
+    showToast('⏳', 'Đang đẩy toàn bộ ' + artworks.length + ' tác phẩm lên Google Cloud...');
+
+    // Convert artworks array to object for Firebase
+    const artObj = {};
+    artworks.forEach(a => {
+        if (a && a.id) artObj[a.id] = a;
+    });
+
+    const userObj = {};
+    users.forEach(u => {
+        if (u && u.username) userObj[u.username] = u;
+    });
+
+    const themeObj = {};
+    themes.forEach((t, i) => {
+        themeObj['t_' + i] = t;
+    });
+
+    Promise.all([
+        firebaseDb.ref('artworks').set(artObj),
+        firebaseDb.ref('users').set(userObj),
+        firebaseDb.ref('themes').set(themeObj)
+    ]).then(() => {
+        showToast('🎉', 'Thành công tuyệt vời! Toàn bộ ' + artworks.length + ' tranh vẽ đã được lưu lên Đám Mây. Tất cả mọi người trên mạng đều thấy ngay lập tức!');
+    }).catch(err => {
+        console.error('Push error:', err);
+        showToast('❌', 'Lỗi khi đẩy lên Đám Mây: ' + err.message);
+    });
+}
+
+// Hook helper to sync single artwork changes directly to Firebase
+function cloudSyncSingleArtwork(art) {
+    if (isFirebaseConnected && firebaseDb && art && art.id) {
+        firebaseDb.ref('artworks/' + art.id).set(art).catch(err => {
+            console.warn('Cloud sync artwork error:', err);
+        });
+    }
+}
+
+function cloudSyncDeleteArtwork(artId) {
+    if (isFirebaseConnected && firebaseDb && artId) {
+        firebaseDb.ref('artworks/' + artId).remove().catch(err => {
+            console.warn('Cloud sync delete error:', err);
+        });
+    }
+}
+
+// Auto init on startup
+setTimeout(() => {
+    initFirebaseRealtimeSync();
+}, 600);

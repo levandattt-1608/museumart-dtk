@@ -4331,3 +4331,713 @@ body.theme-daylight .admin-tab-btn.active {
     .portfolio-hero { flex-direction: column; text-align: center; }
     .portfolio-stats-grid { justify-content: center; }
 }
+
+/* ==========================================================================
+   MASTERPIECES REFERENCE SECTION (GÓC THAM KHẢO KIỆT TÁC NGHỆ THUẬT)
+   Trường PTDTBT TH&THCS Đinh Thanh Kháng
+   ========================================================================== */
+.masterpieces-section {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 24px 80px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.masterpieces-header {
+    text-align: center;
+    margin-bottom: 2.2rem;
+}
+
+.masterpieces-emblem {
+    font-size: 2.8rem;
+    margin-bottom: 0.6rem;
+    filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.4));
+}
+
+.masterpiece-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 35px;
+    padding: 16px 22px;
+    background: rgba(18, 22, 34, 0.78);
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: 16px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.masterpiece-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mp-filter-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    color: #d6ceb8;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mp-filter-btn:hover {
+    background: rgba(212, 175, 55, 0.16);
+    border-color: #d4af37;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.mp-filter-btn.active {
+    background: linear-gradient(135deg, #d4af37, #996515);
+    color: #0b0e14;
+    font-weight: 700;
+    border-color: #ffd700;
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.38);
+}
+
+.masterpiece-search-wrapper {
+    position: relative;
+    min-width: 280px;
+    flex: 1;
+    max-width: 360px;
+}
+
+.masterpiece-search-wrapper .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.6;
+    pointer-events: none;
+    font-size: 0.9rem;
+}
+
+#masterpiece-search-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 25px;
+    padding: 10px 16px 10px 40px;
+    color: #f5f0e1;
+    font-size: 0.88rem;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+#masterpiece-search-input:focus {
+    border-color: #ffd700;
+    background: rgba(0, 0, 0, 0.55);
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+}
+
+/* Masterpieces Grid */
+.masterpieces-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 32px;
+    margin-bottom: 50px;
+}
+
+/* Individual Masterpiece Card */
+.masterpiece-card {
+    background: linear-gradient(180deg, rgba(22, 27, 42, 0.9) 0%, rgba(13, 16, 24, 0.96) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.24);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.masterpiece-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255, 215, 0, 0.65);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 25px rgba(212, 175, 55, 0.25);
+}
+
+.mp-card-frame-container {
+    position: relative;
+    padding: 22px 22px 14px;
+    background: radial-gradient(circle at center, rgba(212, 175, 55, 0.12) 0%, transparent 70%);
+}
+
+.mp-card-frame {
+    border: 10px solid #2a2216;
+    border-image: linear-gradient(45deg, #aa8612, #ffd700, #5c4208, #d4af37, #8a6515) 10;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 8px 20px rgba(0, 0, 0, 0.55);
+    border-radius: 4px;
+    overflow: hidden;
+    background: #000;
+}
+
+.mp-card-mat {
+    padding: 8px;
+    background: #f4edd9;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+.mp-card-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.45s ease;
+    border-radius: 2px;
+}
+
+.masterpiece-card:hover .mp-card-img {
+    transform: scale(1.035);
+}
+
+.mp-badge-tag {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    z-index: 2;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.mp-badge-vn {
+    background: rgba(218, 37, 28, 0.92);
+    color: #fff;
+    border: 1px solid #ffd700;
+}
+
+.mp-badge-world {
+    background: rgba(18, 70, 120, 0.92);
+    color: #ffd700;
+    border: 1px solid rgba(255, 215, 0, 0.5);
+}
+
+.mp-card-info {
+    padding: 16px 22px 22px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.mp-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.18rem;
+    color: #f8f4ea;
+    margin-bottom: 6px;
+    line-height: 1.35;
+}
+
+.mp-card-artist {
+    font-size: 0.92rem;
+    color: #d4af37;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.mp-card-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #9aa3b5;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed rgba(212, 175, 55, 0.15);
+    padding-bottom: 8px;
+}
+
+.mp-card-palette-mini {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.mp-mini-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s ease;
+}
+
+.mp-mini-dot:hover {
+    transform: scale(1.25);
+}
+
+.mp-card-desc {
+    font-size: 0.84rem;
+    color: #b8c0d2;
+    line-height: 1.55;
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.mp-card-btn {
+    margin-top: auto;
+    width: 100%;
+    padding: 10px 0;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 8px;
+    color: #ffd700;
+    font-size: 0.86rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+.masterpiece-card:hover .mp-card-btn {
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0c0e15;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+}
+
+/* ==========================================================================
+   MASTERPIECE STUDY MODAL (POPUP PHÂN TÍCH CHUYÊN SÂU & HỌC TẬP)
+   ========================================================================== */
+.modal-masterpiece {
+    max-width: 1140px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #131722 0%, #0c0e15 100%);
+    border: 2px solid #d4af37;
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(212, 175, 55, 0.22);
+    padding: 36px 32px;
+}
+
+.mp-study-container {
+    display: grid;
+    grid-template-columns: 430px 1fr;
+    gap: 36px;
+    align-items: start;
+}
+
+.mp-artwork-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mp-frame-wrapper {
+    text-align: center;
+}
+
+.mp-frame-wrapper .artwork-frame {
+    border: 14px solid #2a2216;
+    border-image: linear-gradient(45deg, #aa8612, #ffd700, #5c4208, #d4af37, #8a6515) 14;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+    background: #000;
+}
+
+.mp-frame-wrapper .artwork-mat {
+    padding: 10px;
+    background: #f4edd9;
+}
+
+.mp-display-img {
+    width: 100%;
+    max-height: 380px;
+    object-fit: contain;
+    display: block;
+    background: #050608;
+    border-radius: 2px;
+}
+
+.mp-museum-location-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 10px;
+    font-size: 0.84rem;
+    color: #d0c8b0;
+}
+
+.mp-museum-location-box .loc-icon {
+    font-size: 1.3rem;
+}
+
+.mp-palette-box {
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: 12px;
+}
+
+.mp-palette-box .palette-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.mp-palette-box .palette-title {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #d4af37;
+}
+
+.mp-palette-box .palette-harmony-badge {
+    font-size: 0.74rem;
+    padding: 3px 9px;
+    background: rgba(212, 175, 55, 0.16);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 10px;
+    color: #ffd700;
+    font-weight: 600;
+}
+
+.palette-swatches-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.mp-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.mp-swatch-color {
+    width: 100%;
+    height: 38px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease;
+}
+
+.mp-swatch-color:hover {
+    transform: translateY(-2px);
+}
+
+.mp-swatch-hex {
+    font-size: 0.7rem;
+    font-family: monospace;
+    color: #9aa3b5;
+}
+
+/* Modal Right Column */
+.mp-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mp-header-block {
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding-bottom: 14px;
+}
+
+.mp-badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.mp-badge {
+    font-size: 0.76rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.mp-badge-origin {
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid #d4af37;
+    color: #ffd700;
+}
+
+.mp-badge-period {
+    background: rgba(100, 150, 255, 0.12);
+    border: 1px solid rgba(100, 150, 255, 0.3);
+    color: #a5c7ff;
+}
+
+.mp-badge-year {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e2e8f0;
+}
+
+.mp-artwork-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.85rem;
+    color: #ffd700;
+    margin-bottom: 4px;
+    line-height: 1.25;
+}
+
+.mp-artist-name {
+    font-size: 1.08rem;
+    color: #f5f0e1;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.mp-material-spec {
+    font-size: 0.86rem;
+    color: #9aa3b5;
+    font-style: italic;
+}
+
+.mp-audio-bar {
+    margin-top: -4px;
+}
+
+.btn-mp-audio {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.18), rgba(212, 175, 55, 0.18));
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    color: #ffd700;
+    padding: 9px 18px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+.btn-mp-audio:hover {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.35), rgba(212, 175, 55, 0.35));
+    border-color: #ffd700;
+    transform: translateY(-1px);
+}
+
+.btn-mp-audio.playing {
+    background: linear-gradient(135deg, #d4af37, #b8860b);
+    color: #0d1117;
+    font-weight: 700;
+}
+
+.mp-pedagogy-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mp-learn-card {
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: 12px;
+    padding: 14px 18px;
+    transition: all 0.2s ease;
+}
+
+.mp-learn-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(212, 175, 55, 0.35);
+}
+
+.mp-learn-card .mp-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.mp-learn-card .mp-card-title h4 {
+    font-size: 0.94rem;
+    color: #d4af37;
+    font-weight: 700;
+    margin: 0;
+}
+
+.mp-learn-card p {
+    font-size: 0.87rem;
+    color: #cbd5e1;
+    line-height: 1.58;
+    margin: 0;
+}
+
+.mp-learn-card.highlight-challenge {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(255, 140, 0, 0.08));
+    border: 1.5px solid rgba(255, 215, 0, 0.45);
+}
+
+.mp-learn-card.highlight-challenge .mp-card-title h4 {
+    color: #ffd700;
+}
+
+.mp-actions-footer {
+    margin-top: 6px;
+}
+
+.btn-mp-practice {
+    width: 100%;
+    background: linear-gradient(135deg, #d4af37 0%, #aa8612 100%);
+    color: #0c0e15;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+    transition: all 0.3s ease;
+}
+
+.btn-mp-practice:hover {
+    background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.5);
+}
+
+/* Daylight Theme Adaptations */
+body.theme-daylight .masterpiece-controls {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(170, 134, 18, 0.25);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+body.theme-daylight .mp-filter-btn {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(170, 134, 18, 0.25);
+    color: #5a4208;
+}
+
+body.theme-daylight .mp-filter-btn.active {
+    background: linear-gradient(135deg, #d4af37, #aa8612);
+    color: #fff;
+    border-color: #aa8612;
+}
+
+body.theme-daylight #masterpiece-search-input {
+    background: #ffffff;
+    border-color: rgba(170, 134, 18, 0.3);
+    color: #1a160d;
+}
+
+body.theme-daylight .masterpiece-card {
+    background: #ffffff;
+    border-color: rgba(170, 134, 18, 0.22);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+body.theme-daylight .mp-card-title {
+    color: #1a160d;
+}
+
+body.theme-daylight .mp-card-desc {
+    color: #4a5568;
+}
+
+body.theme-daylight .modal-masterpiece {
+    background: #ffffff;
+    border-color: #aa8612;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+body.theme-daylight .mp-museum-location-box,
+body.theme-daylight .mp-palette-box {
+    background: #fdfbf7;
+    border-color: rgba(170, 134, 18, 0.2);
+    color: #2d3748;
+}
+
+body.theme-daylight .mp-learn-card {
+    background: #fdfbf7;
+    border-color: rgba(170, 134, 18, 0.2);
+}
+
+body.theme-daylight .mp-learn-card p {
+    color: #2d3748;
+}
+
+body.theme-daylight .mp-artwork-title {
+    color: #8c6708;
+}
+
+body.theme-daylight .mp-artist-name {
+    color: #1a202c;
+}
+
+@media (max-width: 900px) {
+    .mp-study-container {
+        grid-template-columns: 1fr;
+    }
+    .masterpiece-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .masterpiece-search-wrapper {
+        max-width: none;
+    }
+}
+
+/* Cloud Real-time Status Badge */
+.cloud-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.cloud-status-pill.offline {
+    background: rgba(255, 255, 255, 0.08);
+    color: #9aa3b5;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.cloud-status-pill.offline .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #64748b;
+}
+.cloud-status-pill.online {
+    background: rgba(16, 185, 129, 0.18);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+}
+.cloud-status-pill.online .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}

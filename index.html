@@ -103,6 +103,9 @@
             <button class="nav-link" data-section="hall-of-fame" onclick="showSection('hall-of-fame')">
                 <span>🏆</span> Điện Vinh Danh
             </button>
+            <button class="nav-link" data-section="masterpieces" onclick="showSection('masterpieces')">
+                <span>🏛️</span> Góc Tham Khảo
+            </button>
             <button class="nav-link" id="nav-catalog-btn" onclick="openCatalogModal()">
                 <span>📖</span> Kỷ Yếu Triển Lãm
             </button>
@@ -231,6 +234,9 @@
                 </div>
 
                 <div class="gallery-quick-actions">
+                    <button class="btn-tool btn-tool-sync" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; border-color: #38bdf8;" onclick="exportInitialDataForGithub()" title="Xuất toàn bộ 13 tranh hiện có thành initial-data.json để đưa lên GitHub cho mọi máy khác cùng thấy">
+                        <span>📤 Xuất Dữ Liệu Lên GitHub</span>
+                    </button>
                     <button class="btn-tool" onclick="openCatalogModal()" title="Xem Cuốn Kỷ Yếu Mỹ Thuật">
                         <span>📖 Kỷ yếu triển lãm</span>
                     </button>
@@ -486,6 +492,50 @@
         </div>
     </section>
 
+    <!-- ==================== MASTERPIECES REFERENCE SECTION ==================== -->
+    <section id="section-masterpieces" class="section masterpieces-section hidden">
+        <div class="masterpieces-header">
+            <div class="masterpieces-emblem">🏛️</div>
+            <h2 class="section-title">
+                <span class="title-ornament">❧</span>
+                Góc Tham Khảo: Kiệt Tác Nghệ Thuật Tiêu Biểu
+                <span class="title-ornament">❧</span>
+            </h2>
+            <p class="section-desc">Không gian thưởng lãm các kiệt tác hội họa kinh điển Việt Nam &amp; Thế Giới — Nguồn cảm hứng sâu sắc về bố cục, hòa sắc và bút pháp cho học sinh Trường PTDTBT TH&amp;THCS Đinh Thanh Kháng</p>
+        </div>
+
+        <!-- Masterpieces Filter & Search Controls -->
+        <div class="masterpiece-controls">
+            <div class="masterpiece-filters">
+                <button type="button" class="mp-filter-btn active" data-category="all" onclick="filterMasterpieces('all')">
+                    <span>✨</span> Tất Cả Kiệt Tác (8)
+                </button>
+                <button type="button" class="mp-filter-btn" data-category="vietnam" onclick="filterMasterpieces('vietnam')">
+                    <span>🇻🇳</span> Hội Họa Việt Nam
+                </button>
+                <button type="button" class="mp-filter-btn" data-category="world" onclick="filterMasterpieces('world')">
+                    <span>🌍</span> Danh Họa Thế Giới
+                </button>
+                <button type="button" class="mp-filter-btn" data-category="oil-lacquer" onclick="filterMasterpieces('oil-lacquer')">
+                    <span>🎨</span> Sơn Dầu &amp; Sơn Mài
+                </button>
+                <button type="button" class="mp-filter-btn" data-category="impressionism" onclick="filterMasterpieces('impressionism')">
+                    <span>🖌️</span> Hậu Ấn Tượng &amp; Cận Đại
+                </button>
+            </div>
+
+            <div class="masterpiece-search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="masterpiece-search-input" placeholder="Tìm theo tên tranh, danh họa, trường phái nghệ thuật..." oninput="handleMasterpieceSearch(this.value)">
+            </div>
+        </div>
+
+        <!-- Masterpieces Grid -->
+        <div class="masterpieces-grid" id="masterpieces-grid">
+            <!-- Rendered by app.js -->
+        </div>
+    </section>
+
     <!-- ==================== ADMIN SECTION ==================== -->
     <section id="section-admin" class="section admin-section hidden">
         <div class="admin-container">
@@ -724,6 +774,108 @@
             </div>
             <div class="modal-actions">
                 <button class="btn-primary" onclick="submitName()">Bước Vào Triển Lãm ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MASTERPIECE STUDY MODAL ==================== -->
+    <div id="masterpiece-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeMasterpieceModal()"></div>
+        <div class="modal-content modal-masterpiece">
+            <button class="modal-close" onclick="closeMasterpieceModal()" title="Đóng (ESC)">✕</button>
+            
+            <div class="mp-study-container">
+                <!-- Left Column: Artwork Exhibition View -->
+                <div class="mp-artwork-col">
+                    <div class="mp-frame-wrapper">
+                        <div class="artwork-frame classic-gold" id="mp-display-frame">
+                            <div class="artwork-mat mat-cream">
+                                <img src="" alt="Kiệt tác" id="mp-display-image" class="mp-display-img">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mp-museum-location-box">
+                        <span class="loc-icon">🏛️</span>
+                        <div class="loc-info">
+                            <strong>Nơi lưu giữ nguyên tác:</strong>
+                            <span id="mp-display-location">Bảo tàng Mỹ thuật Việt Nam</span>
+                        </div>
+                    </div>
+
+                    <!-- 5 Dominant Color Palette -->
+                    <div class="mp-palette-box">
+                        <div class="palette-header">
+                            <span class="palette-title">🎨 Bảng Hòa Sắc Đặc Trưng</span>
+                            <span class="palette-harmony-badge" id="mp-palette-harmony">Hài Hòa Tự Nhiên</span>
+                        </div>
+                        <div class="palette-swatches-grid" id="mp-palette-swatches"></div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Deep Pedagogical Analysis -->
+                <div class="mp-info-col">
+                    <div class="mp-header-block">
+                        <div class="mp-badges-row">
+                            <span class="mp-badge mp-badge-origin" id="mp-badge-origin">🇻🇳 Hội Họa Việt Nam</span>
+                            <span class="mp-badge mp-badge-period" id="mp-badge-period">Mỹ thuật Đông Dương</span>
+                            <span class="mp-badge mp-badge-year" id="mp-badge-year">Năm 1943</span>
+                        </div>
+                        <h2 class="mp-artwork-title" id="mp-title">Thiếu Nữ Bên Hoa Huệ</h2>
+                        <h4 class="mp-artist-name" id="mp-artist">Danh họa: Tô Ngọc Vân</h4>
+                        <p class="mp-material-spec" id="mp-material">Chất liệu: Sơn dầu trên toan</p>
+                    </div>
+
+                    <!-- Audio Guide player button -->
+                    <div class="mp-audio-bar">
+                        <button type="button" class="btn-mp-audio" id="btn-mp-audio" onclick="toggleMasterpieceAudioGuide()">
+                            <span id="mp-audio-icon">▶️</span>
+                            <span id="mp-audio-text">Nghe Thuyết Minh Phân Tích (Audio Guide)</span>
+                        </button>
+                    </div>
+
+                    <!-- Pedagogical Learning Cards -->
+                    <div class="mp-pedagogy-cards">
+                        <div class="mp-learn-card">
+                            <div class="mp-card-title">
+                                <span class="card-icon">📐</span>
+                                <h4>1. Nghệ Thuật Bố Cục (Composition)</h4>
+                            </div>
+                            <p id="mp-pedagogy-comp"></p>
+                        </div>
+
+                        <div class="mp-learn-card">
+                            <div class="mp-card-title">
+                                <span class="card-icon">🎨</span>
+                                <h4>2. Hòa Sắc &amp; Ánh Sáng (Color &amp; Light)</h4>
+                            </div>
+                            <p id="mp-pedagogy-color"></p>
+                        </div>
+
+                        <div class="mp-learn-card">
+                            <div class="mp-card-title">
+                                <span class="card-icon">🖌️</span>
+                                <h4>3. Bút Pháp &amp; Chất Cảm (Technique &amp; Texture)</h4>
+                            </div>
+                            <p id="mp-pedagogy-tech"></p>
+                        </div>
+
+                        <div class="mp-learn-card highlight-challenge">
+                            <div class="mp-card-title">
+                                <span class="card-icon">🎯</span>
+                                <h4>4. Thử Thách Sáng Tạo Cho Học Sinh Đinh Thanh Kháng</h4>
+                            </div>
+                            <p id="mp-pedagogy-challenge"></p>
+                        </div>
+                    </div>
+
+                    <!-- Modal Actions -->
+                    <div class="mp-actions-footer">
+                        <button type="button" class="btn-mp-practice" id="btn-mp-practice" onclick="applyMasterpiecePractice()">
+                            <span>🎨</span> Lấy Cảm Hứng &amp; Thực Hành Vẽ Ngay
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1373,6 +1525,9 @@
         <span id="toast-message">Thông báo</span>
     </div>
 
-<script src="app.js"></script>
+    <!-- Firebase SDK (Compat Version) for Realtime Cloud Synchronization across All Devices -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
