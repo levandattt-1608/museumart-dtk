@@ -596,6 +596,9 @@
                 <button class="admin-tab-btn" data-tab="analytics" onclick="switchAdminTab('analytics')">
                     <span>📊</span> Báo Cáo Thống Kê Học Đường
                 </button>
+                <button class="admin-tab-btn" data-tab="cloud" onclick="switchAdminTab('cloud')">
+                    <span>☁️</span> Đồng Bộ Đám Mây Real-time
+                </button>
                 <button class="admin-tab-btn" data-tab="backup" onclick="switchAdminTab('backup')">
                     <span>💾</span> Sao Lưu & Phục Hồi Dữ Liệu
                 </button>
@@ -717,6 +720,71 @@
             </div>
 
             <!-- Tab 5: Sao Lưu & Phục Hồi Dữ Liệu -->
+            <!-- ================= TAB: CLOUD REALTIME SYNC ================= -->
+            <div class="admin-tab-content hidden" id="admin-tab-cloud">
+                <div class="admin-section-header">
+                    <div>
+                        <h3>☁️ Đồng Bộ Dữ Liệu Thời Gian Thực (Google Firebase Realtime Database)</h3>
+                        <p>Giúp học sinh nộp bài ở nhà, giáo viên chấm điểm ở trường, phụ huynh xem trên điện thoại đều thấy chung dữ liệu và cập nhật ngay tức thì!</p>
+                    </div>
+                    <div id="cloud-status-badge" class="cloud-status-pill offline">
+                        <span class="status-dot"></span>
+                        <span id="cloud-status-text">Đang dùng bộ nhớ cục bộ (Local)</span>
+                    </div>
+                </div>
+
+                <div class="backup-cards-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 25px;">
+                    <!-- Cloud Config Card -->
+                    <div class="backup-card" style="border-color: rgba(56, 189, 248, 0.4); background: linear-gradient(135deg, rgba(14, 25, 45, 0.9), rgba(8, 16, 30, 0.95)); text-align: left;">
+                        <div class="backup-icon">⚙️</div>
+                        <h3 style="color: #38bdf8;">Cấu Hình Kết Nối Firebase</h3>
+                        <p>Dán đoạn mã cấu hình <code>firebaseConfig</code> từ Google Firebase Console vào đây để kích hoạt đồng bộ đám mây.</p>
+                        
+                        <textarea id="firebase-config-input" rows="7" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; color: #7dd3fc; font-family: monospace; font-size: 0.8rem; padding: 10px; margin-bottom: 12px;" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "baotang-dtk.firebaseapp.com",
+  "databaseURL": "https://baotang-dtk-default-rtdb.asia-southeast1.firebasedatabase.app",
+  "projectId": "baotang-dtk"
+}'></textarea>
+                        
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button type="button" class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #0369a1); border-color: #38bdf8;" onclick="saveAndConnectFirebase()">
+                                ⚡ Lưu &amp; Kết Nối Đám Mây
+                            </button>
+                            <button type="button" class="btn-secondary" onclick="disconnectFirebase()">
+                                🔌 Ngắt Kết Nối
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cloud Migration Action Card -->
+                    <div class="backup-card" style="border-color: rgba(212, 175, 55, 0.4); background: linear-gradient(135deg, rgba(30, 26, 16, 0.9), rgba(16, 14, 8, 0.95)); text-align: left;">
+                        <div class="backup-icon">🚀</div>
+                        <h3 style="color: #ffd700;">Đẩy Dữ Liệu Lên Đám Mây Real-Time</h3>
+                        <p>Sau khi kết nối Firebase thành công, bấm nút dưới đây để tải toàn bộ <strong>13 tranh vẽ của học sinh và tài khoản hiện tại</strong> lên Đám Mây. Tất cả mọi người trên mạng đều sẽ thấy ngay lập tức!</p>
+                        
+                        <button type="button" class="btn-primary" id="btn-push-to-cloud" style="width: 100%; margin-top: 20px; padding: 14px 20px; font-size: 1rem;" onclick="pushLocalDataToFirebaseCloud()">
+                            🚀 Đẩy Toàn Bộ Dữ Liệu Máy Này Lên Đám Mây
+                        </button>
+                        
+                        <p style="font-size: 0.78rem; color: #9aa3b5; margin-top: 12px; margin-bottom: 0;">
+                            💡 Dữ liệu được bảo mật trên máy chủ Google Cloud của nhà trường và miễn phí 100% vĩnh viễn.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 4 Step Guide Box -->
+                <div class="mp-learn-card" style="border-color: rgba(212, 175, 55, 0.3); background: rgba(20, 25, 38, 0.7); padding: 22px; text-align: left;">
+                    <h4 style="color: #ffd700; font-size: 1.05rem; margin-bottom: 12px;">📖 Hướng Dẫn 4 Bước Tạo Firebase Miễn Phí (Mất 2-3 phút):</h4>
+                    <ol style="margin-left: 20px; line-height: 1.8; color: #cbd5e1; font-size: 0.9rem;">
+                        <li>Vào trang web <strong><a href="https://console.firebase.google.com/" target="_blank" style="color: #38bdf8;">console.firebase.google.com</a></strong>, đăng nhập bằng tài khoản Gmail của bạn.</li>
+                        <li>Bấm <strong>"Add project"</strong> (hoặc "Thêm dự án"), đặt tên ví dụ <code>baotang-dtk</code> rồi bấm Tiếp tục cho đến khi hoàn tất.</li>
+                        <li>Ở menu bên trái, vào <strong>Build</strong> &rarr; chọn <strong>Realtime Database</strong> &rarr; bấm <strong>"Create Database"</strong> (chọn vị trí <em>Singapore</em> hoặc <em>United States</em>) &rarr; chọn <strong>"Start in test mode"</strong> (chế độ thử nghiệm để cho phép đọc/ghi) &rarr; bấm Enable.</li>
+                        <li>Bấm biểu tượng bánh răng ⚙️ (Project settings) &rarr; cuộn xuống dưới cùng tại mục "Your apps", bấm biểu tượng Web <strong><code>&lt;/&gt;</code></strong> &rarr; copy đoạn <code>const firebaseConfig = { ... };</code> rồi dán vào ô Cấu Hình bên trên và bấm <strong>Lưu &amp; Kết Nối Đám Mây</strong>!</li>
+                    </ol>
+                </div>
+            </div>
+
             <div class="admin-tab-content hidden" id="admin-tab-backup">
                 <div class="backup-cards-grid">
                     <div class="backup-card">
