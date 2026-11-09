@@ -368,7 +368,7 @@ function getArtworks() {
         console.error('Error reading artworks:', e);
     }
     const presets = getInitialPresetArtworks();
-    saveArtworks(presets);
+    saveArtworks(presets, true);
     return presets;
 }
 
@@ -379,7 +379,8 @@ function saveArtworks(artworks, skipCloudSync = false) {
         console.error('QuotaExceeded:', e);
     }
 
-    if (!skipCloudSync && typeof firebaseDb !== 'undefined' && firebaseDb) {
+    // Only sync to Firebase if explicitly allowed AND artworks has actual content
+    if (!skipCloudSync && typeof firebaseDb !== 'undefined' && firebaseDb && Array.isArray(artworks) && artworks.length > 0) {
         const artObj = {};
         artworks.forEach(a => {
             if (a && a.id) artObj[a.id] = a;
@@ -430,7 +431,7 @@ function getUsers() {
                 } else {
                     parsed.unshift(getInitialPresetUsers()[0]);
                 }
-                saveUsers(parsed);
+                saveUsers(parsed, true);
                 return parsed;
             }
         }
@@ -438,7 +439,7 @@ function getUsers() {
         console.error('Error reading users:', e);
     }
     const presets = getInitialPresetUsers();
-    saveUsers(presets);
+    saveUsers(presets, true);
     return presets;
 }
 
@@ -484,7 +485,7 @@ function getThemes() {
         console.error('Error reading themes:', e);
     }
     const presets = getInitialThemes();
-    saveThemes(presets);
+    saveThemes(presets, true);
     return presets;
 }
 
@@ -2766,7 +2767,7 @@ function clearAllArtworks() {
 
 function loadDemoData() {
     const presets = getInitialPresetArtworks();
-    saveArtworks(presets);
+    saveArtworks(presets, true);
     populateClassFilter();
     renderGallery();
     showToast('🎨', 'Đã nạp 4 kiệt tác mẫu học đường vào phòng tranh!');
@@ -2982,20 +2983,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function syncExternalDataIfAvailable() {
+    // CLOUD-FIRST PROTECTION:
+    // If Firebase is active or local storage already has user data, NEVER overwrite from static initial-data.json!
     try {
+        const existingArt = localStorage.getItem(STORAGE_KEYS.artworks);
+        if (existingArt) {
+            const parsed = JSON.parse(existingArt);
+            if (Array.isArray(parsed) && parsed.length > 2) {
+                // Already has user-submitted artworks, do not overwrite from static seed file
+                return;
+            }
+        }
+
         const res = await fetch('initial-data.json');
         if (res.ok) {
             const data = await res.json();
-            const syncKey = 'museum_synced_' + (data.exportedAt || 'v1');
+            const syncKey = 'museum_synced_v3';
             if (!localStorage.getItem(syncKey)) {
+                // Pass skipCloudSync = true so static file NEVER overwrites Firebase Cloud data!
                 if (Array.isArray(data.artworks) && data.artworks.length > 0) {
-                    saveArtworks(data.artworks);
+                    saveArtworks(data.artworks, true);
                 }
                 if (Array.isArray(data.users) && data.users.length > 0) {
-                    saveUsers(data.users);
+                    saveUsers(data.users, true);
                 }
                 if (Array.isArray(data.themes) && data.themes.length > 0) {
-                    saveThemes(data.themes);
+                    saveThemes(data.themes, true);
                 }
                 localStorage.setItem(syncKey, 'true');
                 renderThemeTabsAndSelects();
@@ -3004,7 +3017,7 @@ async function syncExternalDataIfAvailable() {
             }
         }
     } catch (e) {
-        // Safe fallback on file:// or if initial-data.json is not present
+        // Safe fallback
     }
 }
 
