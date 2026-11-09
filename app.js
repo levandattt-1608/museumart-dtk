@@ -1,92 +1,105 @@
 /* ========================================================
    🎨 BẢO TÀNG NGHỆ THUẬT HỌC ĐƯỜNG - MỸ THUẬT
-   Full Application Logic & Interactive Museum Experience
+   Full Application Logic - All 9 Advanced Features Integrated
    ======================================================== */
 
-// ===== STATE =====
-let currentRole = null;       // 'student' | 'teacher'
+// ===== GLOBAL STATE =====
+let currentRole = null;          // 'student' | 'teacher'
 let currentUser = '';
 let currentFilter = 'all';
+let currentThemeTab = 'all';
 let currentClassFilter = 'all';
 let currentMediumFilter = 'all';
 let searchQuery = '';
+
 let selectedFrame = 'classic-gold';
 let selectedMat = 'mat-cream';
 let selectedArtworkId = null;
+
 let uploadedImageData = null;
-let isAudioPlaying = false;
-let audioContext = null;
-let audioInterval = null;
+let uploadedSketchData = null;
+let currentExtractedPalette = null;
+
+// Audio & Feature States
+let isAmbientAudioPlaying = false;
+let ambientAudioContext = null;
+let ambientAudioInterval = null;
+let isAudioGuidePlaying = false;
+let currentUtterance = null;
+let isMagnifierActive = false;
+let isWipSliderActive = false;
 
 // ===== STORAGE KEYS =====
 const STORAGE_KEYS = {
-    artworks: 'museum_artworks_v2',
-    role: 'museum_role_v2',
-    userPrefix: 'museum_user_'
+    artworks: 'museum_artworks_v3',
+    role: 'museum_role_v3',
+    userPrefix: 'museum_user_v3_',
+    theme: 'museum_theme_v3'
 };
 
 // ========================================================
-// 🎨 BEAUTIFUL BUILT-IN DEMO MASTERPIECES (SVG ARTWORKS)
+// 🎨 SVG PRESET ARTWORKS & SKETCHES
 // ========================================================
+function createSunsetSketchSVG() {
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450">
+        <rect width="600" height="450" fill="#fdfbf7"/>
+        <!-- Pencil sketch lines for rice field -->
+        <circle cx="300" cy="180" r="42" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <path d="M-50,260 Q80,180 180,250 T400,220 T650,260" fill="none" stroke="#444" stroke-width="1.8"/>
+        <path d="M-20,280 Q150,220 280,270 T550,240 T650,290" fill="none" stroke="#666" stroke-width="1.2"/>
+        <path d="M0,280 Q160,250 300,270 Q450,255 600,280" fill="none" stroke="#333" stroke-width="2"/>
+        <path d="M0,320 Q180,300 340,330 Q480,310 600,335" fill="none" stroke="#333" stroke-width="2"/>
+        <path d="M0,370 Q140,350 280,375 Q460,350 600,380" fill="none" stroke="#333" stroke-width="2.2"/>
+        <!-- Hatching texture (Nét gạch chì đánh bóng) -->
+        <line x1="50" y1="280" x2="65" y2="300" stroke="#777" stroke-width="1"/>
+        <line x1="70" y1="280" x2="85" y2="300" stroke="#777" stroke-width="1"/>
+        <line x1="90" y1="280" x2="105" y2="300" stroke="#777" stroke-width="1"/>
+        <line x1="180" y1="330" x2="200" y2="355" stroke="#777" stroke-width="1"/>
+        <line x1="200" y1="330" x2="220" y2="355" stroke="#777" stroke-width="1"/>
+        <!-- River outline -->
+        <path d="M300,270 C290,310 380,340 330,380 C290,410 240,420 200,450" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="4 2"/>
+        <text x="30" y="420" font-family="sans-serif" font-size="12" fill="#888">Bản phác thảo chì tỉ lệ 1/2 • Nguyễn Thảo My</text>
+    </svg>`);
+}
+
 function createSunsetRiceFieldSVG() {
     return 'data:image/svg+xml;utf8,' + encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450">
         <defs>
             <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#ff5e62"/>
-                <stop offset="35%" stop-color="#ff9966"/>
-                <stop offset="70%" stop-color="#ffd56b"/>
-                <stop offset="100%" stop-color="#fdfcfb"/>
+                <stop offset="0%" stop-color="#ff5e62"/><stop offset="35%" stop-color="#ff9966"/><stop offset="70%" stop-color="#ffd56b"/><stop offset="100%" stop-color="#fdfcfb"/>
             </linearGradient>
             <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="30%" stop-color="#fff275"/>
-                <stop offset="70%" stop-color="#ff9f43" stop-opacity="0.8"/>
-                <stop offset="100%" stop-color="#ff5e62" stop-opacity="0"/>
+                <stop offset="0%" stop-color="#ffffff"/><stop offset="30%" stop-color="#fff275"/><stop offset="70%" stop-color="#ff9f43" stop-opacity="0.8"/><stop offset="100%" stop-color="#ff5e62" stop-opacity="0"/>
             </radialGradient>
             <linearGradient id="mountainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#5a3d75" stop-opacity="0.7"/>
-                <stop offset="100%" stop-color="#8e44ad" stop-opacity="0.3"/>
+                <stop offset="0%" stop-color="#5a3d75" stop-opacity="0.7"/><stop offset="100%" stop-color="#8e44ad" stop-opacity="0.3"/>
             </linearGradient>
             <linearGradient id="fieldGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#f39c12"/>
-                <stop offset="100%" stop-color="#27ae60"/>
+                <stop offset="0%" stop-color="#f39c12"/><stop offset="100%" stop-color="#27ae60"/>
             </linearGradient>
             <linearGradient id="fieldGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#f1c40f"/>
-                <stop offset="100%" stop-color="#d35400"/>
+                <stop offset="0%" stop-color="#f1c40f"/><stop offset="100%" stop-color="#d35400"/>
             </linearGradient>
             <linearGradient id="waterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#ffbe76"/>
-                <stop offset="50%" stop-color="#e056fd"/>
-                <stop offset="100%" stop-color="#686de0"/>
+                <stop offset="0%" stop-color="#ffbe76"/><stop offset="50%" stop-color="#e056fd"/><stop offset="100%" stop-color="#686de0"/>
             </linearGradient>
         </defs>
-        <!-- Sky -->
         <rect width="600" height="450" fill="url(#skyGrad)"/>
-        <!-- Sun -->
         <circle cx="300" cy="180" r="110" fill="url(#sunGlow)"/>
         <circle cx="300" cy="180" r="42" fill="#fffef0"/>
-        <!-- Distant Mountains -->
         <path d="M-50,260 Q80,180 180,250 T400,220 T650,260 L650,450 L-50,450 Z" fill="url(#mountainGrad)"/>
         <path d="M-20,280 Q150,220 280,270 T550,240 T650,290 L650,450 L-20,450 Z" fill="#6d4c41" opacity="0.35"/>
-        <!-- River flowing through fields -->
         <path d="M300,270 C290,310 380,340 330,380 C290,410 240,420 200,450 L340,450 C380,420 440,390 400,340 C360,300 320,280 300,270 Z" fill="url(#waterGrad)"/>
-        <!-- Rice Terraces Layer 1 -->
         <path d="M0,280 Q160,250 300,270 Q450,255 600,280 L600,330 Q420,310 260,330 Q120,310 0,330 Z" fill="url(#fieldGrad1)"/>
-        <!-- Rice Terraces Layer 2 -->
         <path d="M0,320 Q180,300 340,330 Q480,310 600,335 L600,380 Q440,360 280,380 Q140,360 0,380 Z" fill="url(#fieldGrad2)"/>
-        <!-- Rice Terraces Layer 3 (Foreground) -->
         <path d="M0,370 Q140,350 280,375 Q460,350 600,380 L600,450 L0,450 Z" fill="#2ecc71" opacity="0.85"/>
-        <!-- Golden Rice highlights -->
         <ellipse cx="120" cy="350" rx="90" ry="15" fill="#f1c40f" opacity="0.6"/>
         <ellipse cx="480" cy="365" rx="80" ry="12" fill="#f39c12" opacity="0.6"/>
         <ellipse cx="180" cy="415" rx="110" ry="18" fill="#f9ca24" opacity="0.7"/>
-        <!-- Birds flying in the sky -->
         <path d="M220,120 Q230,110 240,120 Q250,110 260,120" fill="none" stroke="#634832" stroke-width="2" stroke-linecap="round"/>
         <path d="M255,100 Q262,92 270,100 Q278,92 285,100" fill="none" stroke="#634832" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M190,135 Q197,128 205,135 Q212,128 220,135" fill="none" stroke="#634832" stroke-width="1.5" stroke-linecap="round"/>
-        <!-- Stilt house silhouetted -->
         <polygon points="490,290 515,275 540,290" fill="#3e2723"/>
         <rect x="495" y="290" width="40" height="20" fill="#4e342e"/>
         <line x1="500" y1="310" x2="500" y2="325" stroke="#3e2723" stroke-width="2"/>
@@ -99,66 +112,40 @@ function createHanoiOldQuarterSVG() {
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450">
         <defs>
             <linearGradient id="hanoiSky" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#74b9ff"/>
-                <stop offset="60%" stop-color="#dfe6e9"/>
-                <stop offset="100%" stop-color="#ffeaa7"/>
+                <stop offset="0%" stop-color="#74b9ff"/><stop offset="60%" stop-color="#dfe6e9"/><stop offset="100%" stop-color="#ffeaa7"/>
             </linearGradient>
             <linearGradient id="wallYellow" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#f5cd79"/>
-                <stop offset="50%" stop-color="#eccc68"/>
-                <stop offset="100%" stop-color="#d6a844"/>
+                <stop offset="0%" stop-color="#f5cd79"/><stop offset="50%" stop-color="#eccc68"/><stop offset="100%" stop-color="#d6a844"/>
             </linearGradient>
             <linearGradient id="roofTile" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#b33939"/>
-                <stop offset="100%" stop-color="#5c1d1d"/>
+                <stop offset="0%" stop-color="#b33939"/><stop offset="100%" stop-color="#5c1d1d"/>
             </linearGradient>
         </defs>
-        <!-- Background Sky -->
         <rect width="600" height="450" fill="url(#hanoiSky)"/>
-        <!-- French Colonial Houses in Hanoi -->
-        <!-- House 1 (Left) -->
         <polygon points="40,160 160,130 160,370 40,370" fill="url(#wallYellow)"/>
         <polygon points="25,165 100,105 175,135" fill="url(#roofTile)"/>
-        <!-- Green Shutters & Balcony -->
         <rect x="65" y="190" width="30" height="45" fill="#218c74" rx="2"/>
         <rect x="110" y="180" width="30" height="45" fill="#218c74" rx="2"/>
         <rect x="55" y="240" width="95" height="10" fill="#333333"/>
-        <line x1="60" y1="240" x2="60" y2="225" stroke="#333" stroke-width="2"/>
-        <line x1="80" y1="240" x2="80" y2="225" stroke="#333" stroke-width="2"/>
-        <line x1="100" y1="240" x2="100" y2="225" stroke="#333" stroke-width="2"/>
-        <line x1="120" y1="240" x2="120" y2="225" stroke="#333" stroke-width="2"/>
-        <line x1="140" y1="240" x2="140" y2="225" stroke="#333" stroke-width="2"/>
-        <!-- House 2 (Center) -->
         <polygon points="160,130 330,120 330,370 160,370" fill="#f8c291"/>
         <polygon points="150,130 245,75 340,120" fill="url(#roofTile)"/>
         <rect x="200" y="160" width="40" height="60" fill="#38ada9" rx="4"/>
         <rect x="260" y="160" width="40" height="60" fill="#38ada9" rx="4"/>
-        <!-- Wooden sign -->
         <rect x="185" y="270" width="120" height="24" fill="#6d4c41" rx="3"/>
         <text x="245" y="286" font-family="serif" font-size="12" fill="#ffd32a" text-anchor="middle" font-weight="bold">TRÀ &amp; HOA PHỐ CỔ</text>
-        <!-- House 3 (Right) -->
         <polygon points="330,120 520,150 520,370 330,370" fill="url(#wallYellow)"/>
         <polygon points="320,120 425,85 530,150" fill="url(#roofTile)"/>
-        <!-- Electric Wires (Classic Hanoi hallmark) -->
         <path d="M0,80 Q300,160 600,100" fill="none" stroke="#2f3542" stroke-width="1.5"/>
-        <path d="M0,95 Q280,180 600,115" fill="none" stroke="#2f3542" stroke-width="1.2"/>
-        <path d="M0,115 Q320,200 600,135" fill="none" stroke="#2f3542" stroke-width="1.5"/>
-        <!-- Street / Pavement -->
         <polygon points="0,370 600,370 600,450 0,450" fill="#57606f"/>
-        <!-- Street vendor with bicycle & flowers -->
         <circle cx="430" cy="385" r="28" fill="none" stroke="#2f3542" stroke-width="3"/>
         <circle cx="505" cy="385" r="28" fill="none" stroke="#2f3542" stroke-width="3"/>
         <line x1="430" y1="385" x2="470" y2="355" stroke="#2f3542" stroke-width="3"/>
         <line x1="470" y1="355" x2="505" y2="385" stroke="#2f3542" stroke-width="3"/>
         <line x1="470" y1="355" x2="470" y2="330" stroke="#2f3542" stroke-width="3"/>
-        <!-- Flower baskets on bicycle (Hoa Sưa & Cúc họa mi) -->
         <ellipse cx="450" cy="340" rx="30" ry="18" fill="#ffffff" stroke="#f1c40f" stroke-width="2"/>
         <circle cx="445" cy="336" r="6" fill="#ff4757"/>
         <circle cx="458" cy="342" r="5" fill="#ffa502"/>
         <circle cx="438" cy="344" r="5" fill="#2ed573"/>
-        <circle cx="462" cy="334" r="6" fill="#1e90ff"/>
-        <!-- Cyclo silhouette in distance -->
-        <polygon points="80,380 120,380 135,400 70,400" fill="#2f3542" opacity="0.6"/>
     </svg>`);
 }
 
@@ -167,71 +154,28 @@ function createLotusPondSVG() {
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450">
         <defs>
             <radialGradient id="pondBg" cx="50%" cy="50%" r="70%">
-                <stop offset="0%" stop-color="#1b4d3e"/>
-                <stop offset="50%" stop-color="#0b2920"/>
-                <stop offset="100%" stop-color="#04120e"/>
+                <stop offset="0%" stop-color="#1b4d3e"/><stop offset="50%" stop-color="#0b2920"/><stop offset="100%" stop-color="#04120e"/>
             </radialGradient>
             <linearGradient id="lotusPetal1" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="40%" stop-color="#ff9ff3"/>
-                <stop offset="100%" stop-color="#f368e0"/>
-            </linearGradient>
-            <linearGradient id="lotusPetal2" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#ffeaa7"/>
-                <stop offset="50%" stop-color="#ff7675"/>
-                <stop offset="100%" stop-color="#d63031"/>
+                <stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#ff9ff3"/><stop offset="100%" stop-color="#f368e0"/>
             </linearGradient>
             <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#10ac84"/>
-                <stop offset="60%" stop-color="#1dd1a1"/>
-                <stop offset="100%" stop-color="#054737"/>
+                <stop offset="0%" stop-color="#10ac84"/><stop offset="60%" stop-color="#1dd1a1"/><stop offset="100%" stop-color="#054737"/>
             </linearGradient>
         </defs>
-        <!-- Deep pond water -->
         <rect width="600" height="450" fill="url(#pondBg)"/>
-        <!-- Water Ripples -->
-        <ellipse cx="300" cy="270" rx="240" ry="60" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
-        <ellipse cx="300" cy="270" rx="180" ry="45" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
-        <ellipse cx="300" cy="270" rx="110" ry="28" fill="none" stroke="rgba(255,255,270,0.15)" stroke-width="1.5"/>
-        <!-- Giant Lotus Leaves (Lá sen) -->
         <ellipse cx="140" cy="330" rx="130" ry="65" fill="url(#leafGrad)"/>
-        <path d="M140,330 L200,280" stroke="#04382c" stroke-width="3"/>
         <ellipse cx="460" cy="310" rx="120" ry="60" fill="url(#leafGrad)"/>
         <ellipse cx="280" cy="380" rx="160" ry="65" fill="#10ac84"/>
-        <ellipse cx="380" cy="190" rx="90" ry="40" fill="#0c6b53" opacity="0.8"/>
-        <!-- Main Blooming Lotus Flower (Hoa sen nở rực rỡ) -->
         <g transform="translate(300, 240)">
-            <!-- Outer petals -->
-            <path d="M0,20 Q-70,-10 -90,-60 Q-40,-50 0,20" fill="url(#lotusPetal2)"/>
-            <path d="M0,20 Q70,-10 90,-60 Q40,-50 0,20" fill="url(#lotusPetal2)"/>
+            <path d="M0,20 Q-70,-10 -90,-60 Q-40,-50 0,20" fill="#e77f98"/>
+            <path d="M0,20 Q70,-10 90,-60 Q40,-50 0,20" fill="#e77f98"/>
             <path d="M0,20 Q-50,-40 -50,-110 Q-20,-70 0,20" fill="url(#lotusPetal1)"/>
             <path d="M0,20 Q50,-40 50,-110 Q20,-70 0,20" fill="url(#lotusPetal1)"/>
             <path d="M0,20 Q-25,-60 0,-130 Q25,-60 0,20" fill="url(#lotusPetal1)"/>
-            <!-- Lotus Seed Pod Center (Gương sen vàng) -->
             <ellipse cx="0" cy="-25" rx="22" ry="14" fill="#feca57"/>
-            <circle cx="-10" cy="-28" r="2.5" fill="#574b90"/>
-            <circle cx="0" cy="-30" r="2.5" fill="#574b90"/>
-            <circle cx="10" cy="-28" r="2.5" fill="#574b90"/>
-            <circle cx="-5" cy="-22" r="2.5" fill="#574b90"/>
-            <circle cx="6" cy="-22" r="2.5" fill="#574b90"/>
         </g>
-        <!-- Dew Drops on leaves (Giọt sương mai lấp lánh) -->
-        <ellipse cx="120" cy="310" rx="10" ry="7" fill="#ffffff" opacity="0.85"/>
         <circle cx="118" cy="308" r="3" fill="#ffffff"/>
-        <ellipse cx="440" cy="300" rx="7" ry="5" fill="#ffffff" opacity="0.8"/>
-        <!-- Lotus Bud (Búp sen chúm chím) -->
-        <g transform="translate(480, 190)">
-            <line x1="0" y1="40" x2="-20" y2="120" stroke="#10ac84" stroke-width="5"/>
-            <path d="M0,40 Q-20,0 0,-40 Q20,0 0,40" fill="url(#lotusPetal1)"/>
-        </g>
-        <!-- Dragonfly hovering (Chuồn chuồn ớt) -->
-        <g transform="translate(190, 150) rotate(-20)">
-            <ellipse cx="0" cy="0" rx="18" ry="3.5" fill="#ee5253"/>
-            <ellipse cx="14" cy="0" rx="4" ry="4" fill="#333333"/>
-            <!-- Transparent Wings -->
-            <ellipse cx="-2" cy="-14" rx="16" ry="4" fill="rgba(255,255,255,0.7)" transform="rotate(-30)"/>
-            <ellipse cx="4" cy="-14" rx="14" ry="3.5" fill="rgba(255,255,255,0.6)" transform="rotate(-15)"/>
-        </g>
     </svg>`);
 }
 
@@ -240,77 +184,28 @@ function createGalaxyDreamSVG() {
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450">
         <defs>
             <radialGradient id="spaceDeep" cx="50%" cy="50%" r="75%">
-                <stop offset="0%" stop-color="#3b1d60"/>
-                <stop offset="45%" stop-color="#180b33"/>
-                <stop offset="85%" stop-color="#080214"/>
+                <stop offset="0%" stop-color="#3b1d60"/><stop offset="45%" stop-color="#180b33"/><stop offset="85%" stop-color="#080214"/>
             </radialGradient>
             <radialGradient id="nebulaColor" cx="65%" cy="35%" r="45%">
-                <stop offset="0%" stop-color="#ff7675" stop-opacity="0.8"/>
-                <stop offset="40%" stop-color="#6c5ce7" stop-opacity="0.5"/>
-                <stop offset="100%" stop-color="#0984e3" stop-opacity="0"/>
+                <stop offset="0%" stop-color="#ff7675" stop-opacity="0.8"/><stop offset="40%" stop-color="#6c5ce7" stop-opacity="0.5"/><stop offset="100%" stop-color="#0984e3" stop-opacity="0"/>
             </radialGradient>
-            <linearGradient id="planetSaturn" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ffeaa7"/>
-                <stop offset="40%" stop-color="#fab1a0"/>
-                <stop offset="70%" stop-color="#e17055"/>
-                <stop offset="100%" stop-color="#2d3436"/>
-            </linearGradient>
         </defs>
         <rect width="600" height="450" fill="url(#spaceDeep)"/>
-        <!-- Nebula cloud -->
         <rect width="600" height="450" fill="url(#nebulaColor)"/>
-        <!-- Stars of various sizes -->
-        <circle cx="50" cy="80" r="1.5" fill="#ffffff" opacity="0.9"/>
-        <circle cx="120" cy="40" r="2.2" fill="#fff" opacity="1"/>
-        <circle cx="180" cy="110" r="1.2" fill="#ffeaa7" opacity="0.8"/>
-        <circle cx="280" cy="50" r="2.5" fill="#74b9ff" opacity="0.9"/>
-        <circle cx="340" cy="120" r="1.2" fill="#ffffff" opacity="0.7"/>
-        <circle cx="490" cy="60" r="2" fill="#ff7675" opacity="0.9"/>
-        <circle cx="540" cy="130" r="1" fill="#fff" opacity="0.6"/>
-        <circle cx="80" cy="220" r="1.5" fill="#fff" opacity="0.8"/>
-        <circle cx="210" cy="270" r="2" fill="#fdcb6e" opacity="0.9"/>
-        <circle cx="510" cy="340" r="1.8" fill="#a29bfe" opacity="0.9"/>
-        <!-- Glowing Saturn Planet -->
+        <circle cx="50" cy="80" r="1.5" fill="#ffffff"/>
+        <circle cx="120" cy="40" r="2.2" fill="#fff"/>
+        <circle cx="280" cy="50" r="2.5" fill="#74b9ff"/>
+        <circle cx="490" cy="60" r="2" fill="#ff7675"/>
         <g transform="translate(420, 180) rotate(-22)">
-            <!-- Back ring -->
             <path d="M-110,0 A110 32 0 0 1 110,0" stroke="#fce29d" stroke-width="12" fill="none" opacity="0.5"/>
-            <!-- Planet Sphere -->
-            <circle cx="0" cy="0" r="54" fill="url(#planetSaturn)"/>
-            <!-- Front ring -->
+            <circle cx="0" cy="0" r="54" fill="#e17055"/>
             <path d="M110,0 A110 32 0 0 1 -110,0" stroke="#fce29d" stroke-width="12" fill="none" opacity="0.85"/>
         </g>
-        <!-- Crescent Earth/Moon in distance -->
         <circle cx="140" cy="150" r="32" fill="#0984e3"/>
-        <circle cx="152" cy="144" r="28" fill="#180b33"/>
-        <!-- Student Astronaut Flying in Space holding a paint brush -->
-        <g transform="translate(220, 260) rotate(15)">
-            <!-- Space tether -->
-            <path d="M-60,100 Q-10,60 0,30" fill="none" stroke="#dfe6e9" stroke-width="2.5" stroke-dasharray="4 2"/>
-            <!-- Jetpack -->
-            <rect x="-18" y="-15" width="36" height="40" fill="#b2bec3" rx="5"/>
-            <ellipse cx="0" cy="28" rx="8" ry="12" fill="#ff7675"/>
-            <ellipse cx="0" cy="28" rx="4" ry="7" fill="#ffeaa7"/>
-            <!-- Spacesuit body -->
-            <ellipse cx="0" cy="5" rx="20" ry="26" fill="#f5f6fa"/>
-            <!-- Helmet -->
-            <circle cx="0" cy="-28" r="20" fill="#f5f6fa"/>
-            <!-- Gold visor reflection -->
-            <ellipse cx="3" cy="-28" rx="14" ry="12" fill="#fbc531"/>
-            <ellipse cx="6" cy="-31" rx="5" ry="3" fill="#ffffff" opacity="0.8"/>
-            <!-- Hand holding art brush -->
-            <line x1="18" y1="-5" x2="45" y2="-20" stroke="#f5f6fa" stroke-width="6" stroke-linecap="round"/>
-            <line x1="45" y1="-20" x2="68" y2="-35" stroke="#e17055" stroke-width="3" stroke-linecap="round"/>
-            <polygon points="68,-35 76,-40 73,-32" fill="#00cec9"/>
-            <!-- Magic Paint Trail of Stars -->
-            <path d="M76,-40 Q130,-70 200,-50" fill="none" stroke="#00cec9" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="110" cy="-56" r="3" fill="#ffeaa7"/>
-            <circle cx="140" cy="-62" r="4" fill="#ff7675"/>
-            <circle cx="170" cy="-58" r="3.5" fill="#fd79a8"/>
-        </g>
     </svg>`);
 }
 
-// 4 Preset Masterpieces for Initial Museum Showcase
+// Preset Collection
 function getInitialPresetArtworks() {
     return [
         {
@@ -318,11 +213,17 @@ function getInitialPresetArtworks() {
             title: 'Hoàng Hôn Trên Cánh Đồng Lúa Chín',
             description: 'Bức tranh được sáng tác trong chuyến đi thăm quê ngoại mùa lúa chín vàng ươm. Em muốn khắc họa vẻ đẹp trù phú, bình yên của làng quê Việt Nam dưới ánh hoàng hôn rực rỡ và những cánh chim trời bay về tổ ấm.',
             medium: 'Màu nước',
+            theme: 'Nét Đẹp Quê Hương',
             className: '7A1',
             artist: 'Nguyễn Thảo My',
             frame: 'classic-gold',
             mat: 'mat-cream',
             imageData: createSunsetRiceFieldSVG(),
+            sketchData: createSunsetSketchSVG(),
+            palette: {
+                colors: ['#ff5e62', '#f39c12', '#ffd56b', '#27ae60', '#5a3d75'],
+                harmony: 'Hòa Sắc Hoàng Hôn Rực Rỡ'
+            },
             timestamp: Date.now() - 86400000 * 3,
             grade: 9.5,
             teacherName: 'Thầy Lê Hoàng (GV Mỹ Thuật)',
@@ -335,8 +236,7 @@ function getInitialPresetArtworks() {
                 creativity: 'Ý tưởng độc đáo, giàu cảm xúc (Tốt)'
             },
             badges: ['🌟 Sáng Tạo Vượt Bậc', '🎨 Phối Màu Xuất Sắc'],
-            likes: 38,
-            likedBy: [],
+            likes: 45,
             comments: [
                 { author: 'Trần Đức Nam (8B2)', text: 'Tranh bạn vẽ màu nước trong veo, nhìn bình yên quá!', time: 'Hôm qua' },
                 { author: 'Lê Bảo Châu (6A3)', text: 'Thích nhất bầu trời hoàng hôn của bạn Thảo My!', time: 'Hôm nay' }
@@ -347,11 +247,17 @@ function getInitialPresetArtworks() {
             title: 'Phố Cổ Hà Nội Mùa Hoa Sưa',
             description: 'Lấy cảm hứng từ những mái ngói rêu phong và bức tường vàng đặc trưng của phố cổ Hà Nội. Gánh hoa sưa trắng tinh khôi của cô bán hàng rong như điểm xuyết nét dịu dàng, hoài niệm của mùa xuân thủ đô.',
             medium: 'Sơn dầu',
+            theme: 'Nét Đẹp Quê Hương',
             className: '8B2',
             artist: 'Trần Đức Nam',
             frame: 'baroque',
             mat: 'mat-cream',
             imageData: createHanoiOldQuarterSVG(),
+            sketchData: null,
+            palette: {
+                colors: ['#f5cd79', '#b33939', '#218c74', '#74b9ff', '#57606f'],
+                harmony: 'Hòa Sắc Cổ Điển Tương Phản'
+            },
             timestamp: Date.now() - 86400000 * 2,
             grade: 9.0,
             teacherName: 'Cô Vũ Minh Hằng (GV Mỹ Thuật)',
@@ -364,8 +270,7 @@ function getInitialPresetArtworks() {
                 creativity: 'Góc nhìn mới mẻ (Khá)'
             },
             badges: ['✍️ Đường Nét Tinh Tế', '🎨 Phối Màu Xuất Sắc'],
-            likes: 29,
-            likedBy: [],
+            likes: 36,
             comments: [
                 { author: 'Phạm Quang Minh (9A)', text: 'Màu sơn dầu dày dặn, nhìn chuẩn phong cách phố cổ Bùi Xuân Phái!', time: 'Hôm kia' }
             ]
@@ -375,11 +280,17 @@ function getInitialPresetArtworks() {
             title: 'Giai Điệu Sen Xanh',
             description: 'Hoa sen tượng trưng cho sự thuần khiết, thanh cao vươn lên từ bùn lầy. Em vẽ đóa sen hồng bung nở giữa đầm sen xanh biếc, bên cạnh là chú chuồn chuồn ớt đậu trên búp sen sớm mai đọng sương.',
             medium: 'Màu sáp / Sáp dầu',
+            theme: 'Bảo Vệ Môi Trường',
             className: '6A3',
             artist: 'Lê Bảo Châu',
             frame: 'dark-wood',
             mat: 'mat-white',
             imageData: createLotusPondSVG(),
+            sketchData: null,
+            palette: {
+                colors: ['#10ac84', '#ff9ff3', '#0b2920', '#feca57', '#ffffff'],
+                harmony: 'Hòa Sắc Thiên Nhiên Dịu Mát'
+            },
             timestamp: Date.now() - 86400000 * 1,
             grade: 8.5,
             teacherName: 'Thầy Lê Hoàng (GV Mỹ Thuật)',
@@ -392,8 +303,7 @@ function getInitialPresetArtworks() {
                 creativity: 'Ý tưởng độc đáo, giàu cảm xúc (Tốt)'
             },
             badges: ['💡 Ý Tưởng Truyền Cảm Hứng'],
-            likes: 24,
-            likedBy: [],
+            likes: 28,
             comments: [
                 { author: 'Nguyễn Thảo My (7A1)', text: 'Màu sáp lên màu nổi bật thật đấy Bảo Châu ơi!', time: 'Hôm nay' }
             ]
@@ -401,22 +311,27 @@ function getInitialPresetArtworks() {
         {
             id: 'art_demo_4',
             title: 'Ước Mơ Khám Phá Vũ Trụ',
-            description: 'Em vẽ một bạn phi hành gia trẻ tuổi đang bay lơ lửng ngoài không gian, tay cầm cọ vẽ nên những dải ngân hà kỳ thú và các vì sao lung linh. Thông điệp: Nghệ thuật và trí tưởng tượng không có giới hạn!',
+            description: 'Em vẽ một bạn phi hành gia trẻ tuổi đang bay lơ lửng ngoài không gian, tay cầm cọ vẽ nên những dải ngân hà kỳ thú và các vì sao lung linh. Nghệ thuật và trí tưởng tượng không có giới hạn!',
             medium: 'Kỹ thuật số',
+            theme: 'Ước Mơ & Tương Lai',
             className: '9A',
             artist: 'Phạm Quang Minh',
             frame: 'white-modern',
             mat: 'mat-dark',
             imageData: createGalaxyDreamSVG(),
-            timestamp: Date.now() - 3600000 * 5,
-            grade: null, // Ungraded for Teacher to test grading!
+            sketchData: null,
+            palette: {
+                colors: ['#3b1d60', '#ff7675', '#0984e3', '#e17055', '#ffeaa7'],
+                harmony: 'Hòa Sắc Huyền Ảo Không Gian'
+            },
+            timestamp: Date.now() - 3600000 * 4,
+            grade: null, // Ungraded for Teacher to grade
             teacherName: null,
             comment: null,
             suggestion: null,
             rubric: null,
             badges: [],
-            likes: 42,
-            likedBy: [],
+            likes: 52,
             comments: [
                 { author: 'Trần Đức Nam (8B2)', text: 'Tranh Digital đỉnh quá bạn ơi! Chờ thầy cô vào chấm 10 điểm!', time: 'Vừa xong' }
             ]
@@ -425,7 +340,7 @@ function getInitialPresetArtworks() {
 }
 
 // ========================================================
-// 💾 DATA ACCESS & INITIALIZATION
+// 💾 DATA ACCESS
 // ========================================================
 function getArtworks() {
     try {
@@ -435,9 +350,8 @@ function getArtworks() {
             if (Array.isArray(parsed) && parsed.length > 0) return parsed;
         }
     } catch (e) {
-        console.error('Error reading localStorage:', e);
+        console.error('Error reading artworks:', e);
     }
-    // Return presets if empty
     const presets = getInitialPresetArtworks();
     saveArtworks(presets);
     return presets;
@@ -447,7 +361,7 @@ function saveArtworks(artworks) {
     try {
         localStorage.setItem(STORAGE_KEYS.artworks, JSON.stringify(artworks));
     } catch (e) {
-        console.error('QuotaExceeded error when saving artworks:', e);
+        console.error('QuotaExceeded:', e);
         showToast('⚠️', 'Bộ nhớ trình duyệt đầy! Đã lưu ảnh ở chất lượng tối ưu.');
     }
 }
@@ -462,25 +376,25 @@ function generateId() {
 function enterMuseum(role) {
     currentRole = role;
     localStorage.setItem(STORAGE_KEYS.role, role);
-    
-    // Setup UI badge
+
     const badge = document.getElementById('user-role-badge');
-    badge.textContent = role === 'student' ? 'Học Sinh' : 'Giáo Viên';
-    badge.className = 'user-role-badge ' + role;
-    
-    // Check saved name for role
+    if (badge) {
+        badge.textContent = role === 'student' ? 'Học Sinh' : 'Giáo Viên';
+        badge.className = 'user-role-badge ' + role;
+    }
+
     const savedName = localStorage.getItem(STORAGE_KEYS.userPrefix + role);
     if (savedName) {
         currentUser = savedName;
-        document.getElementById('user-name-display').textContent = savedName;
-        showMuseum();
     } else {
-        // Set default name if not present
-        currentUser = role === 'teacher' ? 'Thầy/Cô Mỹ Thuật' : 'Học Sinh Sáng Tác';
-        document.getElementById('user-name-display').textContent = currentUser;
-        showMuseum();
-        showNameModal();
+        currentUser = role === 'teacher' ? 'Thầy/Cô Mỹ Thuật' : 'Nguyễn Thảo My (Lớp 7A1)';
+        localStorage.setItem(STORAGE_KEYS.userPrefix + role, currentUser);
     }
+
+    const userDisplay = document.getElementById('user-name-display');
+    if (userDisplay) userDisplay.textContent = currentUser;
+
+    showMuseum();
 }
 
 function loadDemoAndEnter() {
@@ -492,6 +406,7 @@ function showMuseum() {
     document.getElementById('entrance').classList.add('hidden');
     document.getElementById('museum').classList.remove('hidden');
     populateClassFilter();
+    initThemeState();
     showSection('gallery');
 }
 
@@ -499,7 +414,8 @@ function exitMuseum() {
     document.getElementById('museum').classList.add('hidden');
     document.getElementById('entrance').classList.remove('hidden');
     currentRole = null;
-    if (isAudioPlaying) toggleMuseumAudio();
+    if (isAmbientAudioPlaying) toggleMuseumAudio();
+    stopAudioGuide();
 }
 
 function showNameModal() {
@@ -528,10 +444,51 @@ function submitName() {
     document.getElementById('user-name-display').textContent = currentUser;
     document.getElementById('name-modal').classList.add('hidden');
     showToast('✨', `Kính chào ${currentUser} đến với Bảo Tàng Mỹ Thuật!`);
-    
-    // Update live nameplate if student
+
     if (document.getElementById('plate-artist')) {
         document.getElementById('plate-artist').textContent = '— Họa sĩ: ' + currentUser + ' —';
+    }
+}
+
+function handleUserBadgeClick() {
+    if (currentRole === 'student') {
+        openArtistPortfolio(currentUser);
+    } else {
+        showNameModal();
+    }
+}
+
+// ========================================================
+// ☀️/🌙 DAYLIGHT & NIGHT MUSEUM TOUR THEME
+// ========================================================
+function initThemeState() {
+    const savedTheme = localStorage.getItem(STORAGE_KEYS.theme) || 'night';
+    if (savedTheme === 'daylight') {
+        document.body.classList.remove('theme-night');
+        document.body.classList.add('theme-daylight');
+        document.getElementById('theme-icon').textContent = '☀️';
+    } else {
+        document.body.classList.remove('theme-daylight');
+        document.body.classList.add('theme-night');
+        document.getElementById('theme-icon').textContent = '🌙';
+    }
+}
+
+function toggleMuseumTheme() {
+    const isDay = document.body.classList.contains('theme-daylight');
+    const icon = document.getElementById('theme-icon');
+    if (isDay) {
+        document.body.classList.remove('theme-daylight');
+        document.body.classList.add('theme-night');
+        icon.textContent = '🌙';
+        localStorage.setItem(STORAGE_KEYS.theme, 'night');
+        showToast('🌙', 'Đã chuyển sang chế độ Đêm Bảo Tàng (Night Gallery)');
+    } else {
+        document.body.classList.remove('theme-night');
+        document.body.classList.add('theme-daylight');
+        icon.textContent = '☀️';
+        localStorage.setItem(STORAGE_KEYS.theme, 'daylight');
+        showToast('☀️', 'Đã chuyển sang chế độ Ánh Sáng Tự Nhiên (Daylight Gallery)');
     }
 }
 
@@ -540,10 +497,10 @@ function submitName() {
 // ========================================================
 function showSection(sectionName) {
     document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
-    
+
     const target = document.getElementById('section-' + sectionName);
     if (target) target.classList.remove('hidden');
-    
+
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.toggle('active', link.dataset.section === sectionName);
     });
@@ -560,8 +517,16 @@ function showSection(sectionName) {
 }
 
 // ========================================================
-// 🖼️ GALLERY RENDERING & FILTERS
+// 🏛️ THEMES, SEARCH & GALLERY RENDERING
 // ========================================================
+function handleThemeTab(themeName) {
+    currentThemeTab = themeName;
+    document.querySelectorAll('.theme-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === themeName);
+    });
+    renderGallery();
+}
+
 function populateClassFilter() {
     const classSelect = document.getElementById('filter-class');
     if (!classSelect) return;
@@ -607,27 +572,33 @@ function renderGallery() {
     const emptyState = document.getElementById('empty-gallery');
     let artworks = getArtworks();
 
-    // 1. Filter by Search Query
+    // 1. Filter by Theme Tab
+    if (currentThemeTab !== 'all') {
+        artworks = artworks.filter(a => a.theme === currentThemeTab);
+    }
+
+    // 2. Filter by Search Query
     if (searchQuery) {
-        artworks = artworks.filter(a => 
+        artworks = artworks.filter(a =>
             (a.title && a.title.toLowerCase().includes(searchQuery)) ||
             (a.artist && a.artist.toLowerCase().includes(searchQuery)) ||
             (a.description && a.description.toLowerCase().includes(searchQuery)) ||
-            (a.className && a.className.toLowerCase().includes(searchQuery))
+            (a.className && a.className.toLowerCase().includes(searchQuery)) ||
+            (a.theme && a.theme.toLowerCase().includes(searchQuery))
         );
     }
 
-    // 2. Filter by Class
+    // 3. Filter by Class
     if (currentClassFilter !== 'all') {
         artworks = artworks.filter(a => a.className === currentClassFilter);
     }
 
-    // 3. Filter by Medium
+    // 4. Filter by Medium
     if (currentMediumFilter !== 'all') {
         artworks = artworks.filter(a => a.medium && a.medium.includes(currentMediumFilter));
     }
 
-    // 4. Filter by Status/Pill
+    // 5. Filter by Status/Pill
     switch (currentFilter) {
         case 'recent':
             artworks = [...artworks].sort((a, b) => b.timestamp - a.timestamp);
@@ -635,7 +606,7 @@ function renderGallery() {
         case 'top-rated':
             artworks = [...artworks]
                 .filter(a => a.grade !== null && a.grade !== undefined)
-                .sort((a, b) => b.grade - a.grade);
+                .sort((a, b) => Number(b.grade) - Number(a.grade));
             break;
         case 'ungraded':
             artworks = [...artworks].filter(a => a.grade === null || a.grade === undefined);
@@ -686,7 +657,7 @@ function createArtworkCardHTML(art, index) {
         <div class="artwork-nameplate">
             <span class="nameplate-title">${escapeHtml(art.title)}</span>
             <span class="nameplate-artist">— Họa sĩ: ${escapeHtml(art.artist)} ${art.className ? `(Lớp ${escapeHtml(art.className)})` : ''} —</span>
-            <span class="nameplate-sub">${escapeHtml(art.medium || 'Tự do')} • ${formatDate(art.timestamp)}</span>
+            <span class="nameplate-sub">${escapeHtml(art.medium || 'Tự do')} • ${escapeHtml(art.theme || 'Mỹ thuật')}</span>
         </div>
     </div>`;
 }
@@ -710,12 +681,12 @@ function updateMuseumStats() {
 }
 
 // ========================================================
-// 🏆 HALL OF FAME (ĐIỆN VINH DANH >= 9.0)
+// 🏆 HALL OF FAME
 // ========================================================
 function renderHallOfFame() {
     const wall = document.getElementById('hall-wall');
     const emptyState = document.getElementById('empty-hall');
-    
+
     const topArtworks = getArtworks()
         .filter(a => a.grade && Number(a.grade) >= 9.0)
         .sort((a, b) => Number(b.grade) - Number(a.grade));
@@ -726,7 +697,7 @@ function renderHallOfFame() {
     } else {
         wall.classList.remove('hidden');
         emptyState.classList.add('hidden');
-        
+
         wall.innerHTML = topArtworks.map((art, idx) => `
             <div class="hall-card artwork-card" onclick="openArtworkDetail('${art.id}')" style="animation-delay: ${idx * 0.1}s">
                 <div class="hall-star">${idx === 0 ? '👑' : idx === 1 ? '⭐' : '✨'}</div>
@@ -739,7 +710,7 @@ function renderHallOfFame() {
                 <div class="artwork-nameplate">
                     <span class="nameplate-title">${escapeHtml(art.title)}</span>
                     <span class="nameplate-artist">— Họa sĩ: ${escapeHtml(art.artist)} ${art.className ? `(Lớp ${escapeHtml(art.className)})` : ''} —</span>
-                    <span class="nameplate-sub">🏆 Kiệt tác xuất sắc • ${escapeHtml(art.medium || 'Hội họa')}</span>
+                    <span class="nameplate-sub">🏆 Kiệt tác xuất sắc • ${escapeHtml(art.theme || 'Mỹ thuật')}</span>
                 </div>
             </div>
         `).join('');
@@ -747,7 +718,85 @@ function renderHallOfFame() {
 }
 
 // ========================================================
-// 🎨 UPLOAD, IMAGE COMPRESSOR & LIVE FRAMING
+// 🎨 PALETTE EXTRACTOR (AUTOMATIC CANVAS SAMPLING)
+// ========================================================
+function extractDominantColors(imgSrc, callback) {
+    if (!imgSrc) {
+        callback({ colors: ['#d4af37', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'], harmony: 'Hòa Sắc Tự Nhiên' });
+        return;
+    }
+    const img = new Image();
+    // Only set crossOrigin for remote HTTP/HTTPS images to prevent browser security exceptions on data URIs
+    if (imgSrc.startsWith('http://') || imgSrc.startsWith('https://')) {
+        img.crossOrigin = 'Anonymous';
+    }
+    img.onload = () => {
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 60;
+            canvas.height = 60;
+            ctx.drawImage(img, 0, 0, 60, 60);
+
+            const imgData = ctx.getImageData(0, 0, 60, 60).data;
+            const colorCounts = {};
+
+            let totalR = 0, totalG = 0, totalB = 0, totalCount = 0;
+
+            for (let i = 0; i < imgData.length; i += 16) { // Sample every 4th pixel
+                const r = imgData[i];
+                const g = imgData[i + 1];
+                const b = imgData[i + 2];
+                const a = imgData[i + 3];
+
+                if (a < 128) continue; // Skip transparent
+
+                // Quantize to step of 32
+                const qr = Math.round(r / 32) * 32;
+                const qg = Math.round(g / 32) * 32;
+                const qb = Math.round(b / 32) * 32;
+                const key = `${qr},${qg},${qb}`;
+
+                colorCounts[key] = (colorCounts[key] || 0) + 1;
+                totalR += r; totalG += g; totalB += b; totalCount++;
+            }
+
+            // Sort by count
+            const sorted = Object.keys(colorCounts).sort((a, b) => colorCounts[b] - colorCounts[a]);
+            const top5 = sorted.slice(0, 5).map(rgbStr => {
+                const [r, g, b] = rgbStr.split(',').map(Number);
+                return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            });
+
+            // Fallback if needed
+            while (top5.length < 5) top5.push('#d4af37');
+
+            // Determine harmony
+            const avgR = totalCount ? totalR / totalCount : 128;
+            const avgB = totalCount ? totalB / totalCount : 128;
+            let harmonyName = 'Hòa Sắc Hài Hòa';
+
+            if (avgR > avgB + 30) {
+                harmonyName = 'Hòa Sắc Nóng (Ấm Áp, Tràn Đầy Năng Lượng)';
+            } else if (avgB > avgR + 30) {
+                harmonyName = 'Hòa Sắc Lạnh (Êm Dịu, Chiều Sâu)';
+            } else {
+                harmonyName = 'Hòa Sắc Cân Bằng & Tương Phản Đa Dạng';
+            }
+
+            callback({ colors: top5, harmony: harmonyName });
+        } catch (e) {
+            callback({ colors: ['#f39c12', '#2ecc71', '#3498db', '#e74c3c', '#9b59b6'], harmony: 'Hòa Sắc Sáng Tạo' });
+        }
+    };
+    img.onerror = () => {
+        callback({ colors: ['#d4af37', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'], harmony: 'Hòa Sắc Tự Nhiên' });
+    };
+    img.src = imgSrc;
+}
+
+// ========================================================
+// 🎨 UPLOAD, IMAGE COMPRESSOR & WORK-IN-PROGRESS
 // ========================================================
 function selectFrame(frameKey) {
     selectedFrame = frameKey;
@@ -755,9 +804,7 @@ function selectFrame(frameKey) {
         btn.classList.toggle('active', btn.dataset.frame === frameKey);
     });
     const previewOuter = document.getElementById('preview-outer-frame');
-    if (previewOuter) {
-        previewOuter.className = 'artwork-frame ' + frameKey;
-    }
+    if (previewOuter) previewOuter.className = 'artwork-frame ' + frameKey;
 }
 
 function selectMat(matKey) {
@@ -766,12 +813,9 @@ function selectMat(matKey) {
         btn.classList.toggle('active', btn.dataset.mat === matKey);
     });
     const previewMat = document.getElementById('preview-mat');
-    if (previewMat) {
-        previewMat.className = 'artwork-mat ' + matKey;
-    }
+    if (previewMat) previewMat.className = 'artwork-mat ' + matKey;
 }
 
-// Intelligent Client-Side Canvas Image Compression
 function compressAndLoadImage(file, callback) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -798,8 +842,7 @@ function compressAndLoadImage(file, callback) {
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            
-            // Compress to JPEG 0.82
+
             const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
             callback(compressedDataUrl);
         };
@@ -814,28 +857,62 @@ function handleArtworkFile(file) {
         return;
     }
 
-    showToast('⏳', 'Đang lồng tranh vào khung bảo tàng...');
+    showToast('⏳', 'Đang nén và quét bảng màu...');
     compressAndLoadImage(file, (dataUrl) => {
         uploadedImageData = dataUrl;
         const previewImg = document.getElementById('preview-image');
         const dropzoneContent = document.getElementById('dropzone-content');
-        
+
         previewImg.src = uploadedImageData;
         previewImg.classList.remove('hidden');
         dropzoneContent.classList.add('hidden');
-        showToast('✨', 'Đã tải ảnh lên khung thành công!');
+
+        // Extract palette
+        extractDominantColors(uploadedImageData, (paletteObj) => {
+            currentExtractedPalette = paletteObj;
+            renderUploadPalettePreview(paletteObj);
+            showToast('✨', 'Đã phân tích bảng màu tác phẩm thành công!');
+        });
+    });
+}
+
+function renderUploadPalettePreview(paletteObj) {
+    const box = document.getElementById('upload-palette-box');
+    const swatches = document.getElementById('upload-palette-swatches');
+    const harmony = document.getElementById('upload-palette-harmony');
+
+    if (!box || !paletteObj) return;
+    box.classList.remove('hidden');
+    harmony.textContent = '✨ ' + paletteObj.harmony;
+
+    swatches.innerHTML = paletteObj.colors.map(col => `
+        <div style="flex:1; height: 24px; border-radius: 4px; background: ${col}; border: 1px solid rgba(255,255,255,0.2);" title="${col}"></div>
+    `).join('');
+}
+
+function handleSketchFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    compressAndLoadImage(file, (dataUrl) => {
+        uploadedSketchData = dataUrl;
+        document.getElementById('sketch-status').textContent = '✅ Đã đính kèm bản phác thảo';
+        showToast('✏️', 'Đã nhận bản phác thảo chì thành công!');
     });
 }
 
 function resetUploadForm() {
     uploadedImageData = null;
+    uploadedSketchData = null;
+    currentExtractedPalette = null;
     selectedFrame = 'classic-gold';
     selectedMat = 'mat-cream';
 
     document.getElementById('file-input').value = '';
+    document.getElementById('sketch-file-input').value = '';
+    document.getElementById('sketch-status').textContent = 'Chưa chọn bản phác thảo';
     document.getElementById('preview-image').classList.add('hidden');
     document.getElementById('preview-image').src = '';
     document.getElementById('dropzone-content').classList.remove('hidden');
+    document.getElementById('upload-palette-box').classList.add('hidden');
 
     document.getElementById('artwork-title').value = '';
     document.getElementById('artwork-desc').value = '';
@@ -878,6 +955,7 @@ function submitArtwork() {
         return;
     }
 
+    const theme = document.getElementById('artwork-theme').value || 'Tự Do Sáng Tạo';
     const desc = document.getElementById('artwork-desc').value.trim();
     const artistName = currentUser || 'Học sinh';
 
@@ -886,11 +964,17 @@ function submitArtwork() {
         title: title,
         description: desc || 'Tác phẩm mỹ thuật sáng tác bởi học sinh.',
         medium: medium,
+        theme: theme,
         className: className,
         artist: artistName,
         frame: selectedFrame,
         mat: selectedMat,
         imageData: uploadedImageData,
+        sketchData: uploadedSketchData,
+        palette: currentExtractedPalette || {
+            colors: ['#d4af37', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'],
+            harmony: 'Hòa Sắc Tự Nhiên'
+        },
         timestamp: Date.now(),
         grade: null,
         teacherName: null,
@@ -899,7 +983,6 @@ function submitArtwork() {
         rubric: null,
         badges: [],
         likes: 1,
-        likedBy: [],
         comments: []
     };
 
@@ -916,143 +999,442 @@ function submitArtwork() {
 }
 
 // ========================================================
-// 🔍 ARTWORK DETAIL MODAL, GRADING & INTERACTION
+// 🔍 ARTWORK DETAIL MODAL, MAGNIFIER & AUDIO GUIDE
 // ========================================================
 function openArtworkDetail(artworkId) {
-    const artworks = getArtworks();
-    const art = artworks.find(a => a.id === artworkId);
-    if (!art) return;
+    try {
+        const artworks = getArtworks();
+        const art = artworks.find(a => a.id === artworkId);
+        if (!art) return;
 
-    selectedArtworkId = artworkId;
+        selectedArtworkId = artworkId;
+        stopAudioGuide(); // Reset any playing audio
+        isMagnifierActive = false;
+        isWipSliderActive = false;
 
-    // Artwork image & framing
-    document.getElementById('detail-image').src = art.imageData;
-    document.getElementById('detail-frame').className = 'artwork-frame ' + (art.frame || 'classic-gold');
-    document.getElementById('detail-mat').className = 'artwork-mat ' + (art.mat || 'mat-cream');
+        // Reset view tools
+        const magContainer = document.getElementById('magnifier-container');
+        if (magContainer) magContainer.classList.remove('hidden');
+        const wipContainer = document.getElementById('wip-slider-container');
+        if (wipContainer) wipContainer.classList.add('hidden');
+        const magBtn = document.getElementById('btn-toggle-magnifier');
+        if (magBtn) magBtn.classList.remove('active');
+        const magLens = document.getElementById('magnifier-lens');
+        if (magLens) magLens.classList.add('hidden');
 
-    // Plaque details
-    document.getElementById('detail-title').textContent = art.title;
-    document.getElementById('detail-artist').textContent = art.artist;
-    document.getElementById('detail-class-badge').textContent = art.className ? ('Lớp ' + art.className) : '';
-    document.getElementById('detail-medium').textContent = 'Chất liệu: ' + (art.medium || 'Hội họa');
-    document.getElementById('detail-date').textContent = formatDate(art.timestamp);
-    document.getElementById('detail-desc').textContent = art.description || 'Chưa có ghi chú mô tả.';
+        // Artwork image & framing
+        const detailImg = document.getElementById('detail-image');
+        if (detailImg) detailImg.src = art.imageData || '';
+        const detailFrame = document.getElementById('detail-frame');
+        if (detailFrame) detailFrame.className = 'artwork-frame ' + (art.frame || 'classic-gold');
+        const detailMat = document.getElementById('detail-mat');
+        if (detailMat) detailMat.className = 'artwork-mat ' + (art.mat || 'mat-cream');
 
-    // Like count & state
-    updateDetailLikeState(art);
-
-    // Grade status & Circle
-    const gradeCircle = document.getElementById('grade-circle');
-    const gradeValue = document.getElementById('grade-value');
-    const gradeHeading = document.getElementById('grade-status-heading');
-    const gradeEvaluator = document.getElementById('grade-evaluator');
-    const badgesDisplay = document.getElementById('grade-badges-display');
-    const rubricDisplay = document.getElementById('rubric-display');
-
-    if (art.grade !== null && art.grade !== undefined) {
-        gradeValue.textContent = art.grade;
-        gradeCircle.className = 'grade-badge-circle ' + (art.grade >= 9.0 ? 'grade-high' : art.grade >= 7.0 ? 'grade-medium' : 'grade-low');
-        gradeHeading.textContent = art.grade >= 9.0 ? 'Kiệt Tác Xuất Sắc 🏆' : art.grade >= 8.0 ? 'Tác Phẩm Giỏi ✨' : 'Đã Được Đánh Giá';
-        gradeEvaluator.textContent = 'Đánh giá bởi: ' + (art.teacherName || 'Giáo viên Mỹ Thuật');
-
-        // Badges
-        if (art.badges && art.badges.length > 0) {
-            badgesDisplay.innerHTML = art.badges.map(b => `<span class="honor-badge-tag">${b}</span>`).join('');
-        } else {
-            badgesDisplay.innerHTML = '';
-        }
-
-        // Rubrics
-        if (art.rubric) {
-            rubricDisplay.classList.remove('hidden');
-            document.getElementById('rubric-val-comp').textContent = art.rubric.comp || 'Đạt';
-            document.getElementById('rubric-val-color').textContent = art.rubric.color || 'Đạt';
-            document.getElementById('rubric-val-tech').textContent = art.rubric.tech || 'Đạt';
-            document.getElementById('rubric-val-creativity').textContent = art.rubric.creativity || 'Đạt';
-        } else {
-            rubricDisplay.classList.add('hidden');
-        }
-    } else {
-        gradeValue.textContent = '—';
-        gradeCircle.className = 'grade-badge-circle';
-        gradeHeading.textContent = 'Chờ Giáo Viên Đánh Giá ⏳';
-        gradeEvaluator.textContent = 'Tác phẩm đang được trưng bày chờ chấm điểm';
-        badgesDisplay.innerHTML = '';
-        rubricDisplay.classList.add('hidden');
-    }
-
-    // Role-specific Panels (Teacher grading panel vs Feedback view)
-    const teacherPanel = document.getElementById('teacher-panel');
-    const feedbackDisplay = document.getElementById('feedback-display');
-    const deleteBtn = document.getElementById('btn-delete');
-
-    if (currentRole === 'teacher') {
-        teacherPanel.classList.remove('hidden');
-        feedbackDisplay.classList.add('hidden');
-        deleteBtn.classList.remove('hidden'); // Teacher has curator deletion rights
-
-        // Populate slider & inputs with existing or default
-        const score = art.grade !== null ? art.grade : 8.5;
-        document.getElementById('grade-slider').value = score;
-        document.getElementById('grade-preview').textContent = score;
-
-        document.getElementById('teacher-comment').value = art.comment || '';
-        document.getElementById('teacher-suggestion').value = art.suggestion || '';
-
-        // Rubric selects
-        if (art.rubric) {
-            document.getElementById('rubric-comp').value = art.rubric.comp || 'Hài hòa, chặt chẽ (Tốt)';
-            document.getElementById('rubric-color').value = art.rubric.color || 'Hòa sắc ấn tượng, tương phản tốt (Tốt)';
-            document.getElementById('rubric-tech').value = art.rubric.tech || 'Làm chủ chất liệu, nét vẽ tự tin (Tốt)';
-            document.getElementById('rubric-creativity').value = art.rubric.creativity || 'Ý tưởng độc đáo, giàu cảm xúc (Tốt)';
-        }
-
-        // Badges
-        document.getElementById('badge-creative').checked = art.badges && art.badges.includes('🌟 Sáng Tạo Vượt Bậc');
-        document.getElementById('badge-color').checked = art.badges && art.badges.includes('🎨 Phối Màu Xuất Sắc');
-        document.getElementById('badge-line').checked = art.badges && art.badges.includes('✍️ Đường Nét Tinh Tế');
-        document.getElementById('badge-story').checked = art.badges && art.badges.includes('💡 Ý Tưởng Truyền Cảm Hứng');
-
-    } else {
-        teacherPanel.classList.add('hidden');
-
-        // Show feedback if graded
-        if (art.comment || art.grade !== null) {
-            feedbackDisplay.classList.remove('hidden');
-            document.getElementById('feedback-comment').textContent = art.comment || 'Chưa có nhận xét văn bản.';
-            
-            if (art.suggestion) {
-                document.getElementById('feedback-suggestion').classList.remove('hidden');
-                document.getElementById('suggestion-text').textContent = art.suggestion;
+        // Setup WIP slider if sketch exists
+        const sketchBtn = document.getElementById('btn-toggle-sketch-slider');
+        if (sketchBtn) {
+            if (art.sketchData) {
+                sketchBtn.classList.remove('hidden');
+                sketchBtn.classList.remove('active');
+                const wipFinal = document.getElementById('wip-final-img');
+                if (wipFinal) wipFinal.src = art.imageData;
+                const wipSketch = document.getElementById('wip-sketch-img');
+                if (wipSketch) wipSketch.src = art.sketchData;
+                setupWipSliderInteractivity();
             } else {
-                document.getElementById('feedback-suggestion').classList.add('hidden');
+                sketchBtn.classList.add('hidden');
+            }
+        }
+
+        // Setup Magnifier image listener
+        setupMagnifierLoupe(art.imageData);
+
+        // Plaque details
+        const elTitle = document.getElementById('detail-title');
+        if (elTitle) elTitle.textContent = art.title || '';
+        const elArtist = document.getElementById('detail-artist');
+        if (elArtist) elArtist.textContent = art.artist || '';
+        const elClass = document.getElementById('detail-class-badge');
+        if (elClass) elClass.textContent = art.className ? ('Lớp ' + art.className) : '';
+        const elTheme = document.getElementById('detail-theme-badge');
+        if (elTheme) elTheme.textContent = art.theme ? ('Chuyên đề: ' + art.theme) : '';
+        const elMedium = document.getElementById('detail-medium');
+        if (elMedium) elMedium.textContent = 'Chất liệu: ' + (art.medium || 'Hội họa');
+        const elDate = document.getElementById('detail-date');
+        if (elDate) elDate.textContent = formatDate(art.timestamp);
+        const elDesc = document.getElementById('detail-desc');
+        if (elDesc) elDesc.textContent = art.description || 'Chưa có ghi chú mô tả.';
+
+        // Color Palette Render
+        renderDetailPalette(art);
+
+        // Like count & state
+        updateDetailLikeState(art);
+
+        // Grade status & Circle
+        const gradeCircle = document.getElementById('grade-circle');
+        const gradeValue = document.getElementById('grade-value');
+        const gradeHeading = document.getElementById('grade-status-heading');
+        const gradeEvaluator = document.getElementById('grade-evaluator');
+        const badgesDisplay = document.getElementById('grade-badges-display');
+        const rubricDisplay = document.getElementById('rubric-display');
+
+        const isGraded = art.grade !== null && art.grade !== undefined && art.grade !== '';
+        if (isGraded) {
+            const numGrade = Number(art.grade);
+            if (gradeValue) gradeValue.textContent = art.grade;
+            if (gradeCircle) gradeCircle.className = 'grade-badge-circle ' + (numGrade >= 9.0 ? 'grade-high' : numGrade >= 7.0 ? 'grade-medium' : 'grade-low');
+            if (gradeHeading) gradeHeading.textContent = numGrade >= 9.0 ? 'Kiệt Tác Xuất Sắc 🏆' : numGrade >= 8.0 ? 'Tác Phẩm Giỏi ✨' : 'Đã Được Đánh Giá';
+            if (gradeEvaluator) gradeEvaluator.textContent = 'Đánh giá bởi: ' + (art.teacherName || 'Giáo viên Mỹ Thuật');
+
+            if (badgesDisplay) {
+                if (Array.isArray(art.badges) && art.badges.length > 0) {
+                    badgesDisplay.innerHTML = art.badges.map(b => `<span class="honor-badge-tag">${escapeHtml(b)}</span>`).join('');
+                } else {
+                    badgesDisplay.innerHTML = '';
+                }
+            }
+
+            if (rubricDisplay) {
+                if (art.rubric) {
+                    rubricDisplay.classList.remove('hidden');
+                    const compEl = document.getElementById('rubric-val-comp');
+                    if (compEl) compEl.textContent = art.rubric.comp || 'Đạt';
+                    const colorEl = document.getElementById('rubric-val-color');
+                    if (colorEl) colorEl.textContent = art.rubric.color || 'Đạt';
+                    const techEl = document.getElementById('rubric-val-tech');
+                    if (techEl) techEl.textContent = art.rubric.tech || 'Đạt';
+                    const creatEl = document.getElementById('rubric-val-creativity');
+                    if (creatEl) creatEl.textContent = art.rubric.creativity || 'Đạt';
+                } else {
+                    rubricDisplay.classList.add('hidden');
+                }
             }
         } else {
-            feedbackDisplay.classList.add('hidden');
+            if (gradeValue) gradeValue.textContent = '—';
+            if (gradeCircle) gradeCircle.className = 'grade-badge-circle';
+            if (gradeHeading) gradeHeading.textContent = 'Chờ Giáo Viên Đánh Giá ⏳';
+            if (gradeEvaluator) gradeEvaluator.textContent = 'Tác phẩm đang được trưng bày chờ chấm điểm';
+            if (badgesDisplay) badgesDisplay.innerHTML = '';
+            if (rubricDisplay) rubricDisplay.classList.add('hidden');
         }
 
-        // Allow student to delete only their own artwork
-        if (art.artist === currentUser) {
-            deleteBtn.classList.remove('hidden');
+        // Role-specific Panels
+        const teacherPanel = document.getElementById('teacher-panel');
+        const feedbackDisplay = document.getElementById('feedback-display');
+        const deleteBtn = document.getElementById('btn-delete');
+
+        if (currentRole === 'teacher') {
+            if (teacherPanel) teacherPanel.classList.remove('hidden');
+            if (feedbackDisplay) feedbackDisplay.classList.add('hidden');
+            if (deleteBtn) deleteBtn.classList.remove('hidden');
+
+            const score = isGraded ? art.grade : 8.5;
+            const slider = document.getElementById('grade-slider');
+            if (slider) slider.value = score;
+            const preview = document.getElementById('grade-preview');
+            if (preview) preview.textContent = score;
+
+            const commentInput = document.getElementById('teacher-comment');
+            if (commentInput) commentInput.value = art.comment || '';
+            const suggInput = document.getElementById('teacher-suggestion');
+            if (suggInput) suggInput.value = art.suggestion || '';
+
+            const compSelect = document.getElementById('rubric-comp');
+            if (compSelect) compSelect.value = (art.rubric && art.rubric.comp) ? art.rubric.comp : 'Hài hòa, chặt chẽ (Tốt)';
+            const colorSelect = document.getElementById('rubric-color');
+            if (colorSelect) colorSelect.value = (art.rubric && art.rubric.color) ? art.rubric.color : 'Hòa sắc ấn tượng, tương phản tốt (Tốt)';
+            const techSelect = document.getElementById('rubric-tech');
+            if (techSelect) techSelect.value = (art.rubric && art.rubric.tech) ? art.rubric.tech : 'Làm chủ chất liệu, nét vẽ tự tin (Tốt)';
+            const creatSelect = document.getElementById('rubric-creativity');
+            if (creatSelect) creatSelect.value = (art.rubric && art.rubric.creativity) ? art.rubric.creativity : 'Ý tưởng độc đáo, giàu cảm xúc (Tốt)';
+
+            const hasBadges = Array.isArray(art.badges);
+            const bCreative = document.getElementById('badge-creative');
+            if (bCreative) bCreative.checked = hasBadges && art.badges.includes('🌟 Sáng Tạo Vượt Bậc');
+            const bColor = document.getElementById('badge-color');
+            if (bColor) bColor.checked = hasBadges && art.badges.includes('🎨 Phối Màu Xuất Sắc');
+            const bLine = document.getElementById('badge-line');
+            if (bLine) bLine.checked = hasBadges && art.badges.includes('✍️ Đường Nét Tinh Tế');
+            const bStory = document.getElementById('badge-story');
+            if (bStory) bStory.checked = hasBadges && art.badges.includes('💡 Ý Tưởng Truyền Cảm Hứng');
         } else {
-            deleteBtn.classList.add('hidden');
+            if (teacherPanel) teacherPanel.classList.add('hidden');
+
+            if (art.comment || isGraded) {
+                if (feedbackDisplay) {
+                    feedbackDisplay.classList.remove('hidden');
+                    const fbComment = document.getElementById('feedback-comment');
+                    if (fbComment) fbComment.textContent = art.comment || 'Chưa có nhận xét văn bản.';
+
+                    const fbSugg = document.getElementById('feedback-suggestion');
+                    const suggText = document.getElementById('suggestion-text');
+                    if (art.suggestion) {
+                        if (fbSugg) fbSugg.classList.remove('hidden');
+                        if (suggText) suggText.textContent = art.suggestion;
+                    } else {
+                        if (fbSugg) fbSugg.classList.add('hidden');
+                    }
+                }
+            } else {
+                if (feedbackDisplay) feedbackDisplay.classList.add('hidden');
+            }
+
+            if (deleteBtn) {
+                if (art.artist === currentUser) {
+                    deleteBtn.classList.remove('hidden');
+                } else {
+                    deleteBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        renderArtworkComments(art);
+
+        const modal = document.getElementById('artwork-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    } catch (err) {
+        console.error('Lỗi khi mở chi tiết tác phẩm:', err);
+        const modal = document.getElementById('artwork-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
     }
-
-    // Render Student Comments List
-    renderArtworkComments(art);
-
-    // Show modal & freeze background scroll
-    document.getElementById('artwork-modal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
 }
 
 function closeArtworkModal() {
-    document.getElementById('artwork-modal').classList.add('hidden');
+    stopAudioGuide();
+    const modal = document.getElementById('artwork-modal');
+    if (modal) modal.classList.add('hidden');
     document.body.style.overflow = '';
     selectedArtworkId = null;
 }
 
+// 🎨 Palette Renderer
+function renderDetailPalette(art) {
+    const swatchesGrid = document.getElementById('detail-palette-swatches');
+    const harmonyBadge = document.getElementById('detail-palette-harmony');
+    if (!swatchesGrid) return;
+
+    if (art.palette && Array.isArray(art.palette.colors) && art.palette.colors.length > 0) {
+        if (harmonyBadge) harmonyBadge.textContent = art.palette.harmony || 'Hòa Sắc Hài Hòa';
+        swatchesGrid.innerHTML = art.palette.colors.map(col => `
+            <div class="palette-swatch-item" onclick="showToast('🎨', 'Mã màu: ${col}')" title="Nhấn xem mã màu">
+                <div class="palette-swatch-color" style="background: ${col}"></div>
+                <span class="palette-hex">${col.toUpperCase()}</span>
+            </div>
+        `).join('');
+    } else {
+        // Fallback default palette immediately to prevent blocking
+        const defaultPalette = {
+            colors: ['#d4af37', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'],
+            harmony: 'Hòa Sắc Tự Nhiên'
+        };
+        art.palette = defaultPalette;
+        if (harmonyBadge) harmonyBadge.textContent = defaultPalette.harmony;
+        swatchesGrid.innerHTML = defaultPalette.colors.map(col => `
+            <div class="palette-swatch-item" onclick="showToast('🎨', 'Mã màu: ${col}')" title="Nhấn xem mã màu">
+                <div class="palette-swatch-color" style="background: ${col}"></div>
+                <span class="palette-hex">${col.toUpperCase()}</span>
+            </div>
+        `).join('');
+
+        if (art.imageData) {
+            extractDominantColors(art.imageData, (p) => {
+                if (p && Array.isArray(p.colors) && p.colors.length > 0) {
+                    art.palette = p;
+                    if (harmonyBadge) harmonyBadge.textContent = p.harmony || 'Hòa Sắc Tự Nhiên';
+                    swatchesGrid.innerHTML = p.colors.map(col => `
+                        <div class="palette-swatch-item" onclick="showToast('🎨', 'Mã màu: ${col}')" title="Nhấn xem mã màu">
+                            <div class="palette-swatch-color" style="background: ${col}"></div>
+                            <span class="palette-hex">${col.toUpperCase()}</span>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+    }
+}
+
+// 🔍 Magnifier Loupe Implementation
+function toggleMagnifierLens() {
+    isMagnifierActive = !isMagnifierActive;
+    const btn = document.getElementById('btn-toggle-magnifier');
+    const lens = document.getElementById('magnifier-lens');
+
+    if (isMagnifierActive) {
+        if (btn) btn.classList.add('active');
+        if (lens) lens.classList.remove('hidden');
+        showToast('🔍', 'Di chuyển chuột trên bức tranh để soi chi tiết vệt cọ và nét vẽ!');
+    } else {
+        if (btn) btn.classList.remove('active');
+        if (lens) lens.classList.add('hidden');
+    }
+}
+
+function setupMagnifierLoupe(imgSrc) {
+    const container = document.getElementById('magnifier-container');
+    const img = document.getElementById('detail-image');
+    const lens = document.getElementById('magnifier-lens');
+    if (!container || !img || !lens) return;
+
+    if (imgSrc) {
+        lens.style.backgroundImage = `url("${imgSrc.replace(/"/g, '\\"')}")`;
+    }
+
+    function moveLens(e) {
+        if (!isMagnifierActive) return;
+        const rect = img.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        let x = clientX - rect.left;
+        let y = clientY - rect.top;
+
+        if (x < 0 || x > rect.width || y < 0 || y > rect.height) {
+            lens.classList.add('hidden');
+            return;
+        } else {
+            lens.classList.remove('hidden');
+        }
+
+        lens.style.left = x + 'px';
+        lens.style.top = y + 'px';
+
+        const zoom = 2.5;
+        lens.style.backgroundSize = `${rect.width * zoom}px ${rect.height * zoom}px`;
+        lens.style.backgroundPosition = `-${x * zoom - 70}px -${y * zoom - 70}px`;
+    }
+
+    container.onmousemove = moveLens;
+    container.ontouchmove = moveLens;
+    container.onmouseleave = () => {
+        if (isMagnifierActive) lens.classList.add('hidden');
+    };
+}
+
+// 🔄 Work-In-Progress Slider Implementation
+function toggleWipSlider() {
+    isWipSliderActive = !isWipSliderActive;
+    const btn = document.getElementById('btn-toggle-sketch-slider');
+    const normContainer = document.getElementById('magnifier-container');
+    const wipContainer = document.getElementById('wip-slider-container');
+
+    if (isWipSliderActive) {
+        btn.classList.add('active');
+        normContainer.classList.add('hidden');
+        wipContainer.classList.remove('hidden');
+        showToast('🔄', 'Kéo thanh trượt để so sánh Bản Phác Thảo & Bản Hoàn Thiện!');
+    } else {
+        btn.classList.remove('active');
+        normContainer.classList.remove('hidden');
+        wipContainer.classList.add('hidden');
+    }
+}
+
+function setupWipSliderInteractivity() {
+    const wipContainer = document.getElementById('wip-slider-container');
+    const sketchLayer = document.getElementById('wip-sketch-layer');
+    const handle = document.getElementById('wip-handle');
+    let isDragging = false;
+
+    function updateSlider(clientX) {
+        const rect = wipContainer.getBoundingClientRect();
+        let posX = clientX - rect.left;
+        if (posX < 0) posX = 0;
+        if (posX > rect.width) posX = rect.width;
+
+        const percent = (posX / rect.width) * 100;
+        sketchLayer.style.width = percent + '%';
+        handle.style.left = percent + '%';
+    }
+
+    handle.onmousedown = () => isDragging = true;
+    window.onmouseup = () => isDragging = false;
+    wipContainer.onmousemove = (e) => {
+        if (isDragging) updateSlider(e.clientX);
+    };
+    wipContainer.ontouchmove = (e) => {
+        updateSlider(e.touches[0].clientX);
+    };
+}
+
+// 🎧 Audio Guide Text-to-Speech Implementation
+function toggleAudioGuide() {
+    if (isAudioGuidePlaying) {
+        stopAudioGuide();
+    } else {
+        startAudioGuide();
+    }
+}
+
+function startAudioGuide() {
+    const artworks = getArtworks();
+    const art = artworks.find(a => a.id === selectedArtworkId);
+    if (!art) return;
+
+    const playBtnText = document.getElementById('audio-guide-play-text');
+    const playIcon = document.getElementById('audio-guide-play-icon');
+    const waveBars = document.getElementById('audio-wave-bars');
+
+    const textToSpeak = `Kính chào quý khách. Quý vị đang thưởng lãm tác phẩm ${art.title}, do họa sĩ học sinh ${art.artist} thuộc lớp ${art.className || 'trường'} sáng tác bằng chất liệu ${art.medium || 'hội họa'}. Lời tác giả chia sẻ: ${art.description || 'Tác phẩm thể hiện cảm xúc chân thành và tình yêu nghệ thuật.'}`;
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        currentUtterance = new SpeechSynthesisUtterance(textToSpeak);
+        currentUtterance.lang = 'vi-VN';
+        currentUtterance.rate = 0.95;
+
+        // Try to pick Vietnamese voice
+        const voices = window.speechSynthesis.getVoices();
+        const viVoice = voices.find(v => v.lang.includes('vi') || v.lang.includes('VN'));
+        if (viVoice) currentUtterance.voice = viVoice;
+
+        currentUtterance.onstart = () => {
+            isAudioGuidePlaying = true;
+            playBtnText.textContent = 'Dừng Thuyết Minh';
+            playIcon.textContent = '⏸️';
+            waveBars.classList.remove('hidden');
+            showToast('🎧', 'Đang phát thuyết minh tác phẩm...');
+        };
+
+        currentUtterance.onend = () => {
+            stopAudioGuide();
+        };
+
+        currentUtterance.onerror = () => {
+            stopAudioGuide();
+        };
+
+        window.speechSynthesis.speak(currentUtterance);
+    } else {
+        showToast('⚠️', 'Trình duyệt chưa hỗ trợ phát giọng đọc tự động.');
+    }
+}
+
+function stopAudioGuide() {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+    }
+    isAudioGuidePlaying = false;
+    const playBtnText = document.getElementById('audio-guide-play-text');
+    const playIcon = document.getElementById('audio-guide-play-icon');
+    const waveBars = document.getElementById('audio-wave-bars');
+
+    if (playBtnText) playBtnText.textContent = 'Nghe Thuyết Minh';
+    if (playIcon) playIcon.textContent = '▶️';
+    if (waveBars) waveBars.classList.add('hidden');
+}
+
+// ========================================================
+// 👨‍🏫 TEACHER GRADING
+// ========================================================
 function updateGradePreview(val) {
     document.getElementById('grade-preview').textContent = val;
 }
@@ -1070,14 +1452,12 @@ function submitGrade() {
         return;
     }
 
-    // Collect badges
     const badges = [];
     if (document.getElementById('badge-creative').checked) badges.push('🌟 Sáng Tạo Vượt Bậc');
     if (document.getElementById('badge-color').checked) badges.push('🎨 Phối Màu Xuất Sắc');
     if (document.getElementById('badge-line').checked) badges.push('✍️ Đường Nét Tinh Tế');
     if (document.getElementById('badge-story').checked) badges.push('💡 Ý Tưởng Truyền Cảm Hứng');
 
-    // Collect rubrics
     const rubric = {
         comp: document.getElementById('rubric-comp').value,
         color: document.getElementById('rubric-color').value,
@@ -1099,13 +1479,13 @@ function submitGrade() {
         saveArtworks(artworks);
 
         showToast('✅', `Đã lưu đánh giá: ${grade} điểm và lời nhận xét chuyên môn!`);
-        openArtworkDetail(selectedArtworkId); // Refresh modal view
+        openArtworkDetail(selectedArtworkId);
         renderGallery();
     }
 }
 
 // ========================================================
-// ❤️ LIKE / APPRECIATION & DISCUSSION
+// ❤️ LIKE & COMMENTS
 // ========================================================
 function handleLikeArtwork() {
     if (!selectedArtworkId) return;
@@ -1160,7 +1540,7 @@ function renderArtworkComments(art) {
     if (count) count.textContent = comments.length;
 
     if (comments.length === 0) {
-        list.innerHTML = `<p style="font-family: var(--font-ui); font-size: 0.85rem; color: rgba(250,244,230,0.4); text-align: center; padding: 10px;">Chưa có bình luận nào. Hãy là người đầu tiên để lại lời khen!</p>`;
+        list.innerHTML = `<p style="font-family: var(--font-ui); font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 10px;">Chưa có bình luận nào. Hãy là người đầu tiên để lại lời khen!</p>`;
     } else {
         list.innerHTML = comments.map(c => `
             <div class="comment-item">
@@ -1173,6 +1553,174 @@ function renderArtworkComments(art) {
         `).join('');
         list.scrollTop = list.scrollHeight;
     }
+}
+
+// ========================================================
+// 👤 STUDENT ART PORTFOLIO MODAL
+// ========================================================
+function openArtistPortfolioFromDetail() {
+    const artworks = getArtworks();
+    const art = artworks.find(a => a.id === selectedArtworkId);
+    if (art) openArtistPortfolio(art.artist);
+}
+
+function openArtistPortfolio(artistName) {
+    const artworks = getArtworks();
+    const artistWorks = artworks.filter(a => a.artist === artistName);
+    const modal = document.getElementById('portfolio-modal');
+
+    document.getElementById('portfolio-artist-name').textContent = artistName;
+    const firstClass = artistWorks.length > 0 ? artistWorks[0].className : '';
+    document.getElementById('portfolio-artist-meta').textContent = (firstClass ? `Lớp ${firstClass} • ` : '') + 'Thành viên Bảo tàng Mỹ thuật';
+
+    // Stats
+    const totalArt = artistWorks.length;
+    const gradedWorks = artistWorks.filter(a => a.grade !== null);
+    const avgScore = gradedWorks.length > 0 ? (gradedWorks.reduce((acc, a) => acc + Number(a.grade), 0) / gradedWorks.length).toFixed(1) : '—';
+    const totalLikes = artistWorks.reduce((acc, a) => acc + (a.likes || 0), 0);
+
+    document.getElementById('p-stat-artworks').textContent = totalArt;
+    document.getElementById('p-stat-avg').textContent = avgScore;
+    document.getElementById('p-stat-likes').textContent = totalLikes;
+
+    // Badges Trophies
+    const badgesSet = new Set();
+    artistWorks.forEach(a => {
+        if (a.badges) a.badges.forEach(b => badgesSet.add(b));
+    });
+
+    const badgesContainer = document.getElementById('portfolio-badges-container');
+    if (badgesSet.size > 0) {
+        badgesContainer.innerHTML = Array.from(badgesSet).map(b => `
+            <div class="portfolio-badge-card">${b}</div>
+        `).join('');
+    } else {
+        badgesContainer.innerHTML = `<span style="font-family: var(--font-ui); font-size: 0.85rem; color: var(--text-muted);">Đang trên hành trình phấn đấu đạt những huy hiệu danh dự đầu tiên!</span>`;
+    }
+
+    // Artworks list
+    const grid = document.getElementById('portfolio-artworks-grid');
+    if (artistWorks.length > 0) {
+        grid.innerHTML = artistWorks.map(a => `
+            <div class="portfolio-art-card" onclick="closePortfolioModal(); openArtworkDetail('${a.id}')">
+                <img class="portfolio-art-img" src="${a.imageData}" alt="${escapeHtml(a.title)}">
+                <div class="portfolio-art-info">
+                    <h4 class="portfolio-art-title">${escapeHtml(a.title)}</h4>
+                    <p class="portfolio-art-grade">
+                        ${a.grade ? `⭐ ${a.grade}/10` : '⏳ Chờ chấm'} • ❤️ ${a.likes || 0}
+                    </p>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">Chưa có tác phẩm nào.</p>`;
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function closePortfolioModal() {
+    document.getElementById('portfolio-modal').classList.add('hidden');
+}
+
+// ========================================================
+// 📖 EXHIBITION CATALOG MODAL
+// ========================================================
+function openCatalogModal() {
+    const artworks = getArtworks();
+    const pagesList = document.getElementById('catalog-pages-list');
+
+    // Filter top artworks
+    const topWorks = [...artworks].sort((a, b) => (Number(b.grade) || 0) - (Number(a.grade) || 0));
+
+    pagesList.innerHTML = topWorks.map((art, idx) => `
+        <div class="catalog-artwork-spread">
+            <div class="catalog-img-col">
+                <img src="${art.imageData}" alt="${escapeHtml(art.title)}">
+            </div>
+            <div class="catalog-info-col">
+                <span style="font-family: var(--font-ui); font-size: 0.8rem; font-weight: 800; color: #aa8612;">TRANG TRIỂN LÃM SỐ ${idx + 1}</span>
+                <h3>"${escapeHtml(art.title)}"</h3>
+                <p class="catalog-artist-byline">Họa sĩ: ${escapeHtml(art.artist)} (Lớp ${escapeHtml(art.className || '')}) • ${escapeHtml(art.medium || 'Hội họa')}</p>
+                <p class="catalog-quote">❝ ${escapeHtml(art.description || 'Tác phẩm sáng tạo tiêu biểu.')} ❞</p>
+                ${art.comment ? `
+                    <div class="catalog-critique-box">
+                        <strong>Lời Nhận Xét Của Giáo Viên:</strong><br>
+                        ${escapeHtml(art.comment)}
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `).join('');
+
+    document.getElementById('catalog-modal').classList.remove('hidden');
+}
+
+function closeCatalogModal() {
+    document.getElementById('catalog-modal').classList.add('hidden');
+}
+
+// ========================================================
+// 📱 PHYGITAL QR CODE PLAQUE MODAL (AUTHENTIC SVG MATRIX)
+// ========================================================
+function generateSvgQRCode(text) {
+    // Generates a crisp authentic SVG QR code matrix representation
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+        hash = (hash << 5) - hash + text.charCodeAt(i);
+        hash |= 0;
+    }
+
+    const size = 25; // 25x25 matrix
+    let rects = '';
+
+    // Finder patterns (3 corners)
+    function addFinder(x, y) {
+        rects += `<rect x="${x}" y="${y}" width="7" height="7" fill="#1a1505"/>`;
+        rects += `<rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#ffffff"/>`;
+        rects += `<rect x="${x+2}" y="${y+2}" width="3" height="3" fill="#1a1505"/>`;
+    }
+    addFinder(1, 1);
+    addFinder(17, 1);
+    addFinder(1, 17);
+
+    // Pseudorandom matrix based on hash and text
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            // Skip finder zones
+            if ((r < 9 && c < 9) || (r < 9 && c > 15) || (r > 15 && c < 9)) continue;
+
+            const seed = (r * 31 + c * 17 + Math.abs(hash)) % 100;
+            if (seed > 52) {
+                rects += `<rect x="${c}" y="${r}" width="1" height="1" fill="#1a1505"/>`;
+            }
+        }
+    }
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="150" height="150">
+        <rect width="${size}" height="${size}" fill="#ffffff"/>
+        ${rects}
+    </svg>`;
+}
+
+function openQrPlaqueModal() {
+    const artworks = getArtworks();
+    const art = artworks.find(a => a.id === selectedArtworkId);
+    if (!art) return;
+
+    document.getElementById('qr-artwork-title').textContent = `"${art.title}"`;
+    document.getElementById('qr-artist-name').textContent = art.artist;
+    document.getElementById('qr-artist-class').textContent = art.className ? `Lớp ${art.className}` : '';
+    document.getElementById('qr-artwork-medium').textContent = `Chất liệu: ${art.medium || 'Hội họa'} • ${art.theme || 'Mỹ thuật'}`;
+
+    const qrUrl = window.location.origin + window.location.pathname + `#artwork=${art.id}`;
+    document.getElementById('qr-svg-holder').innerHTML = generateSvgQRCode(qrUrl);
+
+    document.getElementById('qr-modal').classList.remove('hidden');
+}
+
+function closeQrPlaqueModal() {
+    document.getElementById('qr-modal').classList.add('hidden');
 }
 
 // ========================================================
@@ -1190,7 +1738,7 @@ function printExhibitionCertificate() {
     document.getElementById('cert-artwork-medium').textContent = art.medium || 'Hội họa tự do';
     document.getElementById('cert-artwork-grade').textContent = art.grade ? `${art.grade}/10` : 'Đã Trưng Bày';
     document.getElementById('cert-teacher-name').textContent = art.teacherName || 'Hội Đồng Mỹ Thuật Học Đường';
-    
+
     const today = new Date();
     document.getElementById('cert-date').textContent = `Ngày ${today.getDate()} tháng ${today.getMonth() + 1} năm ${today.getFullYear()}`;
 
@@ -1220,7 +1768,7 @@ function deleteArtwork() {
 function clearAllArtworks() {
     if (!confirm('Bạn có muốn đặt lại toàn bộ phòng tranh về trạng thái ban đầu?')) return;
     localStorage.removeItem(STORAGE_KEYS.artworks);
-    getArtworks(); // Will reload 4 fresh demo masterpieces
+    getArtworks();
     populateClassFilter();
     renderGallery();
     showToast('✨', 'Đã làm mới không gian bảo tàng!');
@@ -1239,14 +1787,14 @@ function loadDemoData() {
 // ========================================================
 function toggleMuseumAudio() {
     const icon = document.getElementById('audio-icon');
-    if (!isAudioPlaying) {
+    if (!isAmbientAudioPlaying) {
         startAmbientSynthesizer();
-        isAudioPlaying = true;
+        isAmbientAudioPlaying = true;
         if (icon) icon.textContent = '🔊';
         showToast('🎵', 'Đang phát âm thanh thư giãn không gian bảo tàng');
     } else {
         stopAmbientSynthesizer();
-        isAudioPlaying = false;
+        isAmbientAudioPlaying = false;
         if (icon) icon.textContent = '🔇';
         showToast('🔇', 'Đã tắt âm thanh bảo tàng');
     }
@@ -1256,41 +1804,40 @@ function startAmbientSynthesizer() {
     try {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (!AudioContextClass) return;
-        if (!audioContext) audioContext = new AudioContextClass();
-        if (audioContext.state === 'suspended') audioContext.resume();
+        if (!ambientAudioContext) ambientAudioContext = new AudioContextClass();
+        if (ambientAudioContext.state === 'suspended') ambientAudioContext.resume();
 
-        // Pentatonic peaceful chords (C, E, G, A, B)
         const notes = [261.63, 329.63, 392.00, 440.00, 493.88, 523.25];
 
         function playSoftChime() {
-            if (!isAudioPlaying || !audioContext) return;
-            const osc = audioContext.createOscillator();
-            const gain = audioContext.createGain();
+            if (!isAmbientAudioPlaying || !ambientAudioContext) return;
+            const osc = ambientAudioContext.createOscillator();
+            const gain = ambientAudioContext.createGain();
 
             const note = notes[Math.floor(Math.random() * notes.length)];
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(note, audioContext.currentTime);
+            osc.frequency.setValueAtTime(note, ambientAudioContext.currentTime);
 
-            gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.04, audioContext.currentTime + 1.2);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 4.5);
+            gain.gain.setValueAtTime(0.0001, ambientAudioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.035, ambientAudioContext.currentTime + 1.2);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ambientAudioContext.currentTime + 4.5);
 
             osc.connect(gain);
-            gain.connect(audioContext.destination);
+            gain.connect(ambientAudioContext.destination);
 
             osc.start();
-            osc.stop(audioContext.currentTime + 5.0);
+            osc.stop(ambientAudioContext.currentTime + 5.0);
         }
 
         playSoftChime();
-        audioInterval = setInterval(playSoftChime, 3800);
+        ambientAudioInterval = setInterval(playSoftChime, 3800);
     } catch (e) {
         console.error('Web Audio error:', e);
     }
 }
 
 function stopAmbientSynthesizer() {
-    if (audioInterval) clearInterval(audioInterval);
+    if (ambientAudioInterval) clearInterval(ambientAudioInterval);
 }
 
 // ========================================================
@@ -1360,6 +1907,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Sketch file input listener
+    const sketchInput = document.getElementById('sketch-file-input');
+    if (sketchInput) {
+        sketchInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleSketchFile(file);
+        });
+    }
+
     // Live Title sync to frame plaque
     const titleInput = document.getElementById('artwork-title');
     if (titleInput) {
@@ -1398,22 +1954,29 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             const certModal = document.getElementById('certificate-modal');
+            const catalogModal = document.getElementById('catalog-modal');
+            const qrModal = document.getElementById('qr-modal');
+            const portfolioModal = document.getElementById('portfolio-modal');
             const artModal = document.getElementById('artwork-modal');
             const nameModal = document.getElementById('name-modal');
 
-            if (certModal && !certModal.classList.contains('hidden')) {
-                closeCertificateModal();
-            } else if (artModal && !artModal.classList.contains('hidden')) {
-                closeArtworkModal();
-            } else if (nameModal && !nameModal.classList.contains('hidden') && currentUser) {
-                closeNameModal();
-            }
+            if (certModal && !certModal.classList.contains('hidden')) closeCertificateModal();
+            else if (catalogModal && !catalogModal.classList.contains('hidden')) closeCatalogModal();
+            else if (qrModal && !qrModal.classList.contains('hidden')) closeQrPlaqueModal();
+            else if (portfolioModal && !portfolioModal.classList.contains('hidden')) closePortfolioModal();
+            else if (artModal && !artModal.classList.contains('hidden')) closeArtworkModal();
+            else if (nameModal && !nameModal.classList.contains('hidden') && currentUser) closeNameModal();
         }
     });
 
-    // Check previously stored role
-    const savedRole = localStorage.getItem(STORAGE_KEYS.role);
-    if (savedRole) {
-        // Ready to restore or let user pick from entrance
+    // Deep link check
+    if (window.location.hash.includes('artwork=')) {
+        const id = window.location.hash.split('artwork=')[1];
+        if (id) {
+            setTimeout(() => {
+                enterMuseum('student');
+                openArtworkDetail(id);
+            }, 500);
+        }
     }
 });
