@@ -4129,6 +4129,17 @@ let firebaseAppInstance = null;
 let firebaseDb = null;
 let isFirebaseConnected = false;
 
+const DEFAULT_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyD4Oq748YI-0Z6CnRHwr0fGpRrOYjdgC7o",
+  authDomain: "baotangmythuatso.firebaseapp.com",
+  databaseURL: "https://baotangmythuatso-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "baotangmythuatso",
+  storageBucket: "baotangmythuatso.firebasestorage.app",
+  messagingSenderId: "430388692821",
+  appId: "1:430388692821:web:3e9aa7fbf932751c2d51dc",
+  measurementId: "G-CVFT284HZC"
+};
+
 function initFirebaseRealtimeSync() {
     let configStr = localStorage.getItem('art_museum_firebase_config');
     let config = null;
@@ -4142,8 +4153,7 @@ function initFirebaseRealtimeSync() {
     }
 
     if (!config || !config.apiKey || !config.databaseURL) {
-        updateCloudStatusUI(false);
-        return;
+        config = DEFAULT_FIREBASE_CONFIG;
     }
 
     if (typeof firebase === 'undefined') {
