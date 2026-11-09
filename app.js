@@ -372,12 +372,21 @@ function getArtworks() {
     return presets;
 }
 
-function saveArtworks(artworks) {
+function saveArtworks(artworks, skipCloudSync = false) {
     try {
         localStorage.setItem(STORAGE_KEYS.artworks, JSON.stringify(artworks));
     } catch (e) {
         console.error('QuotaExceeded:', e);
-        showToast('⚠️', 'Bộ nhớ trình duyệt đầy! Đã lưu ảnh ở chất lượng tối ưu.');
+    }
+
+    if (!skipCloudSync && typeof firebaseDb !== 'undefined' && firebaseDb) {
+        const artObj = {};
+        artworks.forEach(a => {
+            if (a && a.id) artObj[a.id] = a;
+        });
+        firebaseDb.ref('artworks').set(artObj).catch(err => {
+            console.warn('Firebase saveArtworks sync error:', err);
+        });
     }
 }
 
@@ -433,11 +442,21 @@ function getUsers() {
     return presets;
 }
 
-function saveUsers(users) {
+function saveUsers(users, skipCloudSync = false) {
     try {
         localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users));
     } catch (e) {
         console.error('Error saving users:', e);
+    }
+
+    if (!skipCloudSync && typeof firebaseDb !== 'undefined' && firebaseDb) {
+        const userObj = {};
+        users.forEach(u => {
+            if (u && u.username) userObj[u.username] = u;
+        });
+        firebaseDb.ref('users').set(userObj).catch(err => {
+            console.warn('Firebase saveUsers sync error:', err);
+        });
     }
 }
 
@@ -1919,6 +1938,11 @@ function submitArtwork() {
     artworks.unshift(newArtwork);
     saveArtworks(artworks);
 
+    // Direct Real-time Cloud Push
+    if (typeof firebaseDb !== 'undefined' && firebaseDb) {
+        firebaseDb.ref('artworks/' + newArtwork.id).set(newArtwork).catch(e => console.error('Cloud sync error:', e));
+    }
+
     showToast('🎉', `Chúc mừng! Tác phẩm "${title}" đã được treo lên tường Bảo Tàng!`);
     resetUploadForm();
 
@@ -2417,6 +2441,17 @@ function submitGrade() {
         artworks[idx].rubric = rubric;
         saveArtworks(artworks);
 
+        if (typeof firebaseDb !== 'undefined' && firebaseDb) {
+            firebaseDb.ref('artworks/' + selectedArtworkId).update({
+                grade: grade,
+                teacherName: teacherName,
+                comment: comment,
+                suggestion: suggestion,
+                badges: badges,
+                rubric: rubric
+            }).catch(e => console.error('Cloud grade sync error:', e));
+        }
+
         showToast('✅', `Đã lưu đánh giá: ${grade} điểm và lời nhận xét chuyên môn!`);
         openArtworkDetail(selectedArtworkId);
         renderGallery();
@@ -2435,6 +2470,9 @@ function handleLikeArtwork() {
     const art = artworks[idx];
     art.likes = (art.likes || 0) + 1;
     saveArtworks(artworks);
+    if (typeof firebaseDb !== 'undefined' && firebaseDb) {
+        firebaseDb.ref('artworks/' + art.id + '/likes').set(art.likes).catch(e => console.error('Like sync error:', e));
+    }
 
     updateDetailLikeState(art);
     showToast('❤️', 'Cảm ơn bạn đã yêu thích và cổ vũ tác phẩm!');
@@ -4182,7 +4220,7 @@ function initFirebaseRealtimeSync() {
                 const cloudArtworks = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
                 if (cloudArtworks.length > 0) {
                     console.log('📥 Received realtime artworks update:', cloudArtworks.length);
-                    localStorage.setItem(STORAGE_ARTWORKS_KEY, JSON.stringify(cloudArtworks));
+                    saveArtworks(cloudArtworks, true);
                     
                     // Live UI update
                     renderGallery();
@@ -4194,6 +4232,14 @@ function initFirebaseRealtimeSync() {
                     const admArtEl = document.getElementById('admin-tab-artworks');
                     if (admArtEl && !admArtEl.classList.contains('hidden')) {
                         renderAdminArtworks();
+                    }
+
+                    // Real-time update for currently opened modal (student sees teacher grade & comment immediately!)
+                    if (selectedArtworkId) {
+                        const artModal = document.getElementById('artwork-modal');
+                        if (artModal && !artModal.classList.contains('hidden')) {
+                            openArtworkDetail(selectedArtworkId);
+                        }
                     }
                 }
             }
@@ -4208,7 +4254,7 @@ function initFirebaseRealtimeSync() {
             if (data) {
                 const cloudUsers = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
                 if (cloudUsers.length > 0) {
-                    localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(cloudUsers));
+                    localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(cloudUsers));
                     const admUsersEl = document.getElementById('admin-tab-users');
                     if (admUsersEl && !admUsersEl.classList.contains('hidden')) {
                         renderAdminUsers();
@@ -4223,7 +4269,7 @@ function initFirebaseRealtimeSync() {
             if (data) {
                 const cloudThemes = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
                 if (cloudThemes.length > 0) {
-                    localStorage.setItem(STORAGE_THEMES_KEY, JSON.stringify(cloudThemes));
+                    localStorage.setItem(STORAGE_KEYS.themes, JSON.stringify(cloudThemes));
                     renderThemeTabs();
                     const admThemesEl = document.getElementById('admin-tab-themes');
                     if (admThemesEl && !admThemesEl.classList.contains('hidden')) {
