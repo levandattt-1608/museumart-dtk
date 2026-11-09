@@ -2959,6 +2959,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (portfolioModal && !portfolioModal.classList.contains('hidden')) closePortfolioModal();
             else if (artModal && !artModal.classList.contains('hidden')) closeArtworkModal();
             else if (mpModal && !mpModal.classList.contains('hidden')) closeMasterpieceModal();
+            else if (document.getElementById('masterpiece-edit-modal') && !document.getElementById('masterpiece-edit-modal').classList.contains('hidden')) closeMasterpieceEditModal();
         }
     });
 
@@ -3032,7 +3033,7 @@ function initSchoolLogoFallbacks() {
 
 // ==========================================================================
 // 🏛️ GÓC THAM KHẢO KIỆT TÁC NGHỆ THUẬT (MASTERPIECES REFERENCE MODULE)
-// Trường PTDTBT TH&THCS Đinh Thanh Kháng - Sở GD&ĐT tỉnh Quảng Ngãi
+// Trường PTDTBT TH&THCS Đinh Thanh Kháng - UBND Xã Sơn Tây Thượng
 // ==========================================================================
 
 let currentMasterpieceFilter = 'all';
@@ -3682,7 +3683,7 @@ function svgGreatWave() {
 }
 
 // 2. Masterpieces Database (8 tác phẩm tiêu biểu chuẩn chương trình Mỹ thuật)
-const MASTERPIECES_DATA = [
+const DEFAULT_MASTERPIECES_DATA = [
     {
         id: 'thieu-nu-ben-hoa-hue',
         title: 'Thiếu Nữ Bên Hoa Huệ',
@@ -3898,7 +3899,14 @@ function renderMasterpiecesSection() {
     const grid = document.getElementById('masterpieces-grid');
     if (!grid) return;
 
-    let filtered = MASTERPIECES_DATA;
+    // Show/hide teacher management bar
+    const teacherBar = document.getElementById('masterpiece-teacher-actions');
+    if (teacherBar) {
+        teacherBar.style.display = canManageMasterpieces() ? 'flex' : 'none';
+    }
+
+    const allItems = getMasterpieces();
+    let filtered = allItems;
 
     // Filter by category
     if (currentMasterpieceFilter === 'vietnam') {
@@ -3939,14 +3947,22 @@ function renderMasterpiecesSection() {
         const badgeClass = item.origin === 'vietnam' ? 'mp-badge-vn' : 'mp-badge-world';
         const badgeText = item.origin === 'vietnam' ? '🇻🇳 Việt Nam' : '🌍 Thế Giới';
 
+        const adminCardActions = canManageMasterpieces() ? `
+            <div class="mp-card-admin-actions" onclick="event.stopPropagation()">
+                <button type="button" class="btn-mp-card-action edit" onclick="openMasterpieceEditModal('${item.id}')" title="Chỉnh sửa kiệt tác này">✏️ Sửa</button>
+                <button type="button" class="btn-mp-card-action del" onclick="deleteMasterpiece('${item.id}')" title="Xóa kiệt tác này">🗑️ Xóa</button>
+            </div>
+        ` : '';
+
         return `
             <div class="masterpiece-card" onclick="openMasterpieceDetail('${item.id}')" title="Bấm để xem phân tích chuyên sâu kiệt tác ${escapeHtml(item.title)}">
+                ${adminCardActions}
                 <span class="mp-badge-tag ${badgeClass}">${badgeText}</span>
                 
                 <div class="mp-card-frame-container">
                     <div class="mp-card-frame">
                         <div class="mp-card-mat">
-                            <img src="${item.getImage()}" alt="${escapeHtml(item.title)}" class="mp-card-img" loading="lazy">
+                            <img src="${getMasterpieceImage(item)}" alt="${escapeHtml(item.title)}" class="mp-card-img" loading="lazy">
                         </div>
                     </div>
                 </div>
@@ -3992,10 +4008,17 @@ function handleMasterpieceSearch(val) {
 
 // 5. Open Masterpiece Detail Modal
 function openMasterpieceDetail(id) {
-    const item = MASTERPIECES_DATA.find(m => m.id === id);
+    const list = getMasterpieces();
+    const item = list.find(m => m.id === id);
     if (!item) return;
 
     selectedMasterpieceId = id;
+
+    // Show/hide admin action buttons inside detail modal
+    const admActions = document.getElementById('mp-admin-actions');
+    if (admActions) {
+        admActions.style.display = canManageMasterpieces() ? 'flex' : 'none';
+    }
 
     // Reset audio state
     if (window.speechSynthesis) {
@@ -4021,7 +4044,7 @@ function openMasterpieceDetail(id) {
     const techEl = document.getElementById('mp-pedagogy-tech');
     const challengeEl = document.getElementById('mp-pedagogy-challenge');
 
-    if (imgEl) imgEl.src = item.getImage();
+    if (imgEl) imgEl.src = getMasterpieceImage(item);
     if (locEl) locEl.textContent = item.location;
     if (harmonyEl) harmonyEl.textContent = item.paletteHarmony;
 
@@ -4082,7 +4105,7 @@ function toggleMasterpieceAudioGuide() {
         return;
     }
 
-    const item = MASTERPIECES_DATA.find(m => m.id === selectedMasterpieceId);
+    const item = getMasterpieces().find(m => m.id === selectedMasterpieceId);
     if (!item) return;
 
     window.speechSynthesis.cancel();
@@ -4130,7 +4153,7 @@ function updateMasterpieceAudioButtonState() {
 
 // 8. Apply Masterpiece Practice to Upload Form
 function applyMasterpiecePractice() {
-    const item = MASTERPIECES_DATA.find(m => m.id === selectedMasterpieceId);
+    const item = getMasterpieces().find(m => m.id === selectedMasterpieceId);
     closeMasterpieceModal();
 
     if (!currentUser) {
@@ -4258,6 +4281,28 @@ function initFirebaseRealtimeSync() {
                     const admUsersEl = document.getElementById('admin-tab-users');
                     if (admUsersEl && !admUsersEl.classList.contains('hidden')) {
                         renderAdminUsers();
+                    }
+                }
+            }
+        });
+
+        // 4. Listen for Realtime Masterpieces from Cloud
+        firebaseDb.ref('masterpieces').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const cloudList = Array.isArray(data) ? data.filter(Boolean) : Object.values(data);
+                if (cloudList.length > 0) {
+                    console.log('📥 Received realtime masterpieces update:', cloudList.length);
+                    saveMasterpieces(cloudList, true);
+                    const sec = document.getElementById('section-masterpieces');
+                    if (sec && !sec.classList.contains('hidden')) {
+                        renderMasterpiecesSection();
+                    }
+                    if (selectedMasterpieceId) {
+                        const mpModal = document.getElementById('masterpiece-modal');
+                        if (mpModal && !mpModal.classList.contains('hidden')) {
+                            openMasterpieceDetail(selectedMasterpieceId);
+                        }
                     }
                 }
             }
@@ -4442,3 +4487,314 @@ function cloudSyncDeleteArtwork(artId) {
 setTimeout(() => {
     initFirebaseRealtimeSync();
 }, 600);
+
+
+// ==========================================================================
+// MASTERPIECES CRUD & SYNC FOR TEACHERS & ADMINS
+// Trường PTDTBT TH&THCS Đinh Thanh Kháng
+// ==========================================================================
+let editingMasterpieceImageData = null;
+
+function canManageMasterpieces() {
+    return currentRole === 'teacher' || currentRole === 'admin';
+}
+
+function getMasterpieces() {
+    const raw = localStorage.getItem('museum_masterpieces_v2');
+    if (raw) {
+        try {
+            const list = JSON.parse(raw);
+            if (Array.isArray(list) && list.length > 0) return list;
+        } catch (e) {
+            console.error('Error parsing masterpieces:', e);
+        }
+    }
+    // Seed with defaults
+    saveMasterpieces(DEFAULT_MASTERPIECES_DATA, true);
+    return DEFAULT_MASTERPIECES_DATA;
+}
+
+function saveMasterpieces(list, skipCloudSync = false) {
+    try {
+        localStorage.setItem('museum_masterpieces_v2', JSON.stringify(list));
+    } catch (e) {
+        console.error('QuotaExceeded in saveMasterpieces:', e);
+    }
+
+    if (!skipCloudSync && typeof firebaseDb !== 'undefined' && firebaseDb) {
+        const obj = {};
+        list.forEach(m => {
+            if (m && m.id) obj[m.id] = m;
+        });
+        firebaseDb.ref('masterpieces').set(obj).catch(err => {
+            console.error('Firebase saveMasterpieces error:', err);
+        });
+    }
+}
+
+function getMasterpieceImage(item) {
+    if (!item) return '';
+    if (item.imageData) return item.imageData;
+    if (typeof item.getImage === 'function') return item.getImage();
+    if (typeof item.getImage === 'string' && item.getImage.startsWith('data:')) return item.getImage;
+
+    // Fallbacks for default preset masterpieces
+    switch (item.id) {
+        case 'thieu-nu-ben-hoa-hue': return svgThieuNuBenHoaHue();
+        case 'em-thuy': return svgEmThuy();
+        case 'ket-nap-dang-dien-bien-phu': return svgKetNapDangDienBienPhu();
+        case 'pho-co-ha-noi': return svgPhoPhai();
+        case 'dem-day-sao': return svgStarryNight();
+        case 'nang-mona-lisa': return svgMonaLisa();
+        case 'co-gai-deo-hoa-tai-ngoc-trai': return svgGirlWithPearl();
+        case 'song-lung-ngoai-khoi-kanagawa': return svgGreatWave();
+        default: return 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="#1b2333"/><text x="300" y="200" fill="#d4af37" font-size="20" text-anchor="middle">Kiệt Tác Nghệ Thuật</text></svg>');
+    }
+}
+
+// Open Edit Modal for creating or editing masterpiece
+function openMasterpieceEditModal(id) {
+    if (!canManageMasterpieces()) {
+        showToast('⚠️', 'Chỉ Giáo Viên Mỹ Thuật và Quản Trị Viên mới có quyền thêm/chỉnh sửa tác phẩm tham khảo!');
+        return;
+    }
+
+    const modal = document.getElementById('masterpiece-edit-modal');
+    if (!modal) return;
+
+    editingMasterpieceImageData = null;
+    const previewImg = document.getElementById('mp-edit-preview-img');
+    const placeholder = document.getElementById('mp-edit-preview-placeholder');
+
+    if (id) {
+        // Editing existing masterpiece
+        const list = getMasterpieces();
+        const item = list.find(m => m.id === id);
+        if (!item) return;
+
+        document.getElementById('mp-edit-modal-title').textContent = 'Chỉnh Sửa Kiệt Tác: ' + item.title;
+        document.getElementById('mp-edit-id').value = item.id;
+        document.getElementById('mp-edit-title').value = item.title || '';
+        document.getElementById('mp-edit-artist').value = item.artist || '';
+        document.getElementById('mp-edit-origin').value = item.origin || 'vietnam';
+        document.getElementById('mp-edit-period').value = item.period || '';
+        document.getElementById('mp-edit-year').value = item.year || '';
+        document.getElementById('mp-edit-material').value = item.material || '';
+        document.getElementById('mp-edit-location').value = item.location || '';
+        document.getElementById('mp-edit-harmony').value = item.paletteHarmony || 'Hài Hòa Tự Nhiên';
+        document.getElementById('mp-edit-desc').value = item.shortDesc || '';
+        document.getElementById('mp-edit-comp').value = item.composition || '';
+        document.getElementById('mp-edit-color').value = item.color || '';
+        document.getElementById('mp-edit-tech').value = item.technique || '';
+        document.getElementById('mp-edit-challenge').value = item.challenge || '';
+        document.getElementById('mp-edit-audio').value = item.audioScript || '';
+
+        // Colors
+        if (Array.isArray(item.palette) && item.palette.length >= 5) {
+            for (let i = 1; i <= 5; i++) {
+                const hex = item.palette[i - 1].hex || '#d4af37';
+                document.getElementById('mp-col-' + i).value = hex;
+                document.getElementById('mp-hex-' + i).value = hex;
+            }
+        }
+
+        // Image
+        editingMasterpieceImageData = getMasterpieceImage(item);
+        if (previewImg && placeholder) {
+            previewImg.src = editingMasterpieceImageData;
+            previewImg.style.display = 'block';
+            placeholder.style.display = 'none';
+        }
+
+    } else {
+        // Creating new masterpiece
+        document.getElementById('mp-edit-modal-title').textContent = 'Thêm Kiệt Tác Tham Khảo Mới';
+        document.getElementById('masterpiece-edit-form').reset();
+        document.getElementById('mp-edit-id').value = '';
+        document.getElementById('mp-edit-origin').value = 'vietnam';
+        document.getElementById('mp-edit-harmony').value = 'Hài Hòa Nhã Nhặn';
+        
+        // Default colors
+        const defaultHexes = ['#d4af37', '#1c4570', '#c41e12', '#f5f0e1', '#2b1f16'];
+        for (let i = 1; i <= 5; i++) {
+            document.getElementById('mp-col-' + i).value = defaultHexes[i - 1];
+            document.getElementById('mp-hex-' + i).value = defaultHexes[i - 1];
+        }
+
+        if (previewImg && placeholder) {
+            previewImg.src = '';
+            previewImg.style.display = 'none';
+            placeholder.style.display = 'block';
+        }
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function closeMasterpieceEditModal() {
+    const modal = document.getElementById('masterpiece-edit-modal');
+    if (modal) modal.classList.add('hidden');
+    editingMasterpieceImageData = null;
+}
+
+// File upload handler for masterpiece
+function handleMasterpieceFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    compressAndLoadImage(file, (dataUrl) => {
+        editingMasterpieceImageData = dataUrl;
+        const previewImg = document.getElementById('mp-edit-preview-img');
+        const placeholder = document.getElementById('mp-edit-preview-placeholder');
+        if (previewImg && placeholder) {
+            previewImg.src = dataUrl;
+            previewImg.style.display = 'block';
+            placeholder.style.display = 'none';
+        }
+        showToast('🎨', 'Đã tải và nén ảnh kiệt tác thành công!');
+    });
+}
+
+// Handle Form Submission for Add / Edit
+function handleSaveMasterpiece(e) {
+    e.preventDefault();
+    if (!canManageMasterpieces()) {
+        showToast('⚠️', 'Bạn không có quyền thực hiện thao tác này!');
+        return;
+    }
+
+    const editId = document.getElementById('mp-edit-id').value;
+    const title = document.getElementById('mp-edit-title').value.trim();
+    const artist = document.getElementById('mp-edit-artist').value.trim();
+    const origin = document.getElementById('mp-edit-origin').value;
+    const period = document.getElementById('mp-edit-period').value.trim() || 'Hội Họa';
+    const year = document.getElementById('mp-edit-year').value.trim() || 'Cận đại';
+    const material = document.getElementById('mp-edit-material').value.trim() || 'Sơn dầu';
+    const location = document.getElementById('mp-edit-location').value.trim() || 'Bảo tàng Mỹ thuật';
+    const harmony = document.getElementById('mp-edit-harmony').value.trim() || 'Hài Hòa';
+    const desc = document.getElementById('mp-edit-desc').value.trim() || 'Tác phẩm tham khảo cho học sinh.';
+    const comp = document.getElementById('mp-edit-comp').value.trim() || 'Bố cục cân đối, hài hòa theo nhịp điệu mỹ thuật.';
+    const color = document.getElementById('mp-edit-color').value.trim() || 'Hòa sắc tinh tế, ánh sáng làm nổi bật chủ thể.';
+    const tech = document.getElementById('mp-edit-tech').value.trim() || 'Bút pháp trau chuốt, giàu chất cảm.';
+    const challenge = document.getElementById('mp-edit-challenge').value.trim() || 'Em hãy vẽ một bức tranh theo cảm hứng từ tác phẩm này.';
+    const audio = document.getElementById('mp-edit-audio').value.trim() || ('Chào các em học sinh, đây là tác phẩm ' + title + ' của danh họa ' + artist + '. ' + desc);
+
+    if (!title || !artist) {
+        showToast('⚠️', 'Vui lòng nhập Tên tác phẩm và Danh họa!');
+        return;
+    }
+
+    if (!editingMasterpieceImageData) {
+        showToast('⚠️', 'Vui lòng tải lên hình ảnh cho tác phẩm tham khảo!');
+        return;
+    }
+
+    // Collect 5 colors
+    const palette = [];
+    for (let i = 1; i <= 5; i++) {
+        const hex = document.getElementById('mp-col-' + i).value || '#d4af37';
+        palette.push({ name: 'Màu ' + i, hex: hex });
+    }
+
+    const list = getMasterpieces();
+
+    if (editId) {
+        // Edit existing
+        const idx = list.findIndex(m => m.id === editId);
+        if (idx !== -1) {
+            list[idx].title = title;
+            list[idx].artist = artist;
+            list[idx].origin = origin;
+            list[idx].period = period;
+            list[idx].year = year;
+            list[idx].material = material;
+            list[idx].location = location;
+            list[idx].paletteHarmony = harmony;
+            list[idx].palette = palette;
+            list[idx].shortDesc = desc;
+            list[idx].composition = comp;
+            list[idx].color = color;
+            list[idx].technique = tech;
+            list[idx].challenge = challenge;
+            list[idx].audioScript = audio;
+            list[idx].imageData = editingMasterpieceImageData;
+
+            saveMasterpieces(list);
+
+            // Granular direct update to Firebase
+            if (typeof firebaseDb !== 'undefined' && firebaseDb) {
+                firebaseDb.ref('masterpieces/' + editId).set(list[idx]).catch(e => console.error('Cloud MP update error:', e));
+            }
+
+            showToast('🎉', 'Đã cập nhật kiệt tác "' + title + '" thành công!');
+            if (selectedMasterpieceId === editId) {
+                openMasterpieceDetail(editId);
+            }
+        }
+    } else {
+        // Create new
+        const newId = 'mp_' + Date.now();
+        const newMp = {
+            id: newId,
+            title: title,
+            artist: artist,
+            origin: origin,
+            period: period,
+            year: year,
+            material: material,
+            location: location,
+            tags: [origin],
+            paletteHarmony: harmony,
+            palette: palette,
+            shortDesc: desc,
+            composition: comp,
+            color: color,
+            technique: tech,
+            challenge: challenge,
+            audioScript: audio,
+            imageData: editingMasterpieceImageData,
+            createdAt: Date.now()
+        };
+
+        list.unshift(newMp);
+        saveMasterpieces(list);
+
+        // Granular direct update to Firebase
+        if (typeof firebaseDb !== 'undefined' && firebaseDb) {
+            firebaseDb.ref('masterpieces/' + newId).set(newMp).catch(e => console.error('Cloud MP push error:', e));
+        }
+
+        showToast('🎉', 'Đã thêm kiệt tác mới "' + title + '" vào Góc Tham Khảo!');
+    }
+
+    closeMasterpieceEditModal();
+    renderMasterpiecesSection();
+}
+
+// Delete Masterpiece
+function deleteMasterpiece(id) {
+    if (!canManageMasterpieces()) {
+        showToast('⚠️', 'Chỉ Giáo Viên và Quản Trị Viên mới có quyền xóa tác phẩm tham khảo!');
+        return;
+    }
+
+    const list = getMasterpieces();
+    const item = list.find(m => m.id === id);
+    if (!item) return;
+
+    if (!confirm('Bạn có chắc chắn muốn xóa tác phẩm tham khảo "' + item.title + '" khỏi Góc Tham Khảo?')) {
+        return;
+    }
+
+    const updated = list.filter(m => m.id !== id);
+    saveMasterpieces(updated);
+
+    // Remove from Firebase directly
+    if (typeof firebaseDb !== 'undefined' && firebaseDb) {
+        firebaseDb.ref('masterpieces/' + id).remove().catch(e => console.error('Firebase delete MP error:', e));
+    }
+
+    closeMasterpieceModal();
+    renderMasterpiecesSection();
+    showToast('🗑️', 'Đã xóa kiệt tác "' + item.title + '" khỏi Góc Tham Khảo!');
+}
