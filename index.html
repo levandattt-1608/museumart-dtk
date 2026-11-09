@@ -32,25 +32,37 @@
         </div>
         <p class="entrance-desc">Nơi lưu giữ, tôn vinh và thăng hoa những sắc màu sáng tạo<br>của các tài năng nghệ thuật trẻ</p>
         
-        <div class="entrance-role-select">
-            <button class="entrance-btn btn-student" onclick="enterMuseum('student')">
-                <div class="btn-glow"></div>
-                <span class="btn-icon">🎨</span>
-                <span class="btn-label">Học Sinh Sáng Tác</span>
-                <span class="btn-desc">Triển lãm tranh • Tự do đóng khung • Hồ sơ nghệ sĩ</span>
-            </button>
-            <button class="entrance-btn btn-teacher" onclick="enterMuseum('teacher')">
-                <div class="btn-glow"></div>
-                <span class="btn-icon">👨‍🏫</span>
-                <span class="btn-label">Giáo Viên Mỹ Thuật</span>
-                <span class="btn-desc">Chấm điểm rubric • Nhận xét chuyên môn • Quản lý chuyên đề</span>
-            </button>
-        </div>
+        <!-- Main Portal Actions: Đăng Nhập, Đăng Ký & Khách Tham Quan -->
+        <div class="entrance-portal-actions">
+            <!-- Nút Đăng Nhập & Đăng Ký -->
+            <div class="entrance-auth-row">
+                <button type="button" class="portal-btn btn-login-portal" onclick="openAuthModal(null, 'login')">
+                    <span class="portal-btn-icon">🔑</span>
+                    <div class="portal-btn-text">
+                        <span class="portal-btn-title">Đăng Nhập</span>
+                        <span class="portal-btn-sub">Dành cho Học Sinh, Giáo Viên, Quản Trị</span>
+                    </div>
+                </button>
+                <button type="button" class="portal-btn btn-register-portal" onclick="openAuthModal('student', 'register')">
+                    <span class="portal-btn-icon">📝</span>
+                    <div class="portal-btn-text">
+                        <span class="portal-btn-title">Đăng Ký Tài Khoản</span>
+                        <span class="portal-btn-sub">Tạo tài khoản mới để tham gia</span>
+                    </div>
+                </button>
+            </div>
 
-        <div class="entrance-demo-hint">
-            <button class="btn-text-link" onclick="loadDemoAndEnter()">
-                ✨ Khám phá phòng tranh mẫu có sẵn
-            </button>
+            <!-- Nút Tham Quan Với Tư Cách Khách (Không cần đăng nhập/đăng ký) -->
+            <div class="entrance-guest-row">
+                <button type="button" class="portal-guest-btn" onclick="guestEnterMuseum()">
+                    <span class="guest-emblem">🏛️</span>
+                    <div class="guest-text-group">
+                        <span class="guest-main-title">Tham Quan Với Tư Cách Khách</span>
+                        <span class="guest-subtitle">Thưởng lãm tự do các phòng tranh nghệ thuật mà không cần đăng nhập hay đăng ký</span>
+                    </div>
+                    <span class="guest-arrow">➔</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -87,6 +99,9 @@
             <button class="nav-link" id="nav-catalog-btn" onclick="openCatalogModal()">
                 <span>📖</span> Kỷ Yếu Triển Lãm
             </button>
+            <button class="nav-link nav-link-admin hidden" data-section="admin" id="nav-admin" onclick="showSection('admin')">
+                <span>⚙️</span> Quản Trị Hệ Thống
+            </button>
         </div>
 
         <div class="nav-right">
@@ -100,34 +115,55 @@
                 <span id="audio-icon">🔇</span>
             </button>
 
-            <!-- User Info Badge / Portfolio Link -->
-            <div class="nav-user" id="nav-user-info" onclick="handleUserBadgeClick()" title="Nhấn để xem Hồ Sơ Nghệ Sĩ hoặc đổi tên">
-                <span class="user-role-badge" id="user-role-badge">Học Sinh</span>
-                <span class="user-name" id="user-name-display"></span>
+            <!-- User Info Badge & Dropdown Trigger -->
+            <div class="nav-user-wrapper">
+                <div class="nav-user" id="nav-user-info" onclick="toggleUserDropdown(event)" title="Bấm xem tùy chọn tài khoản">
+                    <span class="user-avatar" id="user-avatar-display">🎨</span>
+                    <div class="user-info-text">
+                        <span class="user-name" id="user-name-display">Đang tải...</span>
+                        <span class="user-role-badge" id="user-role-badge">Học Sinh</span>
+                    </div>
+                    <span class="dropdown-caret">▾</span>
+                </div>
+
+                <!-- User Profile Dropdown Menu -->
+                <div class="user-dropdown-menu hidden" id="user-dropdown-menu">
+                    <div class="dropdown-header">
+                        <span class="dropdown-avatar" id="dropdown-avatar">🎨</span>
+                        <div class="dropdown-user-details">
+                            <strong id="dropdown-fullname">Nguyễn Thảo My</strong>
+                            <span class="dropdown-meta" id="dropdown-meta">Học sinh • Lớp 7A1</span>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" onclick="openCurrentUserPortfolio()">
+                        <span>👤</span> Hồ Sơ Nghệ Sĩ Của Tôi
+                    </button>
+                    <button class="dropdown-item" id="dropdown-my-artworks" onclick="filterMyArtworks()">
+                        <span>🖼️</span> Tác Phẩm Của Tôi (<span id="my-art-count">0</span>)
+                    </button>
+                    <button class="dropdown-item hidden" id="dropdown-pending-grades" onclick="filterPendingGrades()">
+                        <span>⏳</span> Bài Chờ Chấm Điểm
+                    </button>
+                    <button class="dropdown-item hidden" id="dropdown-admin-panel" onclick="showSection('admin')">
+                        <span>⚙️</span> Bảng Quản Trị Hệ Thống
+                    </button>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" onclick="openAuthModal()">
+                        <span>🔄</span> Đăng Nhập / Đổi Tài Khoản
+                    </button>
+                    <button class="dropdown-item text-danger" onclick="logout()">
+                        <span>🚪</span> Đăng Xuất Khỏi Bảo Tàng
+                    </button>
+                </div>
             </div>
 
-            <!-- Exit Button -->
-            <button class="nav-btn-exit" onclick="exitMuseum()" title="Đổi vai trò / Rời bảo tàng">
-                🚪
+            <!-- Direct Auth Button if Guest -->
+            <button class="btn-nav-auth hidden" id="btn-nav-login" onclick="openAuthModal()">
+                🔑 Đăng Nhập
             </button>
         </div>
     </nav>
-
-    <!-- User Name Modal -->
-    <div id="name-modal" class="modal hidden">
-        <div class="modal-backdrop" onclick="closeNameModal()"></div>
-        <div class="modal-content modal-name">
-            <div class="modal-decor-emblem">🎨</div>
-            <h2>Danh Xưng Nghệ Sĩ / Giáo Viên</h2>
-            <p>Vui lòng cho biết họ tên của bạn để khắc tên lên biển đồng bảo tàng</p>
-            <div class="name-input-wrapper">
-                <input type="text" id="user-name-input" placeholder="Ví dụ: Nguyễn Minh Anh (Lớp 7A1)..." maxlength="50" autofocus>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-primary" onclick="submitName()">Bước Vào Triển Lãm ✨</button>
-            </div>
-        </div>
-    </div>
 
     <!-- ==================== GALLERY SECTION ==================== -->
     <section id="section-gallery" class="section gallery-section">
@@ -442,6 +478,239 @@
             <button class="btn-primary" onclick="showSection('gallery')">🖼️ Xem Toàn Bộ Phòng Tranh</button>
         </div>
     </section>
+
+    <!-- ==================== ADMIN SECTION ==================== -->
+    <section id="section-admin" class="section admin-section hidden">
+        <div class="admin-container">
+            <div class="admin-header">
+                <div class="admin-seal">🏛️</div>
+                <h2 class="section-title">
+                    <span class="title-ornament">❧</span>
+                    Trung Tâm Quản Trị Hệ Thống Mỹ Thuật
+                    <span class="title-ornament">❧</span>
+                </h2>
+                <p class="section-desc">Phân quyền tài khoản người dùng, kiểm duyệt tác phẩm, quản lý chuyên đề triển lãm & báo cáo phân tích toàn trường</p>
+                <div class="admin-badge-role">Quyền Quản Trị Viên Cấp Trường (Admin)</div>
+            </div>
+
+            <!-- Overview Stats Grid -->
+            <div class="admin-stats-grid">
+                <div class="admin-stat-card">
+                    <span class="stat-icon">👥</span>
+                    <div class="stat-info">
+                        <strong id="admin-stat-users">0</strong>
+                        <span>Tài Khoản Toàn Trường</span>
+                    </div>
+                </div>
+                <div class="admin-stat-card">
+                    <span class="stat-icon">🎨</span>
+                    <div class="stat-info">
+                        <strong id="admin-stat-artworks">0</strong>
+                        <span>Tổng Số Bức Tranh</span>
+                    </div>
+                </div>
+                <div class="admin-stat-card">
+                    <span class="stat-icon">⭐</span>
+                    <div class="stat-info">
+                        <strong id="admin-stat-graded">0</strong>
+                        <span>Đã Hoàn Thành Chấm Điểm</span>
+                    </div>
+                </div>
+                <div class="admin-stat-card">
+                    <span class="stat-icon">🏆</span>
+                    <div class="stat-info">
+                        <strong id="admin-stat-excellent">0</strong>
+                        <span>Kiệt Tác Xuất Sắc (≥9.0)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Sub-Navigation Tabs -->
+            <div class="admin-tabs-bar">
+                <button class="admin-tab-btn active" data-tab="users" onclick="switchAdminTab('users')">
+                    <span>👥</span> Quản Lý Tài Khoản & Phân Quyền
+                </button>
+                <button class="admin-tab-btn" data-tab="artworks" onclick="switchAdminTab('artworks')">
+                    <span>🖼️</span> Quản Lý & Kiểm Duyệt Tác Phẩm
+                </button>
+                <button class="admin-tab-btn" data-tab="themes" onclick="switchAdminTab('themes')">
+                    <span>🏛️</span> Quản Lý Chuyên Đề Triển Lãm
+                </button>
+                <button class="admin-tab-btn" data-tab="analytics" onclick="switchAdminTab('analytics')">
+                    <span>📊</span> Báo Cáo Thống Kê Học Đường
+                </button>
+                <button class="admin-tab-btn" data-tab="backup" onclick="switchAdminTab('backup')">
+                    <span>💾</span> Sao Lưu & Phục Hồi Dữ Liệu
+                </button>
+            </div>
+
+            <!-- Tab 1: Quản Lý Tài Khoản & Phân Quyền -->
+            <div class="admin-tab-content" id="admin-tab-users">
+                <div class="admin-toolbar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="admin-search-users" placeholder="Tìm kiếm theo tên, tài khoản, lớp học..." oninput="handleAdminUserSearch(this.value)">
+                    </div>
+                    <div class="filter-group">
+                        <select id="admin-filter-role" class="filter-select" onchange="handleAdminRoleFilter(this.value)">
+                            <option value="all">Tất cả vai trò</option>
+                            <option value="student">🎨 Học Sinh</option>
+                            <option value="teacher">👩‍🏫 Giáo Viên</option>
+                            <option value="admin">🏛️ Quản Trị Viên</option>
+                        </select>
+                        <button class="btn-primary" onclick="openAddUserModal()">
+                            ➕ Thêm Tài Khoản Mới
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="admin-table" id="admin-users-table">
+                        <thead>
+                            <tr>
+                                <th>Người Dùng</th>
+                                <th>Tên Đăng Nhập</th>
+                                <th>Vai Trò Hiện Tại</th>
+                                <th>Lớp / Bộ Môn</th>
+                                <th>Ngày Tạo</th>
+                                <th>Thao Tác Phân Quyền</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-tbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 2: Kiểm Duyệt & Quản Lý Tác Phẩm -->
+            <div class="admin-tab-content hidden" id="admin-tab-artworks">
+                <div class="admin-toolbar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="admin-search-artworks" placeholder="Tìm tranh theo tên tác phẩm, tác giả, lớp..." oninput="handleAdminArtworkSearch(this.value)">
+                    </div>
+                    <div class="filter-group">
+                        <select id="admin-filter-art-status" class="filter-select" onchange="handleAdminArtworkFilter(this.value)">
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="graded">Đã chấm điểm</option>
+                            <option value="ungraded">Chờ giáo viên chấm</option>
+                            <option value="hall">Điện vinh danh (≥9.0)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Tên Tác Phẩm</th>
+                                <th>Tác Giả (Lớp)</th>
+                                <th>Chất Liệu & Khung</th>
+                                <th>Điểm Số</th>
+                                <th>Thao Tác Quản Trị</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-artworks-tbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 3: Quản Lý Chuyên Đề Triển Lãm -->
+            <div class="admin-tab-content hidden" id="admin-tab-themes">
+                <div class="theme-management-grid">
+                    <!-- Left: Current Themes List -->
+                    <div class="theme-list-box">
+                        <h3 class="box-title">🏛️ Danh Sách Chuyên Đề Đang Mở</h3>
+                        <div class="admin-theme-cards" id="admin-theme-cards-list">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Add New Theme Form -->
+                    <div class="theme-add-form-box">
+                        <h3 class="box-title">✨ Mở Chuyên Đề Sáng Tác Mới</h3>
+                        <form onsubmit="handleCreateTheme(event)">
+                            <div class="form-group">
+                                <label for="new-theme-name">Tên Chuyên Đề <span class="req">*</span></label>
+                                <input type="text" id="new-theme-name" placeholder="Ví dụ: Chào Mừng 20/11 - Tri Ân Thầy Cô" required maxlength="60">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-theme-icon">Biểu Tượng (Icon Emoji)</label>
+                                <input type="text" id="new-theme-icon" placeholder="Ví dụ: 🏫, 🌺, 🎨, 🚀, 🌿" maxlength="4" value="✨">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-theme-desc">Mô Tả & Thể Lệ Ngắn</label>
+                                <textarea id="new-theme-desc" rows="3" placeholder="Gợi ý nội dung và thông điệp dành cho học sinh..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: 100%;">➕ Thêm Chuyên Đề Vào Triển Lãm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Báo Cáo Thống Kê Học Đường -->
+            <div class="admin-tab-content hidden" id="admin-tab-analytics">
+                <div class="analytics-dashboard" id="admin-analytics-view">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Tab 5: Sao Lưu & Phục Hồi Dữ Liệu -->
+            <div class="admin-tab-content hidden" id="admin-tab-backup">
+                <div class="backup-cards-grid">
+                    <div class="backup-card">
+                        <div class="backup-icon">💾</div>
+                        <h3>Xuất Bản Sao Lưu Hệ Thống</h3>
+                        <p>Tải về tệp tin JSON chứa toàn bộ dữ liệu gồm: Danh sách tài khoản người dùng, tác phẩm nghệ thuật, điểm số rubric, nhận xét và chuyên đề triển lãm.</p>
+                        <button class="btn-primary" onclick="exportSystemBackup()">
+                            📥 Tải File Sao Lưu (.JSON)
+                        </button>
+                    </div>
+
+                    <div class="backup-card">
+                        <div class="backup-icon">📂</div>
+                        <h3>Phục Hồi Dữ Liệu Từ Bản Sao Lưu</h3>
+                        <p>Tải lên tệp JSON đã sao lưu trước đó để khôi phục toàn bộ trạng thái của bảo tàng mỹ thuật.</p>
+                        <input type="file" id="backup-file-input" accept=".json" hidden onchange="handleImportBackup(event)">
+                        <button class="btn-secondary" onclick="document.getElementById('backup-file-input').click()">
+                            📤 Chọn File JSON Để Phục Hồi
+                        </button>
+                    </div>
+
+                    <div class="backup-card backup-danger">
+                        <div class="backup-icon">🔄</div>
+                        <h3>Đặt Lại Dữ Liệu Chuẩn Của Trường</h3>
+                        <p>Xóa sạch dữ liệu thử nghiệm hiện tại và nạp lại 4 tác phẩm chuẩn, 5 tài khoản mẫu phân quyền (học sinh, giáo viên, quản trị) và 5 chuyên đề chính khóa.</p>
+                        <button class="btn-tool btn-tool-danger" onclick="resetSystemToDefault()">
+                            ⚠️ Đặt Lại Dữ Liệu Chuẩn
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div> <!-- ==================== /MAIN MUSEUM ==================== -->
+
+    <!-- ==================== USER NAME MODAL ==================== -->
+    <div id="name-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeNameModal()"></div>
+        <div class="modal-content modal-name">
+            <div class="modal-decor-emblem">🎨</div>
+            <h2>Danh Xưng Nghệ Sĩ / Giáo Viên</h2>
+            <p>Vui lòng cho biết họ tên của bạn để khắc tên lên biển đồng bảo tàng</p>
+            <div class="name-input-wrapper">
+                <input type="text" id="user-name-input" placeholder="Ví dụ: Nguyễn Minh Anh (Lớp 7A1)..." maxlength="50" autofocus>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="submitName()">Bước Vào Triển Lãm ✨</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ==================== ARTWORK DETAIL MODAL ==================== -->
     <div id="artwork-modal" class="modal hidden">
@@ -894,13 +1163,195 @@
         </div>
     </div>
 
+    <!-- ==================== AUTH MODAL (LOGIN & REGISTER) ==================== -->
+    <div id="auth-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeAuthModal()"></div>
+        <div class="modal-content modal-auth">
+            <button class="modal-close" onclick="closeAuthModal()">✕</button>
+            
+            <div class="auth-header">
+                <div class="auth-emblem">🏛️</div>
+                <h2 id="auth-modal-title">Cổng Đăng Nhập &amp; Đăng Ký</h2>
+                <p id="auth-modal-subtitle">Bảo Tàng Mỹ Thuật Học Đường</p>
+                
+                <!-- Tab switch buttons -->
+                <div class="auth-tabs">
+                    <button type="button" class="auth-tab-btn active" id="tab-btn-login" onclick="switchAuthTab('login')">
+                        <span>🔑</span> Đăng Nhập
+                    </button>
+                    <button type="button" class="auth-tab-btn" id="tab-btn-register" onclick="switchAuthTab('register')">
+                        <span>📝</span> Đăng Ký Tài Khoản
+                    </button>
+                </div>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="form-login" class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-username"><span class="label-icon">👤</span> Tên đăng nhập</label>
+                    <input type="text" id="login-username" placeholder="Nhập tên đăng nhập (vd: admin hoặc tên của bạn)" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="login-password"><span class="label-icon">🔒</span> Mật khẩu</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="login-password" placeholder="Nhập mật khẩu" required autocomplete="current-password">
+                        <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('login-password')">👁️</button>
+                    </div>
+                </div>
+                <div class="auth-form-footer">
+                    <button type="submit" class="btn-primary btn-auth-submit">
+                        ✨ Đăng Nhập Vào Triển Lãm
+                    </button>
+                    <p class="auth-switch-prompt">
+                        Chưa có tài khoản? <a href="javascript:void(0)" onclick="switchAuthTab('register')">Đăng ký tài khoản mới ngay</a>
+                    </p>
+                </div>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="form-register" class="auth-form hidden" onsubmit="handleRegister(event)">
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="reg-fullname"><span class="label-icon">📛</span> Họ và tên <span class="req">*</span></label>
+                        <input type="text" id="reg-fullname" placeholder="Ví dụ: Nguyễn Văn An" required>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="reg-username"><span class="label-icon">👤</span> Tên đăng nhập <span class="req">*</span></label>
+                        <input type="text" id="reg-username" placeholder="vd: vanan123 (viết liền)" required pattern="[a-zA-Z0-9_\.]+" title="Chỉ chứa chữ, số, dấu gạch dưới">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><span class="label-icon">🎭</span> Vai trò tài khoản <span class="req">*</span></label>
+                    <div class="role-selector-radios">
+                        <label class="role-radio-card active" id="role-card-student" onclick="selectRegisterRole('student')">
+                            <input type="radio" name="reg-role" value="student" checked hidden>
+                            <span class="role-card-icon">🎨</span>
+                            <span class="role-card-name">Học Sinh</span>
+                            <span class="role-card-desc">Đăng tranh, portfolio</span>
+                        </label>
+                        <label class="role-radio-card" id="role-card-teacher" onclick="selectRegisterRole('teacher')">
+                            <input type="radio" name="reg-role" value="teacher" hidden>
+                            <span class="role-card-icon">👩‍🏫</span>
+                            <span class="role-card-name">Giáo Viên</span>
+                            <span class="role-card-desc">Chấm điểm, nhận xét</span>
+                        </label>
+                        <label class="role-radio-card" id="role-card-admin" onclick="selectRegisterRole('admin')">
+                            <input type="radio" name="reg-role" value="admin" hidden>
+                            <span class="role-card-icon">🏛️</span>
+                            <span class="role-card-name">Quản Trị</span>
+                            <span class="role-card-desc">Phân quyền, toàn quyền</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Conditional Student Field: Class -->
+                <div class="form-group" id="reg-class-group">
+                    <label for="reg-class"><span class="label-icon">🏫</span> Lớp / Khối học <span class="req">*</span></label>
+                    <input type="text" id="reg-class" placeholder="Ví dụ: 6A1, 7B, 8C, 9A2..." maxlength="25">
+                </div>
+
+                <!-- Conditional Security Code for Teacher/Admin -->
+                <div class="form-group hidden" id="reg-secret-group">
+                    <label for="reg-secret-code">
+                        <span class="label-icon">🛡️</span> Mã xác thực bổ nhiệm (<span id="secret-role-text">Giáo viên</span>) <span class="req">*</span>
+                    </label>
+                    <input type="text" id="reg-secret-code" placeholder="Nhập mã bảo mật (Gợi ý: GV2026 hoặc ADMIN2026)">
+                    <span class="form-hint">💡 Mã bảo mật giúp bảo vệ hệ thống khỏi việc học sinh tự ý cấp quyền. Mặc định: Giáo viên là <code>GV2026</code>, Quản trị là <code>ADMIN2026</code>.</span>
+                </div>
+
+                <!-- Avatar Selection -->
+                <div class="form-group">
+                    <label><span class="label-icon">✨</span> Chọn Biểu Tượng Nghệ Sĩ (Avatar)</label>
+                    <div class="avatar-picker-row" id="avatar-picker-row">
+                        <span class="avatar-option active" data-avatar="🎨" onclick="selectAvatar('🎨')">🎨</span>
+                        <span class="avatar-option" data-avatar="🖌️" onclick="selectAvatar('🖌️')">🖌️</span>
+                        <span class="avatar-option" data-avatar="🎭" onclick="selectAvatar('🎭')">🎭</span>
+                        <span class="avatar-option" data-avatar="👩‍🏫" onclick="selectAvatar('👩‍🏫')">👩‍🏫</span>
+                        <span class="avatar-option" data-avatar="👨‍🏫" onclick="selectAvatar('👨‍🏫')">👨‍🏫</span>
+                        <span class="avatar-option" data-avatar="🏛️" onclick="selectAvatar('🏛️')">🏛️</span>
+                        <span class="avatar-option" data-avatar="🌟" onclick="selectAvatar('🌟')">🌟</span>
+                        <span class="avatar-option" data-avatar="👑" onclick="selectAvatar('👑')">👑</span>
+                        <span class="avatar-option" data-avatar="🌸" onclick="selectAvatar('🌸')">🌸</span>
+                        <span class="avatar-option" data-avatar="🦅" onclick="selectAvatar('🦅')">🦅</span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="reg-password"><span class="label-icon">🔒</span> Mật khẩu <span class="req">*</span></label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="reg-password" placeholder="Tối thiểu 3 ký tự" required autocomplete="new-password">
+                            <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('reg-password')">👁️</button>
+                        </div>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="reg-confirm-password"><span class="label-icon">🔐</span> Xác nhận mật khẩu <span class="req">*</span></label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="reg-confirm-password" placeholder="Nhập lại mật khẩu" required autocomplete="new-password">
+                            <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('reg-confirm-password')">👁️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="auth-form-footer">
+                    <button type="submit" class="btn-primary btn-auth-submit">
+                        📝 Hoàn Tất Đăng Ký Tài Khoản
+                    </button>
+                    <p class="auth-switch-prompt">
+                        Đã có tài khoản? <a href="javascript:void(0)" onclick="switchAuthTab('login')">Đăng nhập tại đây</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== ADMIN ADD USER MODAL ==================== -->
+    <div id="add-user-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeAddUserModal()"></div>
+        <div class="modal-content modal-name">
+            <button class="modal-close" onclick="closeAddUserModal()">✕</button>
+            <div class="modal-decor-emblem">👤</div>
+            <h2>Thêm Tài Khoản Mới</h2>
+            <p>Tạo tài khoản học sinh, giáo viên hoặc quản trị viên cấp trường</p>
+            
+            <form onsubmit="handleAdminAddUser(event)">
+                <div class="form-group" style="text-align: left;">
+                    <label for="adm-add-fullname">Họ và tên <span class="req">*</span></label>
+                    <input type="text" id="adm-add-fullname" placeholder="Họ và tên người dùng" required>
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label for="adm-add-username">Tên đăng nhập <span class="req">*</span></label>
+                    <input type="text" id="adm-add-username" placeholder="Tên đăng nhập không dấu" required pattern="[a-zA-Z0-9_\.]+">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label for="adm-add-role">Phân quyền vai trò <span class="req">*</span></label>
+                    <select id="adm-add-role" class="filter-select" style="width: 100%;" onchange="toggleAdminAddClassField(this.value)">
+                        <option value="student">🎨 Học Sinh</option>
+                        <option value="teacher">👩‍🏫 Giáo Viên</option>
+                        <option value="admin">🏛️ Quản Trị Viên</option>
+                    </select>
+                </div>
+                <div class="form-group" id="adm-add-class-group" style="text-align: left;">
+                    <label for="adm-add-class">Lớp / Khối học / Bộ môn</label>
+                    <input type="text" id="adm-add-class" placeholder="Ví dụ: 7A1, Tổ Mỹ Thuật...">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label for="adm-add-password">Mật khẩu ban đầu <span class="req">*</span></label>
+                    <input type="password" id="adm-add-password" value="123456" required>
+                </div>
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button type="submit" class="btn-primary" style="width: 100%;">Tạo Tài Khoản Ngay</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="toast hidden">
         <span id="toast-icon">✨</span>
         <span id="toast-message">Thông báo</span>
     </div>
-
-</div>
 
 <script src="app.js"></script>
 </body>

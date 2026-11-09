@@ -1,11 +1,13 @@
 /* ========================================================
    🎨 BẢO TÀNG NGHỆ THUẬT HỌC ĐƯỜNG - MỸ THUẬT
-   Full Application Logic - All 9 Advanced Features Integrated
+   Full Application Logic - All 9 Advanced Features & Auth RBAC
    ======================================================== */
 
 // ===== GLOBAL STATE =====
-let currentRole = null;          // 'student' | 'teacher'
-let currentUser = '';
+let currentRole = null;          // 'student' | 'teacher' | 'admin' | 'guest'
+let currentUser = '';            // Full name
+let currentUserId = '';          // User ID
+let currentUserObj = null;       // Full user object
 let currentFilter = 'all';
 let currentThemeTab = 'all';
 let currentClassFilter = 'all';
@@ -29,12 +31,22 @@ let currentUtterance = null;
 let isMagnifierActive = false;
 let isWipSliderActive = false;
 
+// Admin & Auth UI States
+let selectedRegisterRole = 'student';
+let selectedAvatarEmoji = '🎨';
+let currentAdminTab = 'users';
+let adminUserSearchQuery = '';
+let adminUserRoleFilter = 'all';
+let adminArtSearchQuery = '';
+let adminArtFilterStatus = 'all';
+
 // ===== STORAGE KEYS =====
 const STORAGE_KEYS = {
-    artworks: 'museum_artworks_v3',
-    role: 'museum_role_v3',
-    userPrefix: 'museum_user_v3_',
-    theme: 'museum_theme_v3'
+    artworks: 'museum_artworks_v4',
+    users: 'museum_users_v6',
+    session: 'museum_session_v6',
+    themes: 'museum_themes_v4',
+    theme: 'museum_theme_lighting_v4'
 };
 
 // ========================================================
@@ -371,41 +383,481 @@ function generateId() {
 }
 
 // ========================================================
-// 🚪 ENTRANCE & USER IDENTITY
+// 👥 USER DATABASE & PRESETS (HỌC SINH, GIÁO VIÊN, QUẢN TRỊ)
+// Duy nhất 1 tài khoản Quản trị: admin / 1608 (theo yêu cầu)
 // ========================================================
-function enterMuseum(role) {
-    currentRole = role;
-    localStorage.setItem(STORAGE_KEYS.role, role);
+function getInitialPresetUsers() {
+    return [
+        {
+            id: 'usr_admin',
+            username: 'admin',
+            password: '1608',
+            fullname: 'Quản Trị Viên Hệ Thống',
+            role: 'admin',
+            className: 'Ban Giám Hiệu & Quản Trị Bảo Tàng',
+            avatar: '🏛️',
+            bio: 'Tài khoản quản trị viên tối cao của Bảo Tàng Mỹ Thuật Học Đường.',
+            createdAt: Date.now() - 86400000 * 30
+        }
+    ];
+}
 
-    const badge = document.getElementById('user-role-badge');
-    if (badge) {
-        badge.textContent = role === 'student' ? 'Học Sinh' : 'Giáo Viên';
-        badge.className = 'user-role-badge ' + role;
+function getUsers() {
+    try {
+        const data = localStorage.getItem(STORAGE_KEYS.users);
+        if (data) {
+            let parsed = JSON.parse(data);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                // Lọc bỏ sạch mọi tài khoản mẫu cũ nếu có
+                parsed = parsed.filter(u => !['student', 'nam_tran', 'baochau', 'quangminh', 'teacher'].includes(u.username));
+                // Đảm bảo tài khoản admin tồn tại và có mật khẩu chính xác là 1608
+                const adminUser = parsed.find(u => u.username === 'admin');
+                if (adminUser) {
+                    adminUser.password = '1608';
+                    adminUser.role = 'admin';
+                } else {
+                    parsed.unshift(getInitialPresetUsers()[0]);
+                }
+                saveUsers(parsed);
+                return parsed;
+            }
+        }
+    } catch (e) {
+        console.error('Error reading users:', e);
+    }
+    const presets = getInitialPresetUsers();
+    saveUsers(presets);
+    return presets;
+}
+
+function saveUsers(users) {
+    try {
+        localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users));
+    } catch (e) {
+        console.error('Error saving users:', e);
+    }
+}
+
+// ========================================================
+// 🏛️ CURATED THEMES DATABASE
+// ========================================================
+function getInitialThemes() {
+    return [
+        { id: 'theme_1', name: 'Nét Đẹp Quê Hương', icon: '🌾', desc: 'Ca ngợi vẻ đẹp đất nước, con người và danh lam thắng cảnh Việt Nam' },
+        { id: 'theme_2', name: 'Thầy Cô & Mái Trường', icon: '🏫', desc: 'Tri ân thầy cô giáo, ghi dấu kỷ niệm tuổi học trò và mái trường thân thương' },
+        { id: 'theme_3', name: 'Bảo Vệ Môi Trường', icon: '🌿', desc: 'Thông điệp Trái Đất xanh, chống rác thải nhựa và bảo vệ thiên nhiên' },
+        { id: 'theme_4', name: 'Ước Mơ & Tương Lai', icon: '🚀', desc: 'Khám phá vũ trụ, khoa học công nghệ và ước mơ hoài bão tương lai' },
+        { id: 'theme_5', name: 'Tự Do Sáng Tạo', icon: '✨', desc: 'Không gian mở cho mọi ý tưởng và phong cách nghệ thuật tự do' }
+    ];
+}
+
+function getThemes() {
+    try {
+        const data = localStorage.getItem(STORAGE_KEYS.themes);
+        if (data) {
+            const parsed = JSON.parse(data);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+    } catch (e) {
+        console.error('Error reading themes:', e);
+    }
+    const presets = getInitialThemes();
+    saveThemes(presets);
+    return presets;
+}
+
+function saveThemes(themes) {
+    try {
+        localStorage.setItem(STORAGE_KEYS.themes, JSON.stringify(themes));
+    } catch (e) {
+        console.error('Error saving themes:', e);
+    }
+}
+
+function renderThemeTabsAndSelects() {
+    const themes = getThemes();
+    const tabsContainer = document.getElementById('theme-tabs-container');
+    if (tabsContainer) {
+        tabsContainer.innerHTML = `
+            <button class="theme-tab-btn ${currentThemeTab === 'all' ? 'active' : ''}" data-theme="all" onclick="handleThemeTab('all')">Tất Cả Tác Phẩm</button>
+            ${themes.map(t => `
+                <button class="theme-tab-btn ${currentThemeTab === t.name ? 'active' : ''}" data-theme="${escapeHtml(t.name)}" onclick="handleThemeTab('${escapeHtml(t.name)}')">
+                    ${t.icon || '🎨'} ${escapeHtml(t.name)}
+                </button>
+            `).join('')}
+        `;
     }
 
-    const savedName = localStorage.getItem(STORAGE_KEYS.userPrefix + role);
-    if (savedName) {
-        currentUser = savedName;
+    const themeSelect = document.getElementById('artwork-theme');
+    if (themeSelect) {
+        const currentVal = themeSelect.value;
+        themeSelect.innerHTML = themes.map(t => `
+            <option value="${escapeHtml(t.name)}">${t.icon || '🎨'} ${escapeHtml(t.name)}</option>
+        `).join('');
+        if (currentVal) themeSelect.value = currentVal;
+    }
+}
+
+// ========================================================
+// 🔑 AUTHENTICATION & SESSION MANAGEMENT
+// ========================================================
+function initSessionState() {
+    try {
+        const sessionData = localStorage.getItem(STORAGE_KEYS.session);
+        if (sessionData) {
+            const user = JSON.parse(sessionData);
+            const users = getUsers();
+            const existing = users.find(u => u.id === user.id || u.username === user.username);
+            if (existing) {
+                setCurrentUser(existing);
+                return;
+            }
+        }
+    } catch (e) {
+        console.error('Error init session:', e);
+    }
+    // Default fallback to student session if no session
+    quickLogin('student', false);
+}
+
+function setCurrentUser(user) {
+    currentUserObj = user;
+    if (user) {
+        currentRole = user.role;
+        currentUser = user.fullname;
+        currentUserId = user.id;
+        localStorage.setItem(STORAGE_KEYS.session, JSON.stringify(user));
     } else {
-        currentUser = role === 'teacher' ? 'Thầy/Cô Mỹ Thuật' : 'Nguyễn Thảo My (Lớp 7A1)';
-        localStorage.setItem(STORAGE_KEYS.userPrefix + role, currentUser);
+        currentRole = 'guest';
+        currentUser = 'Khách Tham Quan';
+        currentUserId = 'guest';
+        localStorage.removeItem(STORAGE_KEYS.session);
+    }
+    applyRolePermissions();
+}
+
+function applyRolePermissions() {
+    const avatarEl = document.getElementById('user-avatar-display');
+    const nameEl = document.getElementById('user-name-display');
+    const badgeEl = document.getElementById('user-role-badge');
+    const navAdminBtn = document.getElementById('nav-admin');
+
+    const dropAvatar = document.getElementById('dropdown-avatar');
+    const dropName = document.getElementById('dropdown-fullname');
+    const dropMeta = document.getElementById('dropdown-meta');
+    const dropMyArt = document.getElementById('dropdown-my-artworks');
+    const dropPending = document.getElementById('dropdown-pending-grades');
+    const dropAdmin = document.getElementById('dropdown-admin-panel');
+    const myArtCount = document.getElementById('my-art-count');
+
+    const roleName = currentRole === 'student' ? 'Học Sinh' : (currentRole === 'teacher' ? 'Giáo Viên' : (currentRole === 'admin' ? 'Quản Trị' : 'Khách'));
+    const avatar = currentUserObj ? currentUserObj.avatar : (currentRole === 'guest' ? '👤' : '🎨');
+
+    if (avatarEl) avatarEl.textContent = avatar;
+    if (nameEl) nameEl.textContent = currentUser || 'Khách Tham Quan';
+    if (badgeEl) {
+        badgeEl.textContent = roleName;
+        badgeEl.className = 'user-role-badge ' + (currentRole || 'guest');
     }
 
-    const userDisplay = document.getElementById('user-name-display');
-    if (userDisplay) userDisplay.textContent = currentUser;
+    if (dropAvatar) dropAvatar.textContent = avatar;
+    if (dropName) dropName.textContent = currentUser;
+    if (dropMeta) {
+        const classPart = currentUserObj && currentUserObj.className ? `${currentUserObj.className} • ` : '';
+        dropMeta.textContent = classPart + roleName;
+    }
 
+    // Nav and dropdown items based on permissions
+    if (currentRole === 'admin') {
+        if (navAdminBtn) navAdminBtn.classList.remove('hidden');
+        if (dropAdmin) dropAdmin.classList.remove('hidden');
+        if (dropPending) dropPending.classList.remove('hidden');
+        if (dropMyArt) dropMyArt.classList.add('hidden');
+    } else if (currentRole === 'teacher') {
+        if (navAdminBtn) navAdminBtn.classList.add('hidden');
+        if (dropAdmin) dropAdmin.classList.add('hidden');
+        if (dropPending) dropPending.classList.remove('hidden');
+        if (dropMyArt) dropMyArt.classList.add('hidden');
+    } else if (currentRole === 'student') {
+        if (navAdminBtn) navAdminBtn.classList.add('hidden');
+        if (dropAdmin) dropAdmin.classList.add('hidden');
+        if (dropPending) dropPending.classList.add('hidden');
+        if (dropMyArt) dropMyArt.classList.remove('hidden');
+
+        // Count student's artworks
+        const works = getArtworks().filter(a => a.userId === currentUserId || a.artist === currentUser);
+        if (myArtCount) myArtCount.textContent = works.length;
+    } else {
+        // Guest
+        if (navAdminBtn) navAdminBtn.classList.add('hidden');
+        if (dropAdmin) dropAdmin.classList.add('hidden');
+        if (dropPending) dropPending.classList.add('hidden');
+        if (dropMyArt) dropMyArt.classList.add('hidden');
+    }
+
+    // Sync upload artist name and class
+    const uploadClass = document.getElementById('artwork-class');
+    const plateArtist = document.getElementById('plate-artist');
+    if (uploadClass && currentUserObj && currentUserObj.className) {
+        uploadClass.value = currentUserObj.className;
+    }
+    if (plateArtist) plateArtist.textContent = `— Họa sĩ: ${currentUser || 'Học sinh'} —`;
+}
+
+function openAuthModal(defaultRole = 'student', defaultTab = 'login') {
+    closeUserDropdown();
+    const modal = document.getElementById('auth-modal');
+    if (!modal) return;
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    switchAuthTab(defaultTab);
+    if (defaultRole) selectRegisterRole(defaultRole);
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    if (modal) modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+function switchAuthTab(tab) {
+    const tabLogin = document.getElementById('tab-btn-login');
+    const tabReg = document.getElementById('tab-btn-register');
+    const formLogin = document.getElementById('form-login');
+    const formReg = document.getElementById('form-register');
+    const title = document.getElementById('auth-modal-title');
+    const subtitle = document.getElementById('auth-modal-subtitle');
+
+    if (tab === 'login') {
+        if (tabLogin) tabLogin.classList.add('active');
+        if (tabReg) tabReg.classList.remove('active');
+        if (formLogin) formLogin.classList.remove('hidden');
+        if (formReg) formReg.classList.add('hidden');
+        if (title) title.textContent = 'Đăng Nhập Bảo Tàng';
+        if (subtitle) subtitle.textContent = 'Dành cho Học Sinh, Giáo Viên và Quản Trị';
+        setTimeout(() => {
+            const input = document.getElementById('login-username');
+            if (input) input.focus();
+        }, 150);
+    } else {
+        if (tabReg) tabReg.classList.add('active');
+        if (tabLogin) tabLogin.classList.remove('active');
+        if (formReg) formReg.classList.remove('hidden');
+        if (formLogin) formLogin.classList.add('hidden');
+        if (title) title.textContent = 'Đăng Ký Tài Khoản Mới';
+        if (subtitle) subtitle.textContent = 'Tham gia cộng đồng sáng tạo nghệ thuật học đường';
+        setTimeout(() => {
+            const input = document.getElementById('reg-fullname');
+            if (input) input.focus();
+        }, 150);
+    }
+}
+
+function selectRegisterRole(role) {
+    selectedRegisterRole = role;
+    const cards = document.querySelectorAll('.role-radio-card');
+    cards.forEach(c => c.classList.remove('active'));
+
+    const activeCard = document.getElementById('role-card-' + role);
+    if (activeCard) activeCard.classList.add('active');
+
+    const radio = document.querySelector(`input[name="reg-role"][value="${role}"]`);
+    if (radio) radio.checked = true;
+
+    const classGroup = document.getElementById('reg-class-group');
+    const secretGroup = document.getElementById('reg-secret-group');
+    const secretText = document.getElementById('secret-role-text');
+
+    if (role === 'student') {
+        if (classGroup) classGroup.classList.remove('hidden');
+        if (secretGroup) secretGroup.classList.add('hidden');
+    } else {
+        if (classGroup) classGroup.classList.add('hidden');
+        if (secretGroup) secretGroup.classList.remove('hidden');
+        if (secretText) secretText.textContent = role === 'teacher' ? 'Giáo viên (mã GV2026)' : 'Quản trị (mã ADMIN2026)';
+    }
+}
+
+function selectAvatar(avatar) {
+    selectedAvatarEmoji = avatar;
+    document.querySelectorAll('.avatar-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.avatar === avatar);
+    });
+}
+
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    const users = getUsers();
+    const user = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+
+    if (user) {
+        setCurrentUser(user);
+        closeAuthModal();
+        showMuseum();
+        showToast('✨', `Kính chào ${user.fullname} (${user.role === 'student' ? 'Học sinh' : (user.role === 'teacher' ? 'Giáo viên' : 'Quản trị viên')})!`);
+        document.getElementById('form-login').reset();
+    } else {
+        showToast('⚠️', 'Tên đăng nhập hoặc mật khẩu không chính xác! Bạn có thể dùng nút Đăng nhập nhanh.');
+    }
+}
+
+function handleRegister(e) {
+    e.preventDefault();
+    const fullname = document.getElementById('reg-fullname').value.trim();
+    const username = document.getElementById('reg-username').value.trim().toLowerCase();
+    const role = selectedRegisterRole;
+    const password = document.getElementById('reg-password').value;
+    const confirmPassword = document.getElementById('reg-confirm-password').value;
+    const className = document.getElementById('reg-class').value.trim();
+    const secretCode = document.getElementById('reg-secret-code').value.trim();
+
+    if (!fullname || !username) {
+        showToast('⚠️', 'Vui lòng điền đầy đủ họ tên và tên đăng nhập!');
+        return;
+    }
+
+    if (password.length < 3) {
+        showToast('⚠️', 'Mật khẩu phải có tối thiểu 3 ký tự!');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showToast('⚠️', 'Xác nhận mật khẩu không trùng khớp!');
+        return;
+    }
+
+    const users = getUsers();
+    if (users.some(u => u.username.toLowerCase() === username)) {
+        showToast('⚠️', 'Tên đăng nhập này đã được sử dụng! Vui lòng chọn tên khác.');
+        document.getElementById('reg-username').focus();
+        return;
+    }
+
+    // Role security check
+    if (role === 'teacher') {
+        if (secretCode !== 'GV2026' && secretCode !== 'gv2026' && secretCode !== 'teacher') {
+            showToast('🛡️', 'Mã xác thực Giáo Viên không đúng! Gợi ý: Hãy nhập "GV2026".');
+            document.getElementById('reg-secret-code').focus();
+            return;
+        }
+    } else if (role === 'admin') {
+        if (secretCode !== 'ADMIN2026' && secretCode !== 'admin2026' && secretCode !== 'admin') {
+            showToast('🛡️', 'Mã xác thực Quản Trị Viên không đúng! Gợi ý: Hãy nhập "ADMIN2026".');
+            document.getElementById('reg-secret-code').focus();
+            return;
+        }
+    }
+
+    const newUser = {
+        id: 'usr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        username: username,
+        password: password,
+        fullname: fullname,
+        role: role,
+        className: role === 'student' ? (className || 'Chưa phân lớp') : (role === 'teacher' ? 'Tổ Mỹ Thuật' : 'Ban Giám Hiệu'),
+        avatar: selectedAvatarEmoji || '🎨',
+        bio: role === 'student' ? `Học sinh lớp ${className || 'trường'}.` : (role === 'teacher' ? 'Giáo viên bộ môn Mỹ thuật.' : 'Quản trị viên hệ thống triển lãm.'),
+        createdAt: Date.now()
+    };
+
+    users.push(newUser);
+    saveUsers(users);
+
+    setCurrentUser(newUser);
+    closeAuthModal();
     showMuseum();
+    showToast('🎉', `Chúc mừng ${fullname}! Đăng ký tài khoản ${role === 'student' ? 'Học sinh' : (role === 'teacher' ? 'Giáo viên' : 'Quản trị viên')} thành công!`);
+    document.getElementById('form-register').reset();
+}
+
+function quickLogin(roleKey, notify = true) {
+    const users = getUsers();
+    const user = users.find(u => u.username === roleKey || u.role === roleKey);
+    if (user) {
+        setCurrentUser(user);
+        closeAuthModal();
+        showMuseum();
+        if (notify) {
+            showToast('⚡', `Đã đăng nhập nhanh: ${user.fullname} [${user.role === 'student' ? 'Học Sinh' : (user.role === 'teacher' ? 'Giáo Viên' : 'Quản Trị')}]`);
+        }
+    }
+}
+
+function guestEnterMuseum() {
+    setCurrentUser(null);
+    showMuseum();
+    showToast('👋', 'Kính chào quý khách ghé thăm Bảo Tàng Nghệ Thuật Học Đường!');
+}
+
+function logout() {
+    closeUserDropdown();
+    setCurrentUser(null);
+    exitMuseum();
+    showToast('👋', 'Bạn đã đăng xuất khỏi bảo tàng.');
+}
+
+// User Profile Dropdown
+function toggleUserDropdown(e) {
+    if (e) e.stopPropagation();
+    const menu = document.getElementById('user-dropdown-menu');
+    if (!menu) return;
+    menu.classList.toggle('hidden');
+}
+
+function closeUserDropdown() {
+    const menu = document.getElementById('user-dropdown-menu');
+    if (menu) menu.classList.add('hidden');
+}
+
+function openCurrentUserPortfolio() {
+    closeUserDropdown();
+    if (currentRole === 'student') {
+        openArtistPortfolio(currentUser);
+    } else {
+        showToast('ℹ️', `Hồ sơ: ${currentUser} (${currentRole === 'teacher' ? 'Giáo Viên Mỹ Thuật' : 'Quản Trị Viên'})`);
+    }
+}
+
+function filterMyArtworks() {
+    closeUserDropdown();
+    showSection('gallery');
+    handleSearch(currentUser);
+    showToast('🔍', `Đang lọc các tác phẩm của bạn: ${currentUser}`);
+}
+
+function filterPendingGrades() {
+    closeUserDropdown();
+    showSection('gallery');
+    filterArtworks('ungraded');
+    showToast('⏳', 'Đang hiển thị danh sách bài vẽ chờ giáo viên chấm điểm');
+}
+
+// Backward compatibility helper
+function enterMuseum(role) {
+    quickLogin(role, false);
 }
 
 function loadDemoAndEnter() {
     loadDemoData();
-    enterMuseum('student');
+    quickLogin('student', false);
 }
 
 function showMuseum() {
     document.getElementById('entrance').classList.add('hidden');
     document.getElementById('museum').classList.remove('hidden');
     populateClassFilter();
+    renderThemeTabsAndSelects();
     initThemeState();
     showSection('gallery');
 }
@@ -419,43 +871,19 @@ function exitMuseum() {
 }
 
 function showNameModal() {
-    const input = document.getElementById('user-name-input');
-    input.value = currentUser || '';
-    document.getElementById('name-modal').classList.remove('hidden');
-    setTimeout(() => input.focus(), 250);
+    openAuthModal('student');
 }
 
 function closeNameModal() {
-    if (currentUser) {
-        document.getElementById('name-modal').classList.add('hidden');
-    }
+    closeAuthModal();
 }
 
 function submitName() {
-    const input = document.getElementById('user-name-input');
-    const val = input.value.trim();
-    if (!val) {
-        input.style.borderColor = '#e74c3c';
-        input.placeholder = 'Vui lòng nhập họ và tên của bạn!';
-        return;
-    }
-    currentUser = val;
-    localStorage.setItem(STORAGE_KEYS.userPrefix + currentRole, currentUser);
-    document.getElementById('user-name-display').textContent = currentUser;
-    document.getElementById('name-modal').classList.add('hidden');
-    showToast('✨', `Kính chào ${currentUser} đến với Bảo Tàng Mỹ Thuật!`);
-
-    if (document.getElementById('plate-artist')) {
-        document.getElementById('plate-artist').textContent = '— Họa sĩ: ' + currentUser + ' —';
-    }
+    openAuthModal('student');
 }
 
 function handleUserBadgeClick() {
-    if (currentRole === 'student') {
-        openArtistPortfolio(currentUser);
-    } else {
-        showNameModal();
-    }
+    toggleUserDropdown();
 }
 
 // ========================================================
@@ -496,6 +924,13 @@ function toggleMuseumTheme() {
 // 🧭 NAVIGATION & SECTIONS
 // ========================================================
 function showSection(sectionName) {
+    closeUserDropdown();
+    if (sectionName === 'admin' && currentRole !== 'admin') {
+        showToast('🔒', 'Bạn cần đăng nhập bằng tài khoản Quản Trị Viên (Admin) để vào mục này!');
+        openAuthModal('admin');
+        return;
+    }
+
     document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
 
     const target = document.getElementById('section-' + sectionName);
@@ -511,9 +946,471 @@ function showSection(sectionName) {
         updateMuseumStats();
     } else if (sectionName === 'hall-of-fame') {
         renderHallOfFame();
+    } else if (sectionName === 'admin') {
+        renderAdminStats();
+        switchAdminTab(currentAdminTab);
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ========================================================
+// ⚙️ ADMIN DASHBOARD & RBAC CONTROL LOGIC
+// ========================================================
+function switchAdminTab(tabName) {
+    currentAdminTab = tabName;
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+
+    document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
+    const targetContent = document.getElementById('admin-tab-' + tabName);
+    if (targetContent) targetContent.classList.remove('hidden');
+
+    if (tabName === 'users') renderAdminUsers();
+    else if (tabName === 'artworks') renderAdminArtworks();
+    else if (tabName === 'themes') renderAdminThemes();
+    else if (tabName === 'analytics') renderAdminAnalytics();
+}
+
+function renderAdminStats() {
+    const users = getUsers();
+    const artworks = getArtworks();
+    const graded = artworks.filter(a => a.grade !== null && a.grade !== undefined && a.grade !== '');
+    const excellent = artworks.filter(a => Number(a.grade) >= 9.0);
+
+    const elUsers = document.getElementById('admin-stat-users');
+    const elArts = document.getElementById('admin-stat-artworks');
+    const elGraded = document.getElementById('admin-stat-graded');
+    const elExc = document.getElementById('admin-stat-excellent');
+
+    if (elUsers) elUsers.textContent = users.length;
+    if (elArts) elArts.textContent = artworks.length;
+    if (elGraded) elGraded.textContent = graded.length;
+    if (elExc) elExc.textContent = excellent.length;
+}
+
+function renderAdminUsers() {
+    renderAdminStats();
+    const tbody = document.getElementById('admin-users-tbody');
+    if (!tbody) return;
+
+    let users = getUsers();
+    if (adminUserRoleFilter !== 'all') {
+        users = users.filter(u => u.role === adminUserRoleFilter);
+    }
+    if (adminUserSearchQuery) {
+        const q = adminUserSearchQuery.toLowerCase();
+        users = users.filter(u =>
+            u.fullname.toLowerCase().includes(q) ||
+            u.username.toLowerCase().includes(q) ||
+            (u.className && u.className.toLowerCase().includes(q))
+        );
+    }
+
+    if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 25px;">Không tìm thấy tài khoản nào phù hợp</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = users.map(u => {
+        const roleBadge = u.role === 'student' ? '<span class="admin-badge badge-student">🎨 Học Sinh</span>' :
+                          u.role === 'teacher' ? '<span class="admin-badge badge-teacher">👩‍🏫 Giáo Viên</span>' :
+                          '<span class="admin-badge badge-admin">🏛️ Quản Trị</span>';
+        const isSelf = u.id === currentUserId;
+
+        return `
+            <tr>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.4rem;">${u.avatar || '👤'}</span>
+                        <strong>${escapeHtml(u.fullname)}</strong>
+                        ${isSelf ? '<span style="font-size: 0.72rem; color: var(--gold);">(Tôi)</span>' : ''}
+                    </div>
+                </td>
+                <td><code>${escapeHtml(u.username)}</code></td>
+                <td>${roleBadge}</td>
+                <td>${escapeHtml(u.className || '—')}</td>
+                <td>${formatDate(u.createdAt)}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <select class="role-select-inline" onchange="changeUserRole('${u.id}', this.value)" title="Đổi phân quyền">
+                            <option value="student" ${u.role === 'student' ? 'selected' : ''}>Học Sinh</option>
+                            <option value="teacher" ${u.role === 'teacher' ? 'selected' : ''}>Giáo Viên</option>
+                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Quản Trị</option>
+                        </select>
+                        <button class="btn-action-small" onclick="resetUserPassword('${u.id}')" title="Đặt lại mật khẩu">🔑</button>
+                        <button class="btn-action-small btn-danger" onclick="deleteUser('${u.id}')" ${isSelf ? 'disabled title="Không thể xóa tài khoản của chính bạn"' : 'title="Xóa tài khoản"'}>🗑️</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function handleAdminUserSearch(val) {
+    adminUserSearchQuery = val.trim();
+    renderAdminUsers();
+}
+
+function handleAdminRoleFilter(val) {
+    adminUserRoleFilter = val;
+    renderAdminUsers();
+}
+
+function changeUserRole(userId, newRole) {
+    const users = getUsers();
+    const idx = users.findIndex(u => u.id === userId);
+    if (idx === -1) return;
+
+    const oldRole = users[idx].role;
+    users[idx].role = newRole;
+    saveUsers(users);
+
+    if (userId === currentUserId) {
+        setCurrentUser(users[idx]);
+    }
+
+    showToast('✅', `Đã cập nhật phân quyền "${users[idx].fullname}" thành ${newRole === 'student' ? 'Học Sinh' : (newRole === 'teacher' ? 'Giáo Viên' : 'Quản Trị')}!`);
+    renderAdminUsers();
+}
+
+function resetUserPassword(userId) {
+    const users = getUsers();
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+
+    const newPwd = prompt(`Đặt lại mật khẩu mới cho tài khoản "${user.username}" (${user.fullname}):`, '123456');
+    if (!newPwd) return;
+
+    user.password = newPwd.trim();
+    saveUsers(users);
+    showToast('🔑', `Đã đặt lại mật khẩu cho "${user.username}" thành công!`);
+}
+
+function deleteUser(userId) {
+    if (userId === currentUserId) {
+        showToast('⚠️', 'Bạn không thể xóa tài khoản Quản Trị Viên đang đăng nhập!');
+        return;
+    }
+    const users = getUsers();
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+
+    if (!confirm(`Bạn có chắc chắn muốn xóa tài khoản "${user.fullname}" (@${user.username})?`)) return;
+
+    const updated = users.filter(u => u.id !== userId);
+    saveUsers(updated);
+    showToast('🗑️', `Đã xóa tài khoản "${user.fullname}".`);
+    renderAdminUsers();
+}
+
+function openAddUserModal() {
+    document.getElementById('add-user-modal').classList.remove('hidden');
+}
+
+function closeAddUserModal() {
+    document.getElementById('add-user-modal').classList.add('hidden');
+}
+
+function toggleAdminAddClassField(role) {
+    const classGroup = document.getElementById('adm-add-class-group');
+    if (classGroup) {
+        classGroup.style.display = role === 'student' ? 'block' : 'none';
+    }
+}
+
+function handleAdminAddUser(e) {
+    e.preventDefault();
+    const fullname = document.getElementById('adm-add-fullname').value.trim();
+    const username = document.getElementById('adm-add-username').value.trim().toLowerCase();
+    const role = document.getElementById('adm-add-role').value;
+    const className = document.getElementById('adm-add-class').value.trim();
+    const password = document.getElementById('adm-add-password').value;
+
+    const users = getUsers();
+    if (users.some(u => u.username.toLowerCase() === username)) {
+        showToast('⚠️', 'Tên đăng nhập này đã tồn tại!');
+        return;
+    }
+
+    const newUser = {
+        id: 'usr_' + Date.now(),
+        username: username,
+        password: password,
+        fullname: fullname,
+        role: role,
+        className: className || (role === 'student' ? '6A1' : (role === 'teacher' ? 'Tổ Mỹ Thuật' : 'BGH')),
+        avatar: role === 'student' ? '🎨' : (role === 'teacher' ? '👩‍🏫' : '🏛️'),
+        bio: `Tài khoản tạo bởi Quản Trị Viên.`,
+        createdAt: Date.now()
+    };
+
+    users.push(newUser);
+    saveUsers(users);
+
+    closeAddUserModal();
+    showToast('✅', `Đã tạo tài khoản "${fullname}" (${role}) thành công!`);
+    renderAdminUsers();
+}
+
+function renderAdminArtworks() {
+    renderAdminStats();
+    const tbody = document.getElementById('admin-artworks-tbody');
+    if (!tbody) return;
+
+    let artworks = getArtworks();
+    if (adminArtFilterStatus === 'graded') {
+        artworks = artworks.filter(a => a.grade !== null && a.grade !== undefined && a.grade !== '');
+    } else if (adminArtFilterStatus === 'ungraded') {
+        artworks = artworks.filter(a => a.grade === null || a.grade === undefined || a.grade === '');
+    } else if (adminArtFilterStatus === 'hall') {
+        artworks = artworks.filter(a => Number(a.grade) >= 9.0);
+    }
+
+    if (adminArtSearchQuery) {
+        const q = adminArtSearchQuery.toLowerCase();
+        artworks = artworks.filter(a =>
+            (a.title && a.title.toLowerCase().includes(q)) ||
+            (a.artist && a.artist.toLowerCase().includes(q)) ||
+            (a.className && a.className.toLowerCase().includes(q))
+        );
+    }
+
+    if (artworks.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 25px;">Không tìm thấy tác phẩm nào</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = artworks.map(art => {
+        const isHall = Number(art.grade) >= 9.0;
+        const gradeDisplay = (art.grade !== null && art.grade !== undefined) ?
+            `<strong style="color: ${isHall ? '#2ecc71' : 'var(--gold-light)'};">${art.grade}/10</strong>` :
+            '<span style="color: var(--text-muted);">⏳ Chờ chấm</span>';
+
+        return `
+            <tr>
+                <td style="width: 60px;">
+                    <img src="${art.imageData}" alt="" style="width: 50px; height: 38px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(212,175,55,0.4);">
+                </td>
+                <td>
+                    <strong>${escapeHtml(art.title)}</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">${escapeHtml(art.theme || 'Mỹ thuật')}</div>
+                </td>
+                <td>${escapeHtml(art.artist)} ${art.className ? `(Lớp ${escapeHtml(art.className)})` : ''}</td>
+                <td>${escapeHtml(art.medium || 'Tự do')} • Khung: ${escapeHtml(art.frame || 'Gold')}</td>
+                <td>${gradeDisplay}</td>
+                <td>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn-action-small" onclick="openArtworkDetail('${art.id}')" title="Xem chi tiết & chấm bài">👁️ Xem</button>
+                        <button class="btn-action-small btn-danger" onclick="deleteArtworkByAdmin('${art.id}')" title="Gỡ tác phẩm vi phạm">🗑️ Gỡ</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function handleAdminArtworkSearch(val) {
+    adminArtSearchQuery = val.trim();
+    renderAdminArtworks();
+}
+
+function handleAdminArtworkFilter(status) {
+    adminArtFilterStatus = status;
+    renderAdminArtworks();
+}
+
+function deleteArtworkByAdmin(artId) {
+    if (!confirm('Bạn có chắc chắn muốn gỡ tác phẩm này với tư cách Quản Trị Viên?')) return;
+    let artworks = getArtworks();
+    artworks = artworks.filter(a => a.id !== artId);
+    saveArtworks(artworks);
+    showToast('🗑️', 'Quản trị viên đã gỡ tác phẩm khỏi bảo tàng.');
+    renderAdminArtworks();
+    renderGallery();
+}
+
+function renderAdminThemes() {
+    const list = document.getElementById('admin-theme-cards-list');
+    if (!list) return;
+
+    const themes = getThemes();
+    list.innerHTML = themes.map(t => `
+        <div class="admin-theme-card">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 1.8rem;">${t.icon || '🎨'}</span>
+                <div class="admin-theme-info">
+                    <h4>${escapeHtml(t.name)}</h4>
+                    <p>${escapeHtml(t.desc || 'Chuyên đề hội họa học đường.')}</p>
+                </div>
+            </div>
+            <button class="btn-action-small btn-danger" onclick="deleteTheme('${t.id}')" title="Xóa chuyên đề">🗑️</button>
+        </div>
+    `).join('');
+}
+
+function handleCreateTheme(e) {
+    e.preventDefault();
+    const name = document.getElementById('new-theme-name').value.trim();
+    const icon = document.getElementById('new-theme-icon').value.trim() || '✨';
+    const desc = document.getElementById('new-theme-desc').value.trim();
+
+    if (!name) return;
+
+    const themes = getThemes();
+    if (themes.some(t => t.name.toLowerCase() === name.toLowerCase())) {
+        showToast('⚠️', 'Chuyên đề này đã tồn tại!');
+        return;
+    }
+
+    const newTheme = {
+        id: 'theme_' + Date.now(),
+        name: name,
+        icon: icon,
+        desc: desc || 'Chuyên đề hội họa sáng tác học đường.'
+    };
+
+    themes.push(newTheme);
+    saveThemes(themes);
+
+    document.getElementById('new-theme-name').value = '';
+    document.getElementById('new-theme-desc').value = '';
+
+    renderAdminThemes();
+    renderThemeTabsAndSelects();
+    showToast('✨', `Đã mở thêm chuyên đề triển lãm: "${name}"!`);
+}
+
+function deleteTheme(themeId) {
+    let themes = getThemes();
+    if (themes.length <= 1) {
+        showToast('⚠️', 'Cần giữ lại ít nhất 1 chuyên đề triển lãm!');
+        return;
+    }
+    const target = themes.find(t => t.id === themeId);
+    if (!confirm(`Bạn có chắc muốn xóa chuyên đề "${target?.name}"?`)) return;
+
+    themes = themes.filter(t => t.id !== themeId);
+    saveThemes(themes);
+    renderAdminThemes();
+    renderThemeTabsAndSelects();
+    showToast('🗑️', 'Đã xóa chuyên đề triển lãm.');
+}
+
+function renderAdminAnalytics() {
+    const view = document.getElementById('admin-analytics-view');
+    if (!view) return;
+
+    const artworks = getArtworks();
+    const total = artworks.length || 1;
+
+    const graded = artworks.filter(a => a.grade !== null && a.grade !== undefined && a.grade !== '');
+    const exc = graded.filter(a => Number(a.grade) >= 9.0).length;
+    const good = graded.filter(a => Number(a.grade) >= 8.0 && Number(a.grade) < 9.0).length;
+    const fair = graded.filter(a => Number(a.grade) >= 6.5 && Number(a.grade) < 8.0).length;
+    const pending = artworks.length - graded.length;
+
+    const classCounts = {};
+    artworks.forEach(a => {
+        const c = a.className || 'Chưa rõ';
+        classCounts[c] = (classCounts[c] || 0) + 1;
+    });
+
+    view.innerHTML = `
+        <div class="analytics-cards-grid">
+            <div class="analytics-card">
+                <h4>📊 Phân Khúc Kết Quả Đánh Giá Mỹ Thuật</h4>
+                <div class="bar-item-row">
+                    <div class="bar-labels"><span>🏆 Xuất sắc (9.0 - 10.0)</span><strong>${exc} bài (${Math.round(exc / total * 100)}%)</strong></div>
+                    <div class="bar-track"><div class="bar-fill" style="width: ${Math.round(exc / total * 100)}%; background: #2ecc71;"></div></div>
+                </div>
+                <div class="bar-item-row">
+                    <div class="bar-labels"><span>✨ Giỏi (8.0 - 8.9)</span><strong>${good} bài (${Math.round(good / total * 100)}%)</strong></div>
+                    <div class="bar-track"><div class="bar-fill" style="width: ${Math.round(good / total * 100)}%; background: #3498db;"></div></div>
+                </div>
+                <div class="bar-item-row">
+                    <div class="bar-labels"><span>🎨 Đạt (6.5 - 7.9)</span><strong>${fair} bài (${Math.round(fair / total * 100)}%)</strong></div>
+                    <div class="bar-track"><div class="bar-fill" style="width: ${Math.round(fair / total * 100)}%; background: #f1c40f;"></div></div>
+                </div>
+                <div class="bar-item-row">
+                    <div class="bar-labels"><span>⏳ Đang chờ chấm điểm</span><strong>${pending} bài (${Math.round(pending / total * 100)}%)</strong></div>
+                    <div class="bar-track"><div class="bar-fill" style="width: ${Math.round(pending / total * 100)}%; background: #e74c3c;"></div></div>
+                </div>
+            </div>
+
+            <div class="analytics-card">
+                <h4>🏫 Số Lượng Tác Phẩm Theo Khối / Lớp</h4>
+                ${Object.entries(classCounts).map(([cls, cnt]) => `
+                    <div class="bar-item-row">
+                        <div class="bar-labels"><span>Lớp ${escapeHtml(cls)}</span><strong>${cnt} tác phẩm (${Math.round(cnt / total * 100)}%)</strong></div>
+                        <div class="bar-track"><div class="bar-fill" style="width: ${Math.round(cnt / total * 100)}%;"></div></div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function exportSystemBackup() {
+    const backupData = {
+        exportedAt: new Date().toISOString(),
+        users: getUsers(),
+        artworks: getArtworks(),
+        themes: getThemes()
+    };
+
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bao-tang-my-thuat-backup-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('💾', 'Đã tải xuống bản sao lưu dữ liệu toàn hệ thống!');
+}
+
+function handleImportBackup(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+        try {
+            const data = JSON.parse(evt.target.result);
+            if (data.users && Array.isArray(data.users)) saveUsers(data.users);
+            if (data.artworks && Array.isArray(data.artworks)) saveArtworks(data.artworks);
+            if (data.themes && Array.isArray(data.themes)) saveThemes(data.themes);
+
+            renderThemeTabsAndSelects();
+            renderGallery();
+            renderAdminStats();
+            switchAdminTab(currentAdminTab);
+            showToast('✅', 'Khôi phục dữ liệu từ file sao lưu thành công!');
+        } catch (err) {
+            showToast('⚠️', 'Tệp tin JSON không hợp lệ hoặc bị lỗi định dạng!');
+        }
+    };
+    reader.readAsText(file);
+}
+
+function resetSystemToDefault() {
+    if (!confirm('CẢNH BÁO: Thao tác này sẽ đặt lại toàn bộ hệ thống về dữ liệu mẫu ban đầu. Bạn có chắc chắn muốn tiếp tục?')) return;
+
+    localStorage.removeItem(STORAGE_KEYS.artworks);
+    localStorage.removeItem(STORAGE_KEYS.users);
+    localStorage.removeItem(STORAGE_KEYS.themes);
+
+    getArtworks();
+    getUsers();
+    getThemes();
+
+    quickLogin('admin', false);
+    renderThemeTabsAndSelects();
+    renderGallery();
+    renderAdminStats();
+    switchAdminTab('users');
+    showToast('✨', 'Đã đặt lại toàn bộ dữ liệu mẫu chuẩn của nhà trường!');
 }
 
 // ========================================================
@@ -929,6 +1826,12 @@ function resetUploadForm() {
 }
 
 function submitArtwork() {
+    if (currentRole === 'guest') {
+        showToast('⚠️', 'Vui lòng đăng nhập hoặc đăng ký tài khoản Học Sinh để đăng tranh!');
+        openAuthModal('student');
+        return;
+    }
+
     if (!uploadedImageData) {
         showToast('⚠️', 'Vui lòng tải lên ảnh bức tranh của bạn trước!');
         return;
@@ -961,6 +1864,7 @@ function submitArtwork() {
 
     const newArtwork = {
         id: generateId(),
+        userId: currentUserId || ('usr_' + Date.now()),
         title: title,
         description: desc || 'Tác phẩm mỹ thuật sáng tác bởi học sinh.',
         medium: medium,
@@ -1119,15 +2023,17 @@ function openArtworkDetail(artworkId) {
             if (rubricDisplay) rubricDisplay.classList.add('hidden');
         }
 
-        // Role-specific Panels
+        // Role-specific Panels (Phân quyền Học Sinh, Giáo Viên, Quản Trị)
         const teacherPanel = document.getElementById('teacher-panel');
         const feedbackDisplay = document.getElementById('feedback-display');
         const deleteBtn = document.getElementById('btn-delete');
 
-        if (currentRole === 'teacher') {
+        // Grading permission: Only Teacher or Admin can grade artworks
+        const canGrade = (currentRole === 'teacher' || currentRole === 'admin');
+
+        if (canGrade) {
             if (teacherPanel) teacherPanel.classList.remove('hidden');
             if (feedbackDisplay) feedbackDisplay.classList.add('hidden');
-            if (deleteBtn) deleteBtn.classList.remove('hidden');
 
             const score = isGraded ? art.grade : 8.5;
             const slider = document.getElementById('grade-slider');
@@ -1159,6 +2065,7 @@ function openArtworkDetail(artworkId) {
             const bStory = document.getElementById('badge-story');
             if (bStory) bStory.checked = hasBadges && art.badges.includes('💡 Ý Tưởng Truyền Cảm Hứng');
         } else {
+            // Student or Guest: cannot grade, only view feedback
             if (teacherPanel) teacherPanel.classList.add('hidden');
 
             if (art.comment || isGraded) {
@@ -1179,13 +2086,20 @@ function openArtworkDetail(artworkId) {
             } else {
                 if (feedbackDisplay) feedbackDisplay.classList.add('hidden');
             }
+        }
 
-            if (deleteBtn) {
-                if (art.artist === currentUser) {
-                    deleteBtn.classList.remove('hidden');
-                } else {
-                    deleteBtn.classList.add('hidden');
-                }
+        // Deletion permissions:
+        // - Admin can delete ANY artwork with confirmation
+        // - Student can ONLY delete artwork submitted by themselves
+        // - Teachers grade assignments, cannot arbitrarily delete students' artworks
+        const isOwner = (art.userId && art.userId === currentUserId) || (art.artist === currentUser);
+        const canDelete = (currentRole === 'admin') || (currentRole === 'student' && isOwner);
+
+        if (deleteBtn) {
+            if (canDelete) {
+                deleteBtn.classList.remove('hidden');
+            } else {
+                deleteBtn.classList.add('hidden');
             }
         }
 
@@ -1754,11 +2668,20 @@ function closeCertificateModal() {
 // ========================================================
 function deleteArtwork() {
     if (!selectedArtworkId) return;
+    const artworks = getArtworks();
+    const art = artworks.find(a => a.id === selectedArtworkId);
+    if (!art) return;
+
+    const isOwner = (art.userId && art.userId === currentUserId) || (art.artist === currentUser);
+    if (currentRole !== 'admin' && !isOwner) {
+        showToast('⚠️', 'Bạn chỉ có quyền xóa tác phẩm do chính mình đăng tải!');
+        return;
+    }
+
     if (!confirm('Bạn có chắc chắn muốn gỡ tác phẩm này khỏi tường bảo tàng? Hành động này không thể hoàn tác.')) return;
 
-    let artworks = getArtworks();
-    artworks = artworks.filter(a => a.id !== selectedArtworkId);
-    saveArtworks(artworks);
+    const updated = artworks.filter(a => a.id !== selectedArtworkId);
+    saveArtworks(updated);
 
     closeArtworkModal();
     showToast('🗑️', 'Đã gỡ tác phẩm khỏi triển lãm');
@@ -1766,6 +2689,10 @@ function deleteArtwork() {
 }
 
 function clearAllArtworks() {
+    if (currentRole !== 'admin') {
+        showToast('🔒', 'Chỉ Quản Trị Viên mới có quyền làm mới toàn bộ phòng tranh!');
+        return;
+    }
     if (!confirm('Bạn có muốn đặt lại toàn bộ phòng tranh về trạng thái ban đầu?')) return;
     localStorage.removeItem(STORAGE_KEYS.artworks);
     getArtworks();
@@ -1942,30 +2869,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Enter key in name modal
-    const nameInput = document.getElementById('user-name-input');
-    if (nameInput) {
-        nameInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') submitName();
-        });
-    }
+    // Click outside dropdown closes user dropdown
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-user-wrapper')) {
+            closeUserDropdown();
+        }
+    });
 
     // ESC key closes modals
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
+            const authModal = document.getElementById('auth-modal');
+            const addUserModal = document.getElementById('add-user-modal');
             const certModal = document.getElementById('certificate-modal');
             const catalogModal = document.getElementById('catalog-modal');
             const qrModal = document.getElementById('qr-modal');
             const portfolioModal = document.getElementById('portfolio-modal');
             const artModal = document.getElementById('artwork-modal');
-            const nameModal = document.getElementById('name-modal');
 
-            if (certModal && !certModal.classList.contains('hidden')) closeCertificateModal();
+            if (authModal && !authModal.classList.contains('hidden')) closeAuthModal();
+            else if (addUserModal && !addUserModal.classList.contains('hidden')) closeAddUserModal();
+            else if (certModal && !certModal.classList.contains('hidden')) closeCertificateModal();
             else if (catalogModal && !catalogModal.classList.contains('hidden')) closeCatalogModal();
             else if (qrModal && !qrModal.classList.contains('hidden')) closeQrPlaqueModal();
             else if (portfolioModal && !portfolioModal.classList.contains('hidden')) closePortfolioModal();
             else if (artModal && !artModal.classList.contains('hidden')) closeArtworkModal();
-            else if (nameModal && !nameModal.classList.contains('hidden') && currentUser) closeNameModal();
         }
     });
 
@@ -1974,9 +2902,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = window.location.hash.split('artwork=')[1];
         if (id) {
             setTimeout(() => {
-                enterMuseum('student');
+                showMuseum();
                 openArtworkDetail(id);
             }, 500);
         }
     }
+
+    // Initialize themes and user session
+    renderThemeTabsAndSelects();
+    initSessionState();
 });
