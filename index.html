@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Bảo Tàng Nghệ Thuật Học Đường - Mỹ Thuật</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ==================== ENTRANCE / SPLASH ==================== -->
+<div id="entrance" class="entrance">
+    <div class="entrance-ambient-light"></div>
+    <div class="entrance-overlay"></div>
+    <div class="entrance-content">
+        <div class="museum-emblem">
+            <svg viewBox="0 0 120 120" class="emblem-svg">
+                <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(212,175,55,0.7)" stroke-width="1.5" stroke-dasharray="4 2"/>
+                <circle cx="60" cy="60" r="48" fill="rgba(212,175,55,0.05)" stroke="rgba(212,175,55,0.4)" stroke-width="1"/>
+                <polygon points="60,18 69,45 98,45 74,62 83,90 60,73 37,90 46,62 22,45 51,45" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1"/>
+                <text x="60" y="68" text-anchor="middle" fill="#d4af37" font-size="38" font-family="serif">🏛️</text>
+            </svg>
+        </div>
+        <p class="entrance-kicker">KHÔNG GIAN TRIỂN LÃM MỸ THUẬT HỌC ĐƯỜNG</p>
+        <h1 class="entrance-title">Bảo Tàng Nghệ Thuật</h1>
+        <p class="entrance-subtitle">Art Gallery & Exhibition</p>
+        <div class="entrance-divider">
+            <span class="divider-ornament">✦ ❧ ✦</span>
+        </div>
+        <p class="entrance-desc">Nơi lưu giữ, tôn vinh và thăng hoa những sắc màu sáng tạo<br>của các tài năng nghệ thuật trẻ</p>
+        
+        <div class="entrance-role-select">
+            <button class="entrance-btn btn-student" onclick="enterMuseum('student')">
+                <div class="btn-glow"></div>
+                <span class="btn-icon">🎨</span>
+                <span class="btn-label">Học Sinh Sáng Tác</span>
+                <span class="btn-desc">Triển lãm tranh • Tự do đóng khung • Giao lưu bạn bè</span>
+            </button>
+            <button class="entrance-btn btn-teacher" onclick="enterMuseum('teacher')">
+                <div class="btn-glow"></div>
+                <span class="btn-icon">👨‍🏫</span>
+                <span class="btn-label">Giáo Viên Mỹ Thuật</span>
+                <span class="btn-desc">Chấm điểm • Nhận xét chuyên môn • Đề xuất sáng tạo</span>
+            </button>
+        </div>
+
+        <div class="entrance-demo-hint">
+            <button class="btn-text-link" onclick="loadDemoAndEnter()">
+                ✨ Khám phá phòng tranh mẫu có sẵn
+            </button>
+        </div>
+    </div>
+
+    <div class="entrance-footer">
+        <p>❝ Nghệ thuật gột rửa khỏi tâm hồn lớp bụi bặm của cuộc sống hàng ngày ❞ — Pablo Picasso</p>
+    </div>
+</div>
+
+<!-- ==================== MAIN MUSEUM ==================== -->
+<div id="museum" class="museum hidden">
+
+    <!-- Navigation Bar -->
+    <nav class="museum-nav">
+        <div class="nav-left">
+            <div class="nav-logo" onclick="showSection('gallery')">
+                <span class="logo-icon">🏛️</span>
+                <div class="logo-group">
+                    <span class="logo-text">BẢO TÀNG MỸ THUẬT HỌC ĐƯỜNG</span>
+                    <span class="logo-sub">School of Fine Arts Gallery</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-center">
+            <button class="nav-link active" data-section="gallery" onclick="showSection('gallery')">
+                <span>🖼️</span> Phòng Trưng Bày
+            </button>
+            <button class="nav-link" data-section="upload" id="nav-upload" onclick="showSection('upload')">
+                <span>🎨</span> Đăng Tác Phẩm
+            </button>
+            <button class="nav-link" data-section="hall-of-fame" onclick="showSection('hall-of-fame')">
+                <span>🏆</span> Điện Vinh Danh
+            </button>
+        </div>
+
+        <div class="nav-right">
+            <!-- Audio Ambiance Toggle -->
+            <button class="nav-btn-icon" id="btn-ambient-audio" onclick="toggleMuseumAudio()" title="Nhạc không gian viện bảo tàng">
+                <span id="audio-icon">🔇</span>
+            </button>
+
+            <!-- User Info Badge -->
+            <div class="nav-user" id="nav-user-info" onclick="showNameModal()" title="Nhấn để đổi tên">
+                <span class="user-role-badge" id="user-role-badge">Học Sinh</span>
+                <span class="user-name" id="user-name-display"></span>
+            </div>
+
+            <!-- Exit Button -->
+            <button class="nav-btn-exit" onclick="exitMuseum()" title="Đổi vai trò / Rời bảo tàng">
+                🚪
+            </button>
+        </div>
+    </nav>
+
+    <!-- User Name Modal -->
+    <div id="name-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeNameModal()"></div>
+        <div class="modal-content modal-name">
+            <div class="modal-decor-emblem">🎨</div>
+            <h2>Danh Xưng Nghệ Sĩ / Giáo Viên</h2>
+            <p>Vui lòng cho biết họ tên của bạn để khắc tên lên biển đồng bảo tàng</p>
+            <div class="name-input-wrapper">
+                <input type="text" id="user-name-input" placeholder="Ví dụ: Nguyễn Minh Anh (Lớp 7A1)..." maxlength="50" autofocus>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="submitName()">Bước Vào Triển Lãm ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== GALLERY SECTION ==================== -->
+    <section id="section-gallery" class="section gallery-section">
+        <!-- Gallery Header & Filters -->
+        <div class="gallery-header">
+            <div class="spotlight-overhead"></div>
+            <h2 class="section-title">
+                <span class="title-ornament">❧</span>
+                Đại Sảnh Triển Lãm Nghệ Thuật
+                <span class="title-ornament">❧</span>
+            </h2>
+            <p class="section-desc">Không gian trưng bày các tác phẩm hội họa của học sinh với đầy đủ phong cách & chất liệu</p>
+            
+            <!-- Controls & Filter Toolbar -->
+            <div class="gallery-toolbar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="search-input" placeholder="Tìm theo tên tranh, họa sĩ, mô tả..." oninput="handleSearch(this.value)">
+                </div>
+
+                <div class="filter-group">
+                    <select id="filter-class" class="filter-select" onchange="handleClassFilter(this.value)">
+                        <option value="all">🏫 Tất cả khối/lớp</option>
+                    </select>
+
+                    <select id="filter-medium" class="filter-select" onchange="handleMediumFilter(this.value)">
+                        <option value="all">🎨 Mọi chất liệu</option>
+                        <option value="Màu nước">Màu nước</option>
+                        <option value="Màu sáp / Sáp dầu">Màu sáp / Sáp dầu</option>
+                        <option value="Sơn dầu">Sơn dầu</option>
+                        <option value="Acrylic">Acrylic</option>
+                        <option value="Bút chì / Ký họa">Bút chì / Ký họa</option>
+                        <option value="Pastel">Pastel</option>
+                        <option value="Kỹ thuật số">Kỹ thuật số</option>
+                        <option value="Xé dán / Thủ công">Xé dán / Thủ công</option>
+                    </select>
+
+                    <div class="filter-pills">
+                        <button class="filter-btn active" data-filter="all" onclick="filterArtworks('all')">Tất cả</button>
+                        <button class="filter-btn" data-filter="recent" onclick="filterArtworks('recent')">Mới nhất</button>
+                        <button class="filter-btn" data-filter="top-rated" onclick="filterArtworks('top-rated')">⭐ Điểm cao</button>
+                        <button class="filter-btn" data-filter="ungraded" onclick="filterArtworks('ungraded')">⏳ Chờ chấm</button>
+                        <button class="filter-btn" data-filter="commented" onclick="filterArtworks('commented')">💬 Đã nhận xét</button>
+                    </div>
+                </div>
+
+                <div class="gallery-quick-actions">
+                    <button class="btn-tool" onclick="loadDemoData()" title="Thêm tác phẩm mẫu">
+                        <span>✨ Thêm tranh mẫu</span>
+                    </button>
+                    <button class="btn-tool btn-tool-danger" onclick="clearAllArtworks()" title="Đặt lại bảo tàng">
+                        <span>🗑️ Làm mới</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="museum-stats-bar" id="museum-stats-bar">
+                <span class="stat-item"><strong id="stat-total">0</strong> tác phẩm</span>
+                <span class="stat-divider">•</span>
+                <span class="stat-item"><strong id="stat-graded">0</strong> đã chấm điểm</span>
+                <span class="stat-divider">•</span>
+                <span class="stat-item"><strong id="stat-avg">0.0</strong> điểm trung bình</span>
+                <span class="stat-divider">•</span>
+                <span class="stat-item"><strong id="stat-likes">0</strong> lượt yêu thích</span>
+            </div>
+        </div>
+
+        <!-- Museum Wall with Perspective Flooring -->
+        <div class="museum-room">
+            <div class="museum-wall-spotlight"></div>
+            <div class="museum-wall" id="gallery-wall">
+                <!-- Artworks rendered here -->
+            </div>
+            <div class="museum-floor"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-gallery hidden" id="empty-gallery">
+            <div class="empty-icon">🖼️</div>
+            <h3>Đại sảnh đang chờ tác phẩm tiếp theo</h3>
+            <p>Hãy là nghệ sĩ đầu tiên trưng bày bức họa tuyệt vời của bạn lên bức tường bảo tàng!</p>
+            <div class="empty-actions">
+                <button class="btn-primary" onclick="showSection('upload')" id="empty-upload-btn">🎨 Tự Đăng Tác Phẩm Ngay</button>
+                <button class="btn-secondary" onclick="loadDemoData()">✨ Nạp 4 Bức Tranh Mẫu Học Đường</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== UPLOAD SECTION ==================== -->
+    <section id="section-upload" class="section upload-section hidden">
+        <div class="upload-container">
+            <h2 class="section-title">
+                <span class="title-ornament">❧</span>
+                Xưởng Đóng Khung & Trưng Bày Tác Phẩm
+                <span class="title-ornament">❧</span>
+            </h2>
+            <p class="section-desc">Tự do tải lên bức vẽ của bạn, chọn loại khung bảo tàng sang trọng và khắc biển tên danh dự</p>
+
+            <div class="upload-form-wrapper">
+                <!-- Left: Live Museum Frame Preview -->
+                <div class="upload-preview-area">
+                    <div class="preview-heading">👁️ Xem Trước Tranh Treo Tường Bảo Tàng:</div>
+                    
+                    <div class="frame-preview-stage">
+                        <div class="preview-spotlight"></div>
+                        <div class="frame-preview" id="frame-preview">
+                            <div class="artwork-frame classic-gold" id="preview-outer-frame">
+                                <div class="artwork-mat mat-cream" id="preview-mat">
+                                    <div class="upload-dropzone" id="upload-dropzone">
+                                        <input type="file" id="file-input" accept="image/*" hidden>
+                                        <div class="dropzone-content" id="dropzone-content">
+                                            <div class="dropzone-icon">🖌️</div>
+                                            <h3>Kéo & thả ảnh tranh vào đây</h3>
+                                            <p>hoặc <strong>nhấp để duyệt ảnh</strong> từ máy tính/điện thoại</p>
+                                            <span class="dropzone-formats">Hỗ trợ JPG, PNG, WEBP • Tự động tối ưu hóa</span>
+                                        </div>
+                                        <img id="preview-image" class="preview-image hidden" alt="Bản xem trước">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Plaque / Nameplate under frame -->
+                            <div class="artwork-nameplate preview-nameplate" id="frame-nameplate">
+                                <span class="nameplate-title" id="plate-title">Tên Tác Phẩm Nghệ Thuật</span>
+                                <span class="nameplate-artist" id="plate-artist">— Họa sĩ học sinh —</span>
+                                <span class="nameplate-sub" id="plate-sub">Chất liệu • Năm 2026</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Frame Customization Tools -->
+                    <div class="customizer-panel">
+                        <div class="customizer-group">
+                            <label class="customizer-label">🏆 Chọn Kiểu Khung Bảo Tàng:</label>
+                            <div class="frame-options">
+                                <button class="frame-option active" data-frame="classic-gold" onclick="selectFrame('classic-gold')" title="Vàng Hoàng Gia">
+                                    <div class="frame-swatch gold"></div>
+                                    <span class="frame-name">Vàng Kim</span>
+                                </button>
+                                <button class="frame-option" data-frame="baroque" onclick="selectFrame('baroque')" title="Cổ Điển Baroque">
+                                    <div class="frame-swatch baroque"></div>
+                                    <span class="frame-name">Baroque</span>
+                                </button>
+                                <button class="frame-option" data-frame="dark-wood" onclick="selectFrame('dark-wood')" title="Gỗ Cổ Thụ">
+                                    <div class="frame-swatch wood"></div>
+                                    <span class="frame-name">Gỗ Sồi</span>
+                                </button>
+                                <button class="frame-option" data-frame="white-modern" onclick="selectFrame('white-modern')" title="Trắng Scandinavian">
+                                    <div class="frame-swatch white"></div>
+                                    <span class="frame-name">Trắng Bắc Âu</span>
+                                </button>
+                                <button class="frame-option" data-frame="minimalist" onclick="selectFrame('minimalist')" title="Đen Gallery Tối Giản">
+                                    <div class="frame-swatch minimal"></div>
+                                    <span class="frame-name">Đen Tối Giản</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="customizer-group">
+                            <label class="customizer-label">🖼️ Màu Viền Bo Lụa (Passe-Partout):</label>
+                            <div class="mat-options">
+                                <button class="mat-option active" data-mat="mat-cream" onclick="selectMat('mat-cream')" title="Màu Kem Ngà">
+                                    <span class="mat-swatch swatch-cream"></span> Kem Ngà
+                                </button>
+                                <button class="mat-option" data-mat="mat-white" onclick="selectMat('mat-white')" title="Trắng Tuyết">
+                                    <span class="mat-swatch swatch-white"></span> Trắng Tuyết
+                                </button>
+                                <button class="mat-option" data-mat="mat-dark" onclick="selectMat('mat-dark')" title="Đen Nhám">
+                                    <span class="mat-swatch swatch-dark"></span> Đen Nhám
+                                </button>
+                                <button class="mat-option" data-mat="mat-gold" onclick="selectMat('mat-gold')" title="Vàng Cát">
+                                    <span class="mat-swatch swatch-gold"></span> Vàng Cát
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Information Form Fields -->
+                <div class="upload-form-fields">
+                    <div class="form-card">
+                        <h3 class="form-section-heading">📝 Thông Tin Bức Họa</h3>
+                        
+                        <div class="form-group">
+                            <label for="artwork-title">
+                                <span class="label-icon">✨</span> Tên Tác Phẩm <span class="req">*</span>
+                            </label>
+                            <input type="text" id="artwork-title" placeholder="Đặt tên bức tranh (ví dụ: 'Mùa Vàng Trên Nương', 'Góc Phố Tuổi Thơ')..." maxlength="100">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label for="artwork-medium">
+                                    <span class="label-icon">🎨</span> Chất Liệu & Kỹ Thuật <span class="req">*</span>
+                                </label>
+                                <select id="artwork-medium">
+                                    <option value="">-- Chọn chất liệu --</option>
+                                    <option value="Màu nước">🎨 Màu nước</option>
+                                    <option value="Màu sáp / Sáp dầu">🖍️ Màu sáp / Sáp dầu</option>
+                                    <option value="Sơn dầu">🖌️ Sơn dầu</option>
+                                    <option value="Acrylic">🎨 Acrylic</option>
+                                    <option value="Bút chì / Ký họa">✏️ Bút chì / Ký họa chì</option>
+                                    <option value="Bút dạ màu / Marker">🖊️ Bút dạ màu / Marker</option>
+                                    <option value="Pastel">🖌️ Phấn tiên (Pastel)</option>
+                                    <option value="Mực nho / Thủy mặc">🖋️ Mực nho / Thủy mặc</option>
+                                    <option value="Kỹ thuật số">💻 Digital Art (Kỹ thuật số)</option>
+                                    <option value="Xé dán / Thủ công">✂️ Xé dán giấy / Đất nặn</option>
+                                    <option value="Chất liệu tổng hợp">🎭 Chất liệu hỗn hợp</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group flex-1">
+                                <label for="artwork-class">
+                                    <span class="label-icon">🏫</span> Lớp / Khối Học <span class="req">*</span>
+                                </label>
+                                <input type="text" id="artwork-class" placeholder="Ví dụ: 6A1, 7B, 8C2, 9A..." maxlength="25">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="artwork-desc">
+                                <span class="label-icon">📖</span> Ghi Chú & Mô Tả Tác Phẩm (Artist Statement)
+                            </label>
+                            <textarea id="artwork-desc" placeholder="Chia sẻ câu chuyện đằng sau bức tranh của bạn: Nguồn cảm hứng từ đâu? Bạn muốn gửi gắm thông điệp hoặc cảm xúc gì qua từng nét vẽ và gam màu?..." rows="6" maxlength="1500"></textarea>
+                            <div class="form-help-row">
+                                <span class="form-tip">💡 Ghi chú sâu sắc giúp giáo viên thấu hiểu ý tưởng sáng tạo của bạn để đánh giá chính xác hơn!</span>
+                                <span class="char-count"><span id="desc-count">0</span>/1500</span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="resetUploadForm()">🔄 Làm Mới Biểu Mẫu</button>
+                            <button type="button" class="btn-primary btn-submit" onclick="submitArtwork()" id="btn-submit">
+                                🖼️ Đóng Khung & Trưng Bày Ngay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== HALL OF FAME ==================== -->
+    <section id="section-hall-of-fame" class="section hall-section hidden">
+        <div class="hall-header">
+            <div class="hall-trophy-emblem">🏆</div>
+            <h2 class="section-title">
+                <span class="title-ornament">❧</span>
+                Điện Vinh Danh Mỹ Thuật
+                <span class="title-ornament">❧</span>
+            </h2>
+            <p class="section-desc">Không gian danh giá dành riêng cho những kiệt tác xuất sắc nhất (đạt điểm 9.0 trở lên) được Hội đồng Giáo viên công nhận</p>
+        </div>
+
+        <div class="hall-wall" id="hall-wall">
+            <!-- Top artworks rendered here -->
+        </div>
+
+        <div class="empty-hall hidden" id="empty-hall">
+            <div class="empty-icon">🏆</div>
+            <h3>Điện Vinh Danh đang chờ đón những tác phẩm đầu tiên</h3>
+            <p>Bất kỳ tác phẩm nào được giáo viên chấm từ <strong>9.0 đến 10.0 điểm</strong> sẽ tự động được vinh danh tại nơi trang trọng này!</p>
+            <button class="btn-primary" onclick="showSection('gallery')">🖼️ Xem Toàn Bộ Phòng Tranh</button>
+        </div>
+    </section>
+
+    <!-- ==================== ARTWORK DETAIL MODAL ==================== -->
+    <div id="artwork-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeArtworkModal()"></div>
+        <div class="modal-content modal-artwork">
+            <button class="modal-close" onclick="closeArtworkModal()" title="Đóng (ESC)">✕</button>
+            
+            <div class="artwork-detail">
+                <!-- Left: Framed Artwork Display with Lightbox & Zoom -->
+                <div class="detail-artwork-col">
+                    <div class="detail-spotlight"></div>
+                    <div class="detail-frame-wrapper">
+                        <div class="artwork-frame classic-gold" id="detail-frame">
+                            <div class="artwork-mat mat-cream" id="detail-mat">
+                                <img id="detail-image" src="" alt="Artwork Detail">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plaque Card beneath artwork in modal -->
+                    <div class="detail-museum-plaque">
+                        <div class="plaque-corner top-left"></div>
+                        <div class="plaque-corner top-right"></div>
+                        <div class="plaque-corner bottom-left"></div>
+                        <div class="plaque-corner bottom-right"></div>
+                        <h3 id="detail-title" class="plaque-artwork-title"></h3>
+                        <p class="plaque-artist-line">Họa sĩ: <strong id="detail-artist"></strong> <span id="detail-class-badge" class="badge-class"></span></p>
+                        <p class="plaque-tech-line"><span id="detail-medium"></span> • Ngày trưng bày: <span id="detail-date"></span></p>
+                    </div>
+
+                    <!-- Action buttons under image -->
+                    <div class="artwork-toolbar-actions">
+                        <button class="btn-action-pill" id="btn-like-artwork" onclick="handleLikeArtwork()">
+                            <span id="like-icon">🤍</span> <span id="like-count-display">0</span> Lượt thích
+                        </button>
+                        <button class="btn-action-pill" onclick="printExhibitionCertificate()">
+                            <span>📜 In Giấy Chứng Nhận Triển Lãm</span>
+                        </button>
+                        <button class="btn-action-pill btn-action-danger hidden" id="btn-delete" onclick="deleteArtwork()">
+                            <span>🗑️ Xóa Tác Phẩm</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Information, Teacher Assessment & Interactions -->
+                <div class="detail-info-col">
+                    <!-- Description & Artist Statement -->
+                    <div class="detail-card">
+                        <h4 class="card-title">📖 Lời Tác Giả & Cảm Hứng Sáng Tác</h4>
+                        <p id="detail-desc" class="artist-statement-text"></p>
+                    </div>
+
+                    <!-- Grade & Evaluation Summary Card -->
+                    <div class="detail-card grade-summary-card" id="grade-summary-card">
+                        <div class="grade-banner">
+                            <div class="grade-badge-circle" id="grade-circle">
+                                <span class="grade-number" id="grade-value">—</span>
+                                <span class="grade-max">/10</span>
+                            </div>
+                            <div class="grade-text-group">
+                                <h4 id="grade-status-heading">Chờ Giáo Viên Đánh Giá</h4>
+                                <p id="grade-evaluator" class="evaluator-name"></p>
+                                <div id="grade-badges-display" class="badges-row"></div>
+                            </div>
+                        </div>
+
+                        <!-- Rubric breakdown if graded -->
+                        <div id="rubric-display" class="rubric-display hidden">
+                            <div class="rubric-item">
+                                <span class="rubric-name">Bố cục & Tỉ lệ:</span>
+                                <span class="rubric-val" id="rubric-val-comp">—</span>
+                            </div>
+                            <div class="rubric-item">
+                                <span class="rubric-name">Màu sắc & Ánh sáng:</span>
+                                <span class="rubric-val" id="rubric-val-color">—</span>
+                            </div>
+                            <div class="rubric-item">
+                                <span class="rubric-name">Kỹ thuật thể hiện:</span>
+                                <span class="rubric-val" id="rubric-val-tech">—</span>
+                            </div>
+                            <div class="rubric-item">
+                                <span class="rubric-name">Sáng tạo & Cảm xúc:</span>
+                                <span class="rubric-val" id="rubric-val-creativity">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Teacher Evaluation Panel (Visible when logged in as Teacher) -->
+                    <div class="teacher-panel hidden" id="teacher-panel">
+                        <div class="teacher-panel-header">
+                            <h4>👨‍🏫 Bàn Chấm Điểm & Nhận Xét Của Giáo Viên</h4>
+                            <span class="role-tag">Quyền Giáo Viên</span>
+                        </div>
+
+                        <!-- Score Slider -->
+                        <div class="grading-section">
+                            <div class="grading-header-row">
+                                <label for="grade-slider">Điểm số tác phẩm (thang 10):</label>
+                                <span class="grade-slider-display" id="grade-preview">8.5</span>
+                            </div>
+                            <input type="range" id="grade-slider" min="1" max="10" step="0.5" value="8.5" oninput="updateGradePreview(this.value)">
+                            <div class="slider-marks">
+                                <span>1</span><span>3</span><span>5</span><span>7</span><span>8.5</span><span>10</span>
+                            </div>
+                        </div>
+
+                        <!-- Rubric checkboxes / evaluation pills -->
+                        <div class="grading-section">
+                            <label>Tiêu chí đánh giá chuyên môn:</label>
+                            <div class="rubric-inputs-grid">
+                                <div class="rubric-input-box">
+                                    <span>Bố cục:</span>
+                                    <select id="rubric-comp">
+                                        <option value="Hài hòa, chặt chẽ">Hài hòa, chặt chẽ (Tốt)</option>
+                                        <option value="Khá cân đối">Khá cân đối (Khá)</option>
+                                        <option value="Cần cải thiện nhịp điệu">Cần cải thiện (Đạt)</option>
+                                    </select>
+                                </div>
+                                <div class="rubric-input-box">
+                                    <span>Phối màu:</span>
+                                    <select id="rubric-color">
+                                        <option value="Hòa sắc ấn tượng, tương phản tốt">Hòa sắc ấn tượng (Tốt)</option>
+                                        <option value="Màu tươi sáng, ăn ý">Màu tươi sáng (Khá)</option>
+                                        <option value="Cần làm rõ mảng chính phụ">Cần phân mảng (Đạt)</option>
+                                    </select>
+                                </div>
+                                <div class="rubric-input-box">
+                                    <span>Kỹ thuật:</span>
+                                    <select id="rubric-tech">
+                                        <option value="Làm chủ chất liệu, nét vẽ tự tin">Nét vẽ tự tin (Tốt)</option>
+                                        <option value="Kỹ thuật khá mượt mà">Khá mượt mà (Khá)</option>
+                                        <option value="Cần rèn thêm nét viền">Cần rèn thêm (Đạt)</option>
+                                    </select>
+                                </div>
+                                <div class="rubric-input-box">
+                                    <span>Sáng tạo:</span>
+                                    <select id="rubric-creativity">
+                                        <option value="Ý tưởng độc đáo, giàu cảm xúc">Độc đáo, cảm xúc (Tốt)</option>
+                                        <option value="Góc nhìn mới mẻ">Mới mẻ (Khá)</option>
+                                        <option value="Bám sát đề tài">Bám sát đề tài (Đạt)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Honor Badges given by teacher -->
+                        <div class="grading-section">
+                            <label>Trao tặng huy hiệu khen thưởng:</label>
+                            <div class="badge-checkboxes">
+                                <label class="badge-chip">
+                                    <input type="checkbox" id="badge-creative" value="🌟 Sáng Tạo Vượt Bậc">
+                                    <span>🌟 Sáng Tạo</span>
+                                </label>
+                                <label class="badge-chip">
+                                    <input type="checkbox" id="badge-color" value="🎨 Phối Màu Xuất Sắc">
+                                    <span>🎨 Hòa Sắc Đẹp</span>
+                                </label>
+                                <label class="badge-chip">
+                                    <input type="checkbox" id="badge-line" value="✍️ Đường Nét Tinh Tế">
+                                    <span>✍️ Nét Vẽ Tinh Tế</span>
+                                </label>
+                                <label class="badge-chip">
+                                    <input type="checkbox" id="badge-story" value="💡 Ý Tưởng Truyền Cảm Hứng">
+                                    <span>💡 Ý Tưởng Hay</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Teacher Comment -->
+                        <div class="grading-section">
+                            <label for="teacher-comment">💬 Lời nhận xét chuyên môn của giáo viên:</label>
+                            <textarea id="teacher-comment" placeholder="Ví dụ: Tác phẩm có hòa sắc trong trẻo, thể hiện tình cảm chân thành với đề tài..." rows="3" maxlength="600"></textarea>
+                        </div>
+
+                        <!-- Teacher Suggestion -->
+                        <div class="grading-section">
+                            <label for="teacher-suggestion">💡 Đề xuất & Hướng dẫn cải thiện:</label>
+                            <textarea id="teacher-suggestion" placeholder="Ví dụ: Em có thể nhấn đậm hơn ở các khoảng tối để tạo chiều sâu không gian tốt hơn..." rows="3" maxlength="600"></textarea>
+                        </div>
+
+                        <div class="grading-actions">
+                            <button class="btn-primary" onclick="submitGrade()">
+                                ✅ Lưu Kết Quả Chấm & Nhận Xét
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Teacher Feedback View (Visible to everyone when graded) -->
+                    <div class="feedback-display hidden" id="feedback-display">
+                        <div class="feedback-header">
+                            <h4>👨‍🏫 Lời Nhận Xét Của Giáo Viên</h4>
+                            <span id="feedback-teacher-badge" class="badge-teacher">Giáo viên Mỹ thuật</span>
+                        </div>
+                        <div class="feedback-comment" id="feedback-comment"></div>
+                        
+                        <div class="feedback-suggestion hidden" id="feedback-suggestion">
+                            <h5>💡 Đề xuất phát triển tác phẩm:</h5>
+                            <p id="suggestion-text"></p>
+                        </div>
+                    </div>
+
+                    <!-- Student Interaction / Discussion Comments -->
+                    <div class="detail-card comments-card">
+                        <h4 class="card-title">💬 Lời Chúc Mừng & Bình Luận Học Sinh (<span id="comments-count">0</span>)</h4>
+                        
+                        <div class="comments-list" id="comments-list">
+                            <!-- Comments populated dynamically -->
+                        </div>
+
+                        <div class="comment-input-box">
+                            <input type="text" id="student-comment-input" placeholder="Viết lời khen hoặc chia sẻ cảm xúc về bức tranh..." maxlength="200" onkeydown="if(event.key==='Enter') submitStudentComment()">
+                            <button class="btn-send-comment" onclick="submitStudentComment()">Gửi 💬</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== EXHIBITION CERTIFICATE MODAL ==================== -->
+    <div id="certificate-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeCertificateModal()"></div>
+        <div class="modal-content modal-certificate">
+            <button class="modal-close" onclick="closeCertificateModal()">✕</button>
+            <div id="printable-certificate" class="certificate-paper">
+                <div class="cert-border-outer">
+                    <div class="cert-border-inner">
+                        <div class="cert-seal">🏛️</div>
+                        <p class="cert-org">TRƯỜNG TRUNG HỌC CƠ SỞ & PHỔ THÔNG • BỘ MÔN MỸ THUẬT</p>
+                        <h2 class="cert-title">GIẤY CHỨNG NHẬN TRIỂN LÃM</h2>
+                        <p class="cert-sub">CHỨNG NHẬN TÁC PHẨM ĐƯỢC TRƯNG BÀY TẠI BẢO TÀNG MỸ THUẬT HỌC ĐƯỜNG</p>
+                        
+                        <p class="cert-recipient">Trao tặng cho nghệ sĩ trẻ:</p>
+                        <h3 class="cert-student-name" id="cert-artist-name">NGUYỄN VĂN A</h3>
+                        <p class="cert-class">Lớp: <span id="cert-class-name">8A1</span></p>
+
+                        <div class="cert-artwork-box">
+                            <p>Tác phẩm: <strong id="cert-artwork-title">"Mùa Hoa Tháng Giêng"</strong></p>
+                            <p>Chất liệu: <span id="cert-artwork-medium">Màu nước</span> • Điểm số: <strong id="cert-artwork-grade">9.5/10</strong></p>
+                        </div>
+
+                        <p class="cert-quote">❝ Ghi nhận tài năng sáng tạo, tư duy thẩm mỹ và đóng góp nghệ thuật tích cực cho triển lãm ❞</p>
+
+                        <div class="cert-signatures">
+                            <div class="cert-sig-box">
+                                <p class="sig-title">BAN TỔ CHỨC TRIỂN LÃM</p>
+                                <div class="sig-seal">BẢO TÀNG MỸ THUẬT</div>
+                                <p class="sig-name">Hội Đồng Nghệ Thuật</p>
+                            </div>
+                            <div class="cert-sig-box">
+                                <p class="sig-date" id="cert-date">Ngày 09 tháng 11 năm 2026</p>
+                                <p class="sig-title">GIÁO VIÊN BỘ MÔN</p>
+                                <div class="sig-stamp" id="cert-teacher-stamp">ĐÃ PHÊ DUYỆT</div>
+                                <p class="sig-name" id="cert-teacher-name">Giáo viên Phụ trách</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cert-actions">
+                <button class="btn-secondary" onclick="closeCertificateModal()">Đóng</button>
+                <button class="btn-primary" onclick="window.print()">🖨️ In Giấy Chứng Nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span id="toast-icon">✨</span>
+        <span id="toast-message">Thông báo</span>
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
