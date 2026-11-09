@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎨 Bảo Tàng Nghệ Thuật Học Đường - Mỹ Thuật</title>
+    <title>🎨 Bảo Tàng Nghệ Thuật - Trường PTDTBT TH&THCS Đinh Thanh Kháng</title>
+    <link rel="icon" type="image/jpeg" href="assets/school-logo.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,14 +17,17 @@
     <div class="entrance-ambient-light"></div>
     <div class="entrance-overlay"></div>
     <div class="entrance-content">
-        <div class="museum-emblem">
-            <svg viewBox="0 0 120 120" class="emblem-svg">
-                <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(212,175,55,0.7)" stroke-width="1.5" stroke-dasharray="4 2"/>
-                <circle cx="60" cy="60" r="48" fill="rgba(212,175,55,0.05)" stroke="rgba(212,175,55,0.4)" stroke-width="1"/>
-                <polygon points="60,18 69,45 98,45 74,62 83,90 60,73 37,90 46,62 22,45 51,45" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1"/>
-                <text x="60" y="68" text-anchor="middle" fill="#d4af37" font-size="38" font-family="serif">🏛️</text>
-            </svg>
+        <!-- Logo & Thương Hiệu Trường Đinh Thanh Kháng -->
+        <div class="school-logo-container">
+            <div class="school-logo-frame" title="Trường PTDTBT TH&THCS Đinh Thanh Kháng">
+                <img src="assets/school-logo.jpg" alt="Logo Trường PTDTBT TH&THCS Đinh Thanh Kháng" class="school-logo-img">
+            </div>
+            <div class="school-identity">
+                <span class="school-meta-kicker">SỞ GD&amp;ĐT TỈNH QUẢNG NGÃI</span>
+                <h2 class="school-official-name">TRƯỜNG PTDTBT TH &amp; THCS ĐINH THANH KHÁNG</h2>
+            </div>
         </div>
+        
         <p class="entrance-kicker">KHÔNG GIAN TRIỂN LÃM MỸ THUẬT HỌC ĐƯỜNG</p>
         <h1 class="entrance-title">Bảo Tàng Nghệ Thuật</h1>
         <p class="entrance-subtitle">Art Gallery & Exhibition</p>
@@ -67,6 +71,7 @@
     </div>
 
     <div class="entrance-footer">
+        <p class="footer-school-brand">🏛️ Trường Phổ Thông Dân Tộc Bán Trú TH &amp; THCS Đinh Thanh Kháng</p>
         <p>❝ Nghệ thuật gột rửa khỏi tâm hồn lớp bụi bặm của cuộc sống hàng ngày ❞ — Pablo Picasso</p>
     </div>
 </div>
@@ -77,11 +82,13 @@
     <!-- Navigation Bar -->
     <nav class="museum-nav">
         <div class="nav-left">
-            <div class="nav-logo" onclick="showSection('gallery')">
-                <span class="logo-icon">🏛️</span>
+            <div class="nav-logo" onclick="showSection('gallery')" title="Trường PTDTBT TH&THCS Đinh Thanh Kháng">
+                <div class="nav-logo-circle">
+                    <img src="assets/school-logo.jpg" alt="Logo Trường PTDTBT TH&THCS Đinh Thanh Kháng" class="nav-school-logo">
+                </div>
                 <div class="logo-group">
-                    <span class="logo-text">BẢO TÀNG MỸ THUẬT HỌC ĐƯỜNG</span>
-                    <span class="logo-sub">School of Fine Arts Gallery</span>
+                    <span class="logo-text">TH &amp; THCS ĐINH THANH KHÁNG</span>
+                    <span class="logo-sub">Bảo Tàng Mỹ Thuật Học Đường</span>
                 </div>
             </div>
         </div>
@@ -681,6 +688,15 @@
                         </button>
                     </div>
 
+                    <div class="backup-card" style="border-color: rgba(112, 196, 255, 0.45); background: linear-gradient(135deg, rgba(20, 35, 60, 0.85), rgba(12, 22, 40, 0.9));">
+                        <div class="backup-icon">🚀</div>
+                        <h3 style="color: #70c4ff;">Đóng Gói Dữ Liệu Đẩy Lên GitHub</h3>
+                        <p>Xuất tệp <code>initial-data.json</code> chứa toàn bộ tranh, tài khoản, điểm số và chuyên đề đã tạo tại máy. Khi đẩy tệp này lên GitHub Pages, khách truy cập từ xa sẽ thấy đầy đủ dữ liệu ngay lập tức!</p>
+                        <button class="btn-primary" style="background: linear-gradient(135deg, #0284c7, #0369a1); border-color: #38bdf8;" onclick="exportInitialDataForGithub()">
+                            📦 Tải File initial-data.json Cho GitHub
+                        </button>
+                    </div>
+
                     <div class="backup-card backup-danger">
                         <div class="backup-icon">🔄</div>
                         <h3>Đặt Lại Dữ Liệu Chuẩn Của Trường</h3>
@@ -1060,8 +1076,10 @@
             <div class="catalog-paper" id="printable-catalog">
                 <!-- Catalog Cover -->
                 <div class="catalog-cover">
-                    <div class="catalog-emblem">🏛️</div>
-                    <p class="catalog-season">NIÊN HỌC 2026 - 2027 • TẬP SỐ I</p>
+                    <div class="catalog-emblem">
+                        <img src="assets/school-logo.jpg" alt="Logo Trường Đinh Thanh Kháng" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2.5px solid #d4af37; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                    </div>
+                    <p class="catalog-season">SỞ GD&amp;ĐT TỈNH QUẢNG NGÃI • TRƯỜNG PTDTBT TH&amp;THCS ĐINH THANH KHÁNG</p>
                     <h1 class="catalog-main-title">KỶ YẾU MỸ THUẬT HỌC ĐƯỜNG</h1>
                     <p class="catalog-subtitle">FINE ARTS EXHIBITION CATALOGUE</p>
                     <div class="catalog-line"></div>
@@ -1123,8 +1141,10 @@
             <div id="printable-certificate" class="certificate-paper">
                 <div class="cert-border-outer">
                     <div class="cert-border-inner">
-                        <div class="cert-seal">🏛️</div>
-                        <p class="cert-org">TRƯỜNG TRUNG HỌC CƠ SỞ &amp; PHỔ THÔNG • BỘ MÔN MỸ THUẬT</p>
+                        <div class="cert-seal">
+                            <img src="assets/school-logo.jpg" alt="Logo Trường Đinh Thanh Kháng" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #d4af37; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                        </div>
+                        <p class="cert-org">SỞ GD&amp;ĐT TỈNH QUẢNG NGÃI • TRƯỜNG PTDTBT TH &amp; THCS ĐINH THANH KHÁNG</p>
                         <h2 class="cert-title">GIẤY CHỨNG NHẬN TRIỂN LÃM</h2>
                         <p class="cert-sub">CHỨNG NHẬN TÁC PHẨM ĐƯỢC TRƯNG BÀY TẠI BẢO TÀNG MỸ THUẬT HỌC ĐƯỜNG</p>
                         

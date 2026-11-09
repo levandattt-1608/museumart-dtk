@@ -1,0 +1,231 @@
+{
+  "exportedAt": "2026-11-09T14:40:14.739Z",
+  "version": "1.0",
+  "users": [
+    {
+      "id": "usr_admin",
+      "username": "admin",
+      "password": "1608",
+      "fullname": "Quản Trị Viên Hệ Thống",
+      "role": "admin",
+      "className": "Ban Giám Hiệu & Quản Trị Bảo Tàng",
+      "avatar": "🏛️",
+      "bio": "Tài khoản quản trị viên tối cao của Bảo Tàng Mỹ Thuật Học Đường.",
+      "createdAt": 1791643211348
+    }
+  ],
+  "artworks": [
+    {
+      "id": "art_demo_1",
+      "title": "Hoàng Hôn Trên Cánh Đồng Lúa Chín",
+      "description": "Bức tranh được sáng tác trong chuyến đi thăm quê ngoại mùa lúa chín vàng ươm. Em muốn khắc họa vẻ đẹp trù phú, bình yên của làng quê Việt Nam dưới ánh hoàng hôn rực rỡ và những cánh chim trời bay về tổ ấm.",
+      "medium": "Màu nước",
+      "theme": "Nét Đẹp Quê Hương",
+      "className": "7A1",
+      "artist": "Nguyễn Thảo My",
+      "frame": "classic-gold",
+      "mat": "mat-cream",
+      "imageData": "data:image/svg+xml;utf8,%0A%20%20%20%20%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%20450%22%3E%0A%20%20%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22skyGrad%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%220%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23ff5e62%22%2F%3E%3Cstop%20offset%3D%2235%25%22%20stop-color%3D%22%23ff9966%22%2F%3E%3Cstop%20offset%3D%2270%25%22%20stop-color%3D%22%23ffd56b%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23fdfcfb%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22sunGlow%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2250%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23ffffff%22%2F%3E%3Cstop%20offset%3D%2230%25%22%20stop-color%3D%22%23fff275%22%2F%3E%3Cstop%20offset%3D%2270%25%22%20stop-color%3D%22%23ff9f43%22%20stop-opacity%3D%220.8%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23ff5e62%22%20stop-opacity%3D%220%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22mountainGrad%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%220%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%235a3d75%22%20stop-opacity%3D%220.7%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%238e44ad%22%20stop-opacity%3D%220.3%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22fieldGrad1%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%220%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23f39c12%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2327ae60%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22fieldGrad2%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%220%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23f1c40f%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23d35400%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22waterGrad%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%220%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23ffbe76%22%2F%3E%3Cstop%20offset%3D%2250%25%22%20stop-color%3D%22%23e056fd%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23686de0%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%20%20%3Crect%20width%3D%22600%22%20height%3D%22450%22%20fill%3D%22url(%23skyGrad)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22300%22%20cy%3D%22180%22%20r%3D%22110%22%20fill%3D%22url(%23sunGlow)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22300%22%20cy%3D%22180%22%20r%3D%2242%22%20fill%3D%22%23fffef0%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M-50%2C260%20Q80%2C180%20180%2C250%20T400%2C220%20T650%2C260%20L650%2C450%20L-50%2C450%20Z%22%20fill%3D%22url(%23mountainGrad)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M-20%2C280%20Q150%2C220%20280%2C270%20T550%2C240%20T650%2C290%20L650%2C450%20L-20%2C450%20Z%22%20fill%3D%22%236d4c41%22%20opacity%3D%220.35%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M300%2C270%20C290%2C310%20380%2C340%20330%2C380%20C290%2C410%20240%2C420%20200%2C450%20L340%2C450%20C380%2C420%20440%2C390%20400%2C340%20C360%2C300%20320%2C280%20300%2C270%20Z%22%20fill%3D%22url(%23waterGrad)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C280%20Q160%2C250%20300%2C270%20Q450%2C255%20600%2C280%20L600%2C330%20Q420%2C310%20260%2C330%20Q120%2C310%200%2C330%20Z%22%20fill%3D%22url(%23fieldGrad1)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C320%20Q180%2C300%20340%2C330%20Q480%2C310%20600%2C335%20L600%2C380%20Q440%2C360%20280%2C380%20Q140%2C360%200%2C380%20Z%22%20fill%3D%22url(%23fieldGrad2)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C370%20Q140%2C350%20280%2C375%20Q460%2C350%20600%2C380%20L600%2C450%20L0%2C450%20Z%22%20fill%3D%22%232ecc71%22%20opacity%3D%220.85%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cellipse%20cx%3D%22120%22%20cy%3D%22350%22%20rx%3D%2290%22%20ry%3D%2215%22%20fill%3D%22%23f1c40f%22%20opacity%3D%220.6%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cellipse%20cx%3D%22480%22%20cy%3D%22365%22%20rx%3D%2280%22%20ry%3D%2212%22%20fill%3D%22%23f39c12%22%20opacity%3D%220.6%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cellipse%20cx%3D%22180%22%20cy%3D%22415%22%20rx%3D%22110%22%20ry%3D%2218%22%20fill%3D%22%23f9ca24%22%20opacity%3D%220.7%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M220%2C120%20Q230%2C110%20240%2C120%20Q250%2C110%20260%2C120%22%20fill%3D%22none%22%20stroke%3D%22%23634832%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M255%2C100%20Q262%2C92%20270%2C100%20Q278%2C92%20285%2C100%22%20fill%3D%22none%22%20stroke%3D%22%23634832%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20points%3D%22490%2C290%20515%2C275%20540%2C290%22%20fill%3D%22%233e2723%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22495%22%20y%3D%22290%22%20width%3D%2240%22%20height%3D%2220%22%20fill%3D%22%234e342e%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cline%20x1%3D%22500%22%20y1%3D%22310%22%20x2%3D%22500%22%20y2%3D%22325%22%20stroke%3D%22%233e2723%22%20stroke-width%3D%222%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cline%20x1%3D%22530%22%20y1%3D%22310%22%20x2%3D%22530%22%20y2%3D%22325%22%20stroke%3D%22%233e2723%22%20stroke-width%3D%222%22%2F%3E%0A%20%20%20%20%3C%2Fsvg%3E",
+      "sketchData": "data:image/svg+xml;utf8,%0A%20%20%20%20%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%20450%22%3E%0A%20%20%20%20%20%20%20%20%3Crect%20width%3D%22600%22%20height%3D%22450%22%20fill%3D%22%23fdfbf7%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C!--%20Pencil%20sketch%20lines%20for%20rice%20field%20--%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22300%22%20cy%3D%22180%22%20r%3D%2242%22%20fill%3D%22none%22%20stroke%3D%22%23555%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%223%203%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M-50%2C260%20Q80%2C180%20180%2C250%20T400%2C220%20T650%2C260%22%20fill%3D%22none%22%20stroke%3D%22%23444%22%20stroke-width%3D%221.8%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M-20%2C280%20Q150%2C220%20280%2C270%20T550%2C240%20T650%2C290%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%221.2%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C280%20Q160%2C250%20300%2C270%20Q450%2C255%20600%2C280%22%20fill%3D%22none%22%20stroke%3D%22%23333%22%20stroke-width%3D%222%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C320%20Q180%2C300%20340%2C330%20Q480%2C310%20600%2C335%22%20fill%3D%22none%22%20stroke%3D%22%23333%22%20stroke-width%3D%222%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C370%20Q140%2C350%20280%2C375%20Q460%2C350%20600%2C380%22%20fill%3D%22none%22%20stroke%3D%22%23333%22%20stroke-width%3D%222.2%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C!--%20Hatching%20texture%20(N%C3%A9t%20g%E1%BA%A1ch%20ch%C3%AC%20%C4%91%C3%A1nh%20b%C3%B3ng)%20--%3E%0A%20%20%20%20%20%20%20%20%3Cline%20x1%3D%2250%22%20y1%3D%22280%22%20x2%3D%2265%22%20y2%3D%22300%22%20stroke%3D%22%23777%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cline%20x1%3D%2270%22%20y1%3D%22280%22%20x2%3D%2285%22%20y2%3D%22300%22%20stroke%3D%22%23777%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cline%20x1%3D%2290%22%20y1%3D%22280%22%20x2%3D%22105%22%20y2%3D%22300%22%20stroke%3D%22%23777%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cline%20x1%3D%22180%22%20y1%3D%22330%22%20x2%3D%22200%22%20y2%3D%22355%22%20stroke%3D%22%23777%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cline%20x1%3D%22200%22%20y1%3D%22330%22%20x2%3D%22220%22%20y2%3D%22355%22%20stroke%3D%22%23777%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C!--%20River%20outline%20--%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M300%2C270%20C290%2C310%20380%2C340%20330%2C380%20C290%2C410%20240%2C420%20200%2C450%22%20fill%3D%22none%22%20stroke%3D%22%23555%22%20stroke-width%3D%221.5%22%20stroke-dasharray%3D%224%202%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ctext%20x%3D%2230%22%20y%3D%22420%22%20font-family%3D%22sans-serif%22%20font-size%3D%2212%22%20fill%3D%22%23888%22%3EB%E1%BA%A3n%20ph%C3%A1c%20th%E1%BA%A3o%20ch%C3%AC%20t%E1%BB%89%20l%E1%BB%87%201%2F2%20%E2%80%A2%20Nguy%E1%BB%85n%20Th%E1%BA%A3o%20My%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E",
+      "palette": {
+        "colors": [
+          "#ff5e62",
+          "#f39c12",
+          "#ffd56b",
+          "#27ae60",
+          "#5a3d75"
+        ],
+        "harmony": "Hòa Sắc Hoàng Hôn Rực Rỡ"
+      },
+      "timestamp": 1793976014739,
+      "grade": 9.5,
+      "teacherName": "Thầy Lê Hoàng (GV Mỹ Thuật)",
+      "comment": "Tác phẩm xuất sắc! Kỹ thuật vẽ loang màu nước mượt mà, chuyển sắc từ cam hoàng hôn sang vàng lúa rất có chiều sâu không gian. Nét vẽ tự tin và giàu cảm xúc.",
+      "suggestion": "Em có thể nghiên cứu thêm kỹ thuật cọ tỉa khô (dry-brush) ở tiền cảnh để tôn thêm độ sắc nét của từng bông lúa trĩu hạt nhé!",
+      "rubric": {
+        "comp": "Hài hòa, chặt chẽ (Tốt)",
+        "color": "Hòa sắc ấn tượng, tương phản tốt (Tốt)",
+        "tech": "Làm chủ chất liệu, nét vẽ tự tin (Tốt)",
+        "creativity": "Ý tưởng độc đáo, giàu cảm xúc (Tốt)"
+      },
+      "badges": [
+        "🌟 Sáng Tạo Vượt Bậc",
+        "🎨 Phối Màu Xuất Sắc"
+      ],
+      "likes": 45,
+      "comments": [
+        {
+          "author": "Trần Đức Nam (8B2)",
+          "text": "Tranh bạn vẽ màu nước trong veo, nhìn bình yên quá!",
+          "time": "Hôm qua"
+        },
+        {
+          "author": "Lê Bảo Châu (6A3)",
+          "text": "Thích nhất bầu trời hoàng hôn của bạn Thảo My!",
+          "time": "Hôm nay"
+        }
+      ]
+    },
+    {
+      "id": "art_demo_2",
+      "title": "Phố Cổ Hà Nội Mùa Hoa Sưa",
+      "description": "Lấy cảm hứng từ những mái ngói rêu phong và bức tường vàng đặc trưng của phố cổ Hà Nội. Gánh hoa sưa trắng tinh khôi của cô bán hàng rong như điểm xuyết nét dịu dàng, hoài niệm của mùa xuân thủ đô.",
+      "medium": "Sơn dầu",
+      "theme": "Nét Đẹp Quê Hương",
+      "className": "8B2",
+      "artist": "Trần Đức Nam",
+      "frame": "baroque",
+      "mat": "mat-cream",
+      "imageData": "data:image/svg+xml;utf8,%0A%20%20%20%20%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%20450%22%3E%0A%20%20%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22hanoiSky%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%220%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2374b9ff%22%2F%3E%3Cstop%20offset%3D%2260%25%22%20stop-color%3D%22%23dfe6e9%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23ffeaa7%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22wallYellow%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%220%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23f5cd79%22%2F%3E%3Cstop%20offset%3D%2250%25%22%20stop-color%3D%22%23eccc68%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23d6a844%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22roofTile%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%220%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23b33939%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%235c1d1d%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%20%20%3Crect%20width%3D%22600%22%20height%3D%22450%22%20fill%3D%22url(%23hanoiSky)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20points%3D%2240%2C160%20160%2C130%20160%2C370%2040%2C370%22%20fill%3D%22url(%23wallYellow)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20points%3D%2225%2C165%20100%2C105%20175%2C135%22%20fill%3D%22url(%23roofTile)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%2265%22%20y%3D%22190%22%20width%3D%2230%22%20height%3D%2245%22%20fill%3D%22%23218c74%22%20rx%3D%222%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22110%22%20y%3D%22180%22%20width%3D%2230%22%20height%3D%2245%22%20fill%3D%22%23218c74%22%20rx%3D%222%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%2255%22%20y%3D%22240%22%20width%3D%2295%22%20height%3D%2210%22%20fill%3D%22%23333333%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20points%3D%22160%2C130%20330%2C120%20330%2C370%20160%2C370%22%20fill%3D%22%23f8c291%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20points%3D%22150%2C130%20245%2C75%20340%2C120%22%20fill%3D%22url(%23roofTile)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22200%22%20y%3D%22160%22%20width%3D%2240%22%20height%3D%2260%22%20fill%3D%22%2338ada9%22%20rx%3D%224%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22260%22%20y%3D%22160%22%20width%3D%2240%22%20height%3D%2260%22%20fill%3D%22%2338ada9%22%20rx%3D%224%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22185%22%20y%3D%22270%22%20width%3D%22120%22%20height%3D%2224%22%20fill%3D%22%236d4c41%22%20rx%3D%223%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ctext%20x%3D%22245%22%20y%3D%22286%22%20font-family%3D%22serif%22%20font-size%3D%2212%22%20fill%3D%22%23ffd32a%22%20text-anchor%3D%22middle%22%20font-weight%3D%22bold%22%3ETR%C3%80%20%26amp%3B%20HOA%20PH%E1%BB%90%20C%E1%BB%94%3C%2Ftext%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20points%3D%22330%2C120%20520%2C150%20520%2C370%20330%2C370%22%20fill%3D%22url(%23wallYellow)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20points%3D%22320%2C120%20425%2C85%20530%2C150%22%20fill%3D%22url(%23roofTile)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C80%20Q300%2C160%20600%2C100%22%20fill%3D%22none%22%20stroke%3D%22%232f3542%22%20stroke-width%3D%221.5%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cpolygon%20points%3D%220%2C370%20600%2C370%20600%2C450%200%2C450%22%20fill%3D%22%2357606f%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22430%22%20cy%3D%22385%22%20r%3D%2228%22%20fill%3D%22none%22%20stroke%3D%22%232f3542%22%20stroke-width%3D%223%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22505%22%20cy%3D%22385%22%20r%3D%2228%22%20fill%3D%22none%22%20stroke%3D%22%232f3542%22%20stroke-width%3D%223%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cline%20x1%3D%22430%22%20y1%3D%22385%22%20x2%3D%22470%22%20y2%3D%22355%22%20stroke%3D%22%232f3542%22%20stroke-width%3D%223%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cline%20x1%3D%22470%22%20y1%3D%22355%22%20x2%3D%22505%22%20y2%3D%22385%22%20stroke%3D%22%232f3542%22%20stroke-width%3D%223%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cline%20x1%3D%22470%22%20y1%3D%22355%22%20x2%3D%22470%22%20y2%3D%22330%22%20stroke%3D%22%232f3542%22%20stroke-width%3D%223%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cellipse%20cx%3D%22450%22%20cy%3D%22340%22%20rx%3D%2230%22%20ry%3D%2218%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23f1c40f%22%20stroke-width%3D%222%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22445%22%20cy%3D%22336%22%20r%3D%226%22%20fill%3D%22%23ff4757%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22458%22%20cy%3D%22342%22%20r%3D%225%22%20fill%3D%22%23ffa502%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22438%22%20cy%3D%22344%22%20r%3D%225%22%20fill%3D%22%232ed573%22%2F%3E%0A%20%20%20%20%3C%2Fsvg%3E",
+      "sketchData": null,
+      "palette": {
+        "colors": [
+          "#f5cd79",
+          "#b33939",
+          "#218c74",
+          "#74b9ff",
+          "#57606f"
+        ],
+        "harmony": "Hòa Sắc Cổ Điển Tương Phản"
+      },
+      "timestamp": 1794062414739,
+      "grade": 9,
+      "teacherName": "Cô Vũ Minh Hằng (GV Mỹ Thuật)",
+      "comment": "Bố cục rất chững chạc, cách phối màu tường vàng tương phản ăn ý với mái ngói đỏ sẫm. Chi tiết gánh hoa trên xe đạp tạo điểm nhấn thị giác duyên dáng.",
+      "suggestion": "Nên chú ý sắc độ bóng đổ dưới chân các ngôi nhà xuống mặt đường để tăng độ vững chãi cho khối kiến trúc.",
+      "rubric": {
+        "comp": "Hài hòa, chặt chẽ (Tốt)",
+        "color": "Hòa sắc ấn tượng, tương phản tốt (Tốt)",
+        "tech": "Làm chủ chất liệu, nét vẽ tự tin (Tốt)",
+        "creativity": "Góc nhìn mới mẻ (Khá)"
+      },
+      "badges": [
+        "✍️ Đường Nét Tinh Tế",
+        "🎨 Phối Màu Xuất Sắc"
+      ],
+      "likes": 36,
+      "comments": [
+        {
+          "author": "Phạm Quang Minh (9A)",
+          "text": "Màu sơn dầu dày dặn, nhìn chuẩn phong cách phố cổ Bùi Xuân Phái!",
+          "time": "Hôm kia"
+        }
+      ]
+    },
+    {
+      "id": "art_demo_3",
+      "title": "Giai Điệu Sen Xanh",
+      "description": "Hoa sen tượng trưng cho sự thuần khiết, thanh cao vươn lên từ bùn lầy. Em vẽ đóa sen hồng bung nở giữa đầm sen xanh biếc, bên cạnh là chú chuồn chuồn ớt đậu trên búp sen sớm mai đọng sương.",
+      "medium": "Màu sáp / Sáp dầu",
+      "theme": "Bảo Vệ Môi Trường",
+      "className": "6A3",
+      "artist": "Lê Bảo Châu",
+      "frame": "dark-wood",
+      "mat": "mat-white",
+      "imageData": "data:image/svg+xml;utf8,%0A%20%20%20%20%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%20450%22%3E%0A%20%20%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22pondBg%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2270%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231b4d3e%22%2F%3E%3Cstop%20offset%3D%2250%25%22%20stop-color%3D%22%230b2920%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%2304120e%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22lotusPetal1%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%220%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23ffffff%22%2F%3E%3Cstop%20offset%3D%2240%25%22%20stop-color%3D%22%23ff9ff3%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23f368e0%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3ClinearGradient%20id%3D%22leafGrad%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%2310ac84%22%2F%3E%3Cstop%20offset%3D%2260%25%22%20stop-color%3D%22%231dd1a1%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23054737%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%20%20%3Crect%20width%3D%22600%22%20height%3D%22450%22%20fill%3D%22url(%23pondBg)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cellipse%20cx%3D%22140%22%20cy%3D%22330%22%20rx%3D%22130%22%20ry%3D%2265%22%20fill%3D%22url(%23leafGrad)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cellipse%20cx%3D%22460%22%20cy%3D%22310%22%20rx%3D%22120%22%20ry%3D%2260%22%20fill%3D%22url(%23leafGrad)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cellipse%20cx%3D%22280%22%20cy%3D%22380%22%20rx%3D%22160%22%20ry%3D%2265%22%20fill%3D%22%2310ac84%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cg%20transform%3D%22translate(300%2C%20240)%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C20%20Q-70%2C-10%20-90%2C-60%20Q-40%2C-50%200%2C20%22%20fill%3D%22%23e77f98%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C20%20Q70%2C-10%2090%2C-60%20Q40%2C-50%200%2C20%22%20fill%3D%22%23e77f98%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C20%20Q-50%2C-40%20-50%2C-110%20Q-20%2C-70%200%2C20%22%20fill%3D%22url(%23lotusPetal1)%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C20%20Q50%2C-40%2050%2C-110%20Q20%2C-70%200%2C20%22%20fill%3D%22url(%23lotusPetal1)%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M0%2C20%20Q-25%2C-60%200%2C-130%20Q25%2C-60%200%2C20%22%20fill%3D%22url(%23lotusPetal1)%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cellipse%20cx%3D%220%22%20cy%3D%22-25%22%20rx%3D%2222%22%20ry%3D%2214%22%20fill%3D%22%23feca57%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22118%22%20cy%3D%22308%22%20r%3D%223%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%20%20%3C%2Fsvg%3E",
+      "sketchData": null,
+      "palette": {
+        "colors": [
+          "#10ac84",
+          "#ff9ff3",
+          "#0b2920",
+          "#feca57",
+          "#ffffff"
+        ],
+        "harmony": "Hòa Sắc Thiên Nhiên Dịu Mát"
+      },
+      "timestamp": 1794148814739,
+      "grade": 8.5,
+      "teacherName": "Thầy Lê Hoàng (GV Mỹ Thuật)",
+      "comment": "Nét sáp dầu đậm đà, mộc mạc và tràn đầy năng lượng tươi trẻ. Cách thể hiện giọt sương trên lá sen rất khéo léo.",
+      "suggestion": "Em thử dùng ngón tay hoặc khăn giấy miết nhẹ các mảng màu sáp để tạo độ chuyển mịn màng hơn ở phần cánh hoa sen nhé.",
+      "rubric": {
+        "comp": "Khá cân đối (Khá)",
+        "color": "Màu tươi sáng, ăn ý (Khá)",
+        "tech": "Kỹ thuật khá mượt mà (Khá)",
+        "creativity": "Ý tưởng độc đáo, giàu cảm xúc (Tốt)"
+      },
+      "badges": [
+        "💡 Ý Tưởng Truyền Cảm Hứng"
+      ],
+      "likes": 28,
+      "comments": [
+        {
+          "author": "Nguyễn Thảo My (7A1)",
+          "text": "Màu sáp lên màu nổi bật thật đấy Bảo Châu ơi!",
+          "time": "Hôm nay"
+        }
+      ]
+    },
+    {
+      "id": "art_demo_4",
+      "title": "Ước Mơ Khám Phá Vũ Trụ",
+      "description": "Em vẽ một bạn phi hành gia trẻ tuổi đang bay lơ lửng ngoài không gian, tay cầm cọ vẽ nên những dải ngân hà kỳ thú và các vì sao lung linh. Nghệ thuật và trí tưởng tượng không có giới hạn!",
+      "medium": "Kỹ thuật số",
+      "theme": "Ước Mơ & Tương Lai",
+      "className": "9A",
+      "artist": "Phạm Quang Minh",
+      "frame": "white-modern",
+      "mat": "mat-dark",
+      "imageData": "data:image/svg+xml;utf8,%0A%20%20%20%20%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20600%20450%22%3E%0A%20%20%20%20%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22spaceDeep%22%20cx%3D%2250%25%22%20cy%3D%2250%25%22%20r%3D%2275%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%233b1d60%22%2F%3E%3Cstop%20offset%3D%2245%25%22%20stop-color%3D%22%23180b33%22%2F%3E%3Cstop%20offset%3D%2285%25%22%20stop-color%3D%22%23080214%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CradialGradient%20id%3D%22nebulaColor%22%20cx%3D%2265%25%22%20cy%3D%2235%25%22%20r%3D%2245%25%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23ff7675%22%20stop-opacity%3D%220.8%22%2F%3E%3Cstop%20offset%3D%2240%25%22%20stop-color%3D%22%236c5ce7%22%20stop-opacity%3D%220.5%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230984e3%22%20stop-opacity%3D%220%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FradialGradient%3E%0A%20%20%20%20%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%20%20%20%20%3Crect%20width%3D%22600%22%20height%3D%22450%22%20fill%3D%22url(%23spaceDeep)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Crect%20width%3D%22600%22%20height%3D%22450%22%20fill%3D%22url(%23nebulaColor)%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%2250%22%20cy%3D%2280%22%20r%3D%221.5%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22120%22%20cy%3D%2240%22%20r%3D%222.2%22%20fill%3D%22%23fff%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22280%22%20cy%3D%2250%22%20r%3D%222.5%22%20fill%3D%22%2374b9ff%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22490%22%20cy%3D%2260%22%20r%3D%222%22%20fill%3D%22%23ff7675%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cg%20transform%3D%22translate(420%2C%20180)%20rotate(-22)%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M-110%2C0%20A110%2032%200%200%201%20110%2C0%22%20stroke%3D%22%23fce29d%22%20stroke-width%3D%2212%22%20fill%3D%22none%22%20opacity%3D%220.5%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%220%22%20cy%3D%220%22%20r%3D%2254%22%20fill%3D%22%23e17055%22%2F%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M110%2C0%20A110%2032%200%200%201%20-110%2C0%22%20stroke%3D%22%23fce29d%22%20stroke-width%3D%2212%22%20fill%3D%22none%22%20opacity%3D%220.85%22%2F%3E%0A%20%20%20%20%20%20%20%20%3C%2Fg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22140%22%20cy%3D%22150%22%20r%3D%2232%22%20fill%3D%22%230984e3%22%2F%3E%0A%20%20%20%20%3C%2Fsvg%3E",
+      "sketchData": null,
+      "palette": {
+        "colors": [
+          "#3b1d60",
+          "#ff7675",
+          "#0984e3",
+          "#e17055",
+          "#ffeaa7"
+        ],
+        "harmony": "Hòa Sắc Huyền Ảo Không Gian"
+      },
+      "timestamp": 1794220814739,
+      "grade": null,
+      "teacherName": null,
+      "comment": null,
+      "suggestion": null,
+      "rubric": null,
+      "badges": [],
+      "likes": 52,
+      "comments": [
+        {
+          "author": "Trần Đức Nam (8B2)",
+          "text": "Tranh Digital đỉnh quá bạn ơi! Chờ thầy cô vào chấm 10 điểm!",
+          "time": "Vừa xong"
+        }
+      ]
+    }
+  ],
+  "themes": [
+    {
+      "id": "theme_1",
+      "name": "Nét Đẹp Quê Hương",
+      "icon": "🌾",
+      "desc": "Ca ngợi vẻ đẹp đất nước, con người và danh lam thắng cảnh Việt Nam"
+    },
+    {
+      "id": "theme_2",
+      "name": "Thầy Cô & Mái Trường",
+      "icon": "🏫",
+      "desc": "Tri ân thầy cô giáo, ghi dấu kỷ niệm tuổi học trò và mái trường thân thương"
+    },
+    {
+      "id": "theme_3",
+      "name": "Bảo Vệ Môi Trường",
+      "icon": "🌿",
+      "desc": "Thông điệp Trái Đất xanh, chống rác thải nhựa và bảo vệ thiên nhiên"
+    },
+    {
+      "id": "theme_4",
+      "name": "Ước Mơ & Tương Lai",
+      "icon": "🚀",
+      "desc": "Khám phá vũ trụ, khoa học công nghệ và ước mơ hoài bão tương lai"
+    },
+    {
+      "id": "theme_5",
+      "name": "Tự Do Sáng Tạo",
+      "icon": "✨",
+      "desc": "Không gian mở cho mọi ý tưởng và phong cách nghệ thuật tự do"
+    }
+  ]
+}

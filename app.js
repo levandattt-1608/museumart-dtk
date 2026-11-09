@@ -1370,6 +1370,25 @@ function exportSystemBackup() {
     showToast('💾', 'Đã tải xuống bản sao lưu dữ liệu toàn hệ thống!');
 }
 
+function exportInitialDataForGithub() {
+    const backupData = {
+        exportedAt: new Date().toISOString(),
+        version: '1.0',
+        users: getUsers(),
+        artworks: getArtworks(),
+        themes: getThemes()
+    };
+
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'initial-data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('🚀', 'Đã xuất file initial-data.json! Hãy lưu vào thư mục web rồi đẩy lên GitHub.');
+}
+
 function handleImportBackup(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -2911,4 +2930,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize themes and user session
     renderThemeTabsAndSelects();
     initSessionState();
+    syncExternalDataIfAvailable();
 });
+
+async function syncExternalDataIfAvailable() {
+    try {
+        const res = await fetch('initial-data.json');
+        if (res.ok) {
+            const data = await res.json();
+            const syncKey = 'museum_synced_' + (data.exportedAt || 'v1');
+            if (!localStorage.getItem(syncKey)) {
+                if (Array.isArray(data.artworks) && data.artworks.length > 0) {
+                    saveArtworks(data.artworks);
+                }
+                if (Array.isArray(data.users) && data.users.length > 0) {
+                    saveUsers(data.users);
+                }
+                if (Array.isArray(data.themes) && data.themes.length > 0) {
+                    saveThemes(data.themes);
+                }
+                localStorage.setItem(syncKey, 'true');
+                renderThemeTabsAndSelects();
+                renderGallery();
+                updateMuseumStats();
+            }
+        }
+    } catch (e) {
+        // Safe fallback on file:// or if initial-data.json is not present
+    }
+}
